@@ -12,7 +12,7 @@ the player does (die, land a blackjack, cheat, go all-in...).
 | First slice | Blackjack only. The code is built so that every game is a module with its own artifact pool |
 | Run | Endless until death, goal is a record (payments survived, then peak chips) |
 | Debt | The house lends 100 chips and writes a debt of 500 at once (x5). The stake is always all in. Due after 5 hands, payable early. Paying brings the next loan (x2: 200, 400...) and debt (1000, 2000...), and a free artifact offer. Cannot pay or empty purse = death |
-| Death | All chips are lost, the run ends, meta progress (unlocks, stats) stays |
+| Death | A death costs a finger of the right hand (5 lives): the house lends the current loan again. The fifth ends the run; meta progress (unlocks, stats) stays |
 | Artifacts | 3 slots. A run starts empty: a free offer of 3 random unlocked artifacts, pick one. Another free offer only when a loan is paid off. Replace or discard when full. Four kinds, each its own colour: active blue, passive green, consumable amber, cursed crimson |
 | Deadline | Five candles on the far rail, one snuffed per hand; the installment due floats beside them. Redder light and two enforcers leaning in as it nears; on the last hand a hand raps three times on the felt; three knocks when it falls |
 | Feedback | A triggered artifact pops into the middle of the screen, shaking, and leaves the same way. A newly opened one slides in at the bottom-right with its icon and the reason it opened |
@@ -23,7 +23,7 @@ the player does (die, land a blackjack, cheat, go all-in...).
 | Tone | Dark, oppressive, modern: an abandoned underground casino, not a medieval dungeon (see `assets/README.md`) |
 | View | 3D, first person at the table, stylized low-poly with soft light. Menus stay 2D pixel UI |
 | Controls | Everything pressable is an object on the table: plaques and the artifacts in the left hand. Chips are only a display. Numbers and subtitles are a 2D overlay |
-| Table layout | Table across the view, dealer opposite. Chips standing in columns by denomination on a rack along the near rim (display only), action buttons in a row above it, bet circle in the middle. Artifacts are held in the player's left hand in the lower-left corner: fanned between the fingers, the hovered one spins out like a coin to show its emblem |
+| Table layout | Table across the view, dealer opposite. Chips standing in columns by denomination on a rack along the near rim (display only), action buttons in a row above it, bet circle in the middle. Artifacts are held like coins on the knuckles of the player's left hand, which lies on the table; the hovered one rolls out and spins to show its emblem. The right hand lies on the table too and does every press |
 | Buttons | 3D but camera-aligned (never skewed), large, with hover ring, press squash and a shake when unavailable |
 
 ## Run loop

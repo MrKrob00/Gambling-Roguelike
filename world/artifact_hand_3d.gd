@@ -1,17 +1,20 @@
 extends Node3D
-## The player's left hand, a child of the camera so it stays in the lower-left corner of the screen. The
-## equipped artifacts are fanned between its fingers, turned half edge-on so they never cover the table.
-## `focus(token)` lifts one toward the eye and spins it like a coin to show its emblem; the others stay put.
+## The player's left hand, resting on the table in a loose fist with the artifacts gripped on edge between the
+## knuckles like coins. `focus(token)` rolls one out of the grip, turns it to face the player and spins it over the
+## fingers (a coin roll) to show its emblem; the others stay put. Poses live in `hands/hand_l.tscn` (AnimationPlayer).
 
 const HAND_SCENE: PackedScene = preload("res://world/hands/hand_l.tscn")
 const GLOVE := Color(0.4, 0.27, 0.22)
-const HAND_POS := Vector3(-0.66, -0.5, -0.9)
-const MODEL_SCALE := 2.4
-const REST_SCALE := 0.36
+## The room is scaled up (a chip is 20 cm across), so the hand is too.
+const HAND_SCALE := 3.5
+const COIN_SCALE := 0.45
 const FOCUS_SCALE := 0.6
-const REST_YAW := 1.0
-const SLOT_SPACING := 0.12
-const FOCUS_LIFT := Vector3(0.24, 0.1, 0.2)
+## The gaps between the knuckles in the hand's own space (palm down, fingers along -z), before HAND_SCALE.
+const GAPS: Array[Vector3] = [Vector3(0.010, 0.016, -0.080), Vector3(-0.0125, 0.0155, -0.0765), Vector3(-0.0325, 0.0085, -0.0685)]
+const COIN_LIFT := 0.03
+const FOCUS_LIFT := Vector3(0.55, 0.45, 0.15)
+const FOCUS_TILT := 1.25
+const ROLL_TIME := 0.6
 
 var _rest: Dictionary = {}
 var _focused
@@ -19,13 +22,13 @@ var _tweens: Dictionary = {}
 var _anim: AnimationPlayer
 
 func _ready() -> void:
-	position = HAND_POS
 	var model: Node3D = HAND_SCENE.instantiate()
-	model.scale = Vector3.ONE * MODEL_SCALE
-	# The model lies with its fingers along -Z; stand it up so the fingers point up and the back faces the eye.
-	model.rotation_degrees = Vector3(90.0, 0.0, 18.0)
+	model.scale = Vector3.ONE * HAND_SCALE
+	# Palm down: the model stands with its palm on +x, so lay its back upwards.
+	model.rotation_degrees = Vector3(0.0, 0.0, -90.0)
 	add_child(model)
 	_anim = model.get_node("Anim")
+	_anim.play("fist")
 	var glove := StandardMaterial3D.new()
 	glove.albedo_color = GLOVE
 	glove.roughness = 0.55
@@ -36,43 +39,54 @@ func _ready() -> void:
 		m.material_override = glove
 		m.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
-## Puts a token into slot `index` of `count`, fanned.
-func add_token(token, index: int, count: int) -> void:
+## Puts a token into the knuckle gap `index`, standing on edge and fanned a little.
+func add_token(token, index: int, _count: int) -> void:
 	add_child(token)
-	var pos := Vector3(-0.02 + (index - (count - 1) / 2.0) * SLOT_SPACING, 0.31 + 0.02 * (index % 2), -0.08 + index * 0.02)
-	var yaw := REST_YAW - index * 0.12
-	_rest[token] = [pos, yaw]
+	var pos := (GAPS[mini(index, GAPS.size() - 1)] + Vector3(0.0, COIN_LIFT, 0.0)) * HAND_SCALE
+	var rotation_at_rest := Vector3(0.0, -0.8 + index * 0.15, -PI / 2.0)
+	_rest[token] = [pos, Quaternion.from_euler(rotation_at_rest)]
 	token.position = pos
-	token.rotation = Vector3(PI / 2.0, yaw, 0.0)
+	token.quaternion = _rest[token][1]
 	token.scale = Vector3.ONE * 0.01
 	var pop := create_tween()
-	pop.tween_property(token, "scale", Vector3.ONE * REST_SCALE, 0.25).set_delay(index * 0.06).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	pop.tween_property(token, "scale", Vector3.ONE * COIN_SCALE, 0.25).set_delay(index * 0.06).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 func clear() -> void:
 	_rest.clear()
 	_tweens.clear()
 	_focused = null
 
-## Lifts and spins `token`; null puts the focused one back. Safe with freed tokens.
+## Rolls `token` out and spins it; null puts the focused one back. Safe with freed tokens.
 func focus(token) -> void:
 	if token == _focused:
 		return
 	if is_instance_valid(_focused) and _rest.has(_focused):
-		_move(_focused, _rest[_focused][0], REST_SCALE, _rest[_focused][1], 0.2)
+		_roll(_focused, false)
 	_focused = token
-	_anim.play("open" if is_instance_valid(token) else "idle")
+	_anim.play("idle" if is_instance_valid(token) else "fist")
 	if is_instance_valid(token) and _rest.has(token):
 		Audio.sfx(&"ui/ui_hover")
-		var base: Vector3 = _rest[token][0]
-		token.rotation.y = _rest[token][1]
-		_move(token, base + FOCUS_LIFT, FOCUS_SCALE, -TAU, 0.45)
+		_roll(token, true)
 
-func _move(token, pos: Vector3, scale_to: float, yaw: float, duration: float) -> void:
+func _roll(token, out: bool) -> void:
 	if _tweens.has(token) and _tweens[token] != null:
 		_tweens[token].kill()
+	var rest: Array = _rest[token]
+	var from_pos: Vector3 = token.position
+	var from_q: Quaternion = token.quaternion
+	var from_s: float = token.scale.x
+	var to_pos: Vector3 = rest[0] + FOCUS_LIFT if out else rest[0]
+	var to_q: Quaternion = Quaternion.from_euler(Vector3(FOCUS_TILT, 0.0, 0.0)) if out else rest[1]
+	var to_s := FOCUS_SCALE if out else COIN_SCALE
 	var tween := create_tween()
-	tween.set_parallel(true)
-	tween.tween_property(token, "position", pos, duration).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	tween.tween_property(token, "scale", Vector3.ONE * scale_to, duration)
-	tween.tween_property(token, "rotation:y", yaw, duration).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tween.tween_method(_roll_step.bind(token, from_pos, to_pos, from_q, to_q, from_s, to_s, out), 0.0, 1.0, ROLL_TIME if out else ROLL_TIME * 0.6).set_trans(Tween.TRANS_SINE)
 	_tweens[token] = tween
+
+## One frame of the roll: move, turn toward the target orientation and spin once around the coin's own axis.
+func _roll_step(t: float, token, from_pos: Vector3, to_pos: Vector3, from_q: Quaternion, to_q: Quaternion, from_s: float, to_s: float, spin: bool) -> void:
+	if not is_instance_valid(token):
+		return
+	token.position = from_pos.lerp(to_pos, t)
+	token.scale = Vector3.ONE * lerpf(from_s, to_s, t)
+	var q := from_q.slerp(to_q, t)
+	token.quaternion = q * Quaternion(Vector3.UP, TAU * t) if spin else q

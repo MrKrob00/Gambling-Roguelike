@@ -50,10 +50,12 @@ const RAIL_TOP := TOP + 0.04
 const ACTION_Z := 0.96
 ## Early repayment sits at the right end of the action row, away from the deal button.
 const ENFORCERS_POS := Vector3(0.0, 0.0, 0.3)
-const HAND_POS := Vector3(0.0, TOP + 0.02, 0.62)
-const PAY_OFF_X := 1.5
+const HAND_POS := Vector3(0.0, TOP + 0.02, 0.3)
+const PAY_OFF_X := 0.8
+## The left hand rests on the table at the left of the near edge, the right one (PlayerHand) at the right.
+const LEFT_HAND_POS := Vector3(-1.2, TOP + 0.11, 1.45)
 const ACTION_X: Array[float] = [-0.8, 0.0, 0.8]
-const DISCARD_X := 1.5
+const DISCARD_X := -0.8
 const OFFER_Z := 0.2
 const OFFER_SPACING := 0.9
 ## The deadline candles stand on the far rail, in front of the dealer.
@@ -148,9 +150,10 @@ func _build_world() -> void:
 	_rig = CameraRig.new()
 	add_child(_rig)
 	_hand_rig = ArtifactHand.new()
-	_rig.camera.add_child(_hand_rig)
+	_hand_rig.position = LEFT_HAND_POS
+	add_child(_hand_rig)
 	_player_hand = PlayerHand.new()
-	_rig.camera.add_child(_player_hand)
+	add_child(_player_hand)
 	_player_hand.set_lives.call_deferred(run.lives)
 	_faces = CardFaces.new()
 	add_child(_faces)
@@ -251,7 +254,7 @@ func _build_controls() -> void:
 		add_child(plaque)
 		plaque.setup(defs[id][0])
 		var slot: int = defs[id][1]
-		plaque.position = Vector3(_slot_x(slot), TOP + 0.02, ACTION_Z - (0.45 if slot == -1 else 0.0))
+		plaque.position = Vector3(_slot_x(slot), TOP + 0.02, ACTION_Z)
 		plaque.activated.connect(_on_plaque.bind(id))
 		plaque.show_plaque(false)
 		plaque.scale = Vector3.ONE * 0.001
@@ -626,7 +629,7 @@ func _on_pointer_up(event: InputEventMouseButton) -> void:
 ## answers with a shake, so a tap is never silent.
 func _act_on(target) -> void:
 	_reaching = true
-	await _player_hand.reach(_rig.camera, target.global_position, _activate_if_alive.bind(target))
+	await _player_hand.reach(target.global_position, _activate_if_alive.bind(target))
 	_reaching = false
 
 func _activate_if_alive(target) -> void:

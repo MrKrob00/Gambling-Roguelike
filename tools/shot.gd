@@ -59,10 +59,12 @@ func _initialize() -> void:
 				await create_timer(0.5).timeout
 			var active: Array = everything.filter(func(o): return o.collision_layer != 0 and o.visible)
 			for p in active:
-				var screen: Vector2 = view._rig.camera.unproject_position(p.global_position + Vector3(0, 0.1, 0))
+				## The coins in the hand overlap on purpose, so a token only has to hit some token.
+				var is_token: bool = p in view._tokens
+				var screen: Vector2 = view._rig.camera.unproject_position(p.global_position + (Vector3.ZERO if is_token else Vector3(0, 0.1, 0)))
 				var hit = view._pick(screen)
 				checked += 1
-				if hit != p:
+				if hit != p and not (is_token and hit in view._tokens):
 					failures += 1
 					print("PICK MISS ", phase_name, " ", p.name, " at ", screen, " hit ", hit)
 		print("pickcheck: ", checked, " objects, ", failures, " misses")
@@ -71,7 +73,7 @@ func _initialize() -> void:
 		await create_timer(0.6).timeout
 	if shot == "table3d" and OS.has_environment("LIVES"):
 		scene._player_hand.set_lives(int(OS.get_environment("LIVES")))
-		scene._player_hand.position = scene._player_hand.PRESENT_POS
+		scene._player_hand.global_position = scene._player_hand.PRESENT_POS
 		await create_timer(0.5).timeout
 	if shot == "table3d" and OS.has_environment("PRESS"):
 		scene._act_on(scene._plaques[&"pay_off" if OS.get_environment("PRESS") == "off" else &"deal"])

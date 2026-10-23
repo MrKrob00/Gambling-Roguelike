@@ -81,16 +81,16 @@ integer. The 3D view renders at the window's real resolution.
 - Everything is built in code from `blackjack_view_3d.gd`'s layout constants (metres, `TOP` is the felt):
   the table runs **across** the view with the dealer opposite. The chip rack lies along the
   near rim (display only), the action buttons in a row above it, the bet circle in the middle. The artifacts are not on the table:
-  they are in the player's left hand (`world/artifact_hand_3d.gd`), a child of the camera, so they stay at a fixed
-  size in the lower-left corner (anything on the table shrinks with distance). They are fanned half edge-on; the
-  hovered or pinned one lifts and spins like a coin to show its emblem (`focus()`), the info panel stays a 2D
-  overlay. Change a position in the view's constants, not in a scene.
+  they are held like coins on the knuckles of the player's left hand (`world/artifact_hand_3d.gd`), which rests on the
+  table at the left of the near edge; the right hand rests at the right. Both are in world space (the room is scaled up,
+  a chip is 20 cm, so the hands are 3.5x). The hovered or pinned coin rolls out of the grip, turns to face the player and
+  spins (`focus()`); the info panel stays a 2D overlay. Change a position in the view's constants, not in a scene.
 - **The hands are editable scenes**, not code: `world/hands/hand_l.tscn` and `hand_r.tscn` hold the unpacked glove (a
   Skeleton3D with 26 finger bones) and an AnimationPlayer with the poses `idle`, `open`, `fist`, `point` and `tap`.
   Open them in the editor to pose and animate; `tools/build_hands.gd` regenerates them from `assets/models/hand` and
   **overwrites those edits**. The scripts only call `play(name)`. The right hand (`world/player_hand_3d.gd`) does
-  every press: `BlackjackView3D._act_on` slides it over the screen to the object, taps it and activates the object at
-  contact, input is ignored while it reaches.
+  every press: `BlackjackView3D._act_on` carries it over the felt to the object, taps it and activates the object at
+  contact, input is ignored while it reaches. Each death takes a finger of this hand (`set_lives`, `Rules.LIVES` = 5).
 - **A collider that sits in front of another pickable eats its taps**; `pickcheck` catches an overlap.
 - **Every control is an object on the table** (`world/pickable_3d.gd`, physics layer 2): plaques,
   artifact tokens. The view casts a ray from the pointer or a tap and calls `activate()` on what it hits. A
@@ -146,17 +146,21 @@ integer. The 3D view renders at the window's real resolution.
   is always the whole purse** (`BlackjackTable.deal_all_in`, the one door the view uses; there are no bet buttons). The
   debt falls due after `PAYMENT_EVERY` hands and is taken from the purse (`next_payment()`, artifacts may shrink it);
   `pay_off()` pays it early. A paid debt hands out the next loan's chips, writes the next debt and opens a free
-  artifact offer (`loan_closed` signal). Not enough chips at the deadline, or an empty purse, is death unless
-  `prevent_death` saves it.
+  artifact offer (`loan_closed` signal). Not enough chips at the deadline, or an empty purse, is a death unless
+  `prevent_death` saves it. **A death costs a life** (`RunState.lives`, `life_lost` signal): the house lends the current
+  loan again and the run goes on; the fifth death ends it (`died`).
 - The purse is shown as chip columns standing on a rack at the near rim, one per denomination (`world/chip_rack_3d.gd`), display only.
 - The debt is physical too: two enforcers stand at the player's shoulders and lean in as the deadline nears
-  (`world/enforcers_3d.gd`); on the last hand a hand raps three times on the felt (`world/warning_hand_3d.gd`).
+  (`world/enforcers_3d.gd`); on the last hand a gloved hand (the same rigged hand scene) raps three times on the felt (`world/warning_hand_3d.gd`).
 - The deadline is physical: `world/deadline_candles_3d.gd` burns one candle per hand toward the payment, the
   dealer's rim light reddens and the vignette darkens as it nears, the last hand has a heartbeat, and the
   payment is three knocks.
 - Artifacts are coloured by kind everywhere (`core/kind_style.gd`): active blue, passive green, consumable
   amber, cursed crimson. Effect text uses `+` lines (benefit, green) and `-` lines (cost, red); the info
   panel (`ui/common/artifact_info_panel.gd`, a 2D corner overlay) renders them. Keep descriptions to short lines.
+- Buttons have a **cooldown in hands** (`ArtifactData.cooldown_hands`, usually 2 to 4, ticked in `hand_started`), and a
+  consumable is removed from the slots the moment its last charge is spent (`RunState.retire_spent`). An undone card
+  returns on top of the shoe (`discard_last_player_card`), so the next draw is the same card.
 - **An artifact announces itself when it acts** (`ArtifactEffect.notify()` -> `RunState.artifact_triggered`): the
   view plays `ui/common/artifact_flash.gd`, the icon popping into the middle of the screen with a shake and
   leaving the same way. Call `notify()` only where the effect really changes something (`modify_payout`,
@@ -167,7 +171,8 @@ integer. The 3D view renders at the window's real resolution.
   keys, so a new counter needs one `REASON_` key). It is queued with the table's steps so it never beats the
   animation that earned it. **A wrapping `Label` needs a known width and a frame to settle**: measure a panel
   built from such labels only after two frames, or it keeps an oversized height.
-- On touch the first tap on an artifact only shows its panel, the second acts (there is no hover); with a
+- **A button acts on release**, only if the pointer is still on it (`set_held` sinks it on press); sliding off cancels.
+  On touch the first tap on an artifact only shows its panel, the second acts (there is no hover); with a
   mouse the hover shows it and one click acts.
 
 - A payment is due every
