@@ -1,5 +1,5 @@
 extends Node3D
-## The player's left hand, resting on the table in a loose fist with the artifacts gripped on edge between the
+## The player's left hand, resting on the table, relaxed, with the artifacts wedged on edge in the grooves between the
 ## knuckles like coins. `focus(token)` rolls one out of the grip, turns it to face the player and spins it over the
 ## fingers (a coin roll) to show its emblem; the others stay put. Poses live in `hands/hand_l.tscn` (AnimationPlayer).
 
@@ -9,9 +9,13 @@ const GLOVE := Color(0.4, 0.27, 0.22)
 const HAND_SCALE := 3.5
 const COIN_SCALE := 0.45
 const FOCUS_SCALE := 0.6
-## The gaps between the knuckles in the hand's own space (palm down, fingers along -z), before HAND_SCALE.
-const GAPS: Array[Vector3] = [Vector3(0.010, 0.016, -0.080), Vector3(-0.0125, 0.0155, -0.0765), Vector3(-0.0325, 0.0085, -0.0685)]
-const COIN_LIFT := 0.03
+## Where a coin stands: in the groove between two neighbouring fingers, over the first phalanx (not over the knuckle),
+## in the hand's own space before HAND_SCALE. Measured from the bones in the `idle` pose: the finger-pair midpoint,
+## plus half a finger's width, plus the coin's radius, less a little because the rim is pinched into the groove.
+const GAPS: Array[Vector3] = [Vector3(0.011, 0.034, -0.0995), Vector3(-0.016, 0.032, -0.096), Vector3(-0.038, 0.026, -0.085)]
+## The fingers slope down toward the tips; the coins follow.
+const COIN_PITCH := 0.3
+const COIN_YAW := 0.6
 const FOCUS_LIFT := Vector3(0.55, 0.45, 0.15)
 const FOCUS_TILT := 1.25
 const ROLL_TIME := 0.6
@@ -28,7 +32,7 @@ func _ready() -> void:
 	model.rotation_degrees = Vector3(0.0, 0.0, -90.0)
 	add_child(model)
 	_anim = model.get_node("Anim")
-	_anim.play("fist")
+	_anim.play("idle")
 	var glove := StandardMaterial3D.new()
 	glove.albedo_color = GLOVE
 	glove.roughness = 0.55
@@ -42,8 +46,8 @@ func _ready() -> void:
 ## Puts a token into the knuckle gap `index`, standing on edge and fanned a little.
 func add_token(token, index: int, _count: int) -> void:
 	add_child(token)
-	var pos := (GAPS[mini(index, GAPS.size() - 1)] + Vector3(0.0, COIN_LIFT, 0.0)) * HAND_SCALE
-	var rotation_at_rest := Vector3(0.0, -0.8 + index * 0.15, -PI / 2.0)
+	var pos := GAPS[mini(index, GAPS.size() - 1)] * HAND_SCALE
+	var rotation_at_rest := Vector3(COIN_PITCH, -COIN_YAW, -PI / 2.0)
 	_rest[token] = [pos, Quaternion.from_euler(rotation_at_rest)]
 	token.position = pos
 	token.quaternion = _rest[token][1]
@@ -63,7 +67,7 @@ func focus(token) -> void:
 	if is_instance_valid(_focused) and _rest.has(_focused):
 		_roll(_focused, false)
 	_focused = token
-	_anim.play("idle" if is_instance_valid(token) else "fist")
+	_anim.play("open" if is_instance_valid(token) else "idle")
 	if is_instance_valid(token) and _rest.has(token):
 		Audio.sfx(&"ui/ui_hover")
 		_roll(token, true)
