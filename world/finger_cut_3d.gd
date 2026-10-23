@@ -10,6 +10,10 @@ signal impact
 
 enum Kind { BITE, CLEAVER, BOMB, PISTOL }
 
+const REVOLVER: Mesh = preload("res://assets/models/revolver/revolver.obj")
+const REVOLVER_TEXTURE: Texture2D = preload("res://assets/models/revolver/revolver_diffuse.png")
+## The model is 9 units long; this makes it about 80 cm in the oversized room.
+const REVOLVER_SCALE := 0.09
 const TABLE_TOP := 1.03
 const BLOOD := Color(0.55, 0.02, 0.04)
 const STEEL := Color(0.72, 0.74, 0.8)
@@ -101,16 +105,18 @@ func _bomb(tip: Vector3, on_hit: Callable) -> void:
 func _pistol(tip: Vector3, on_hit: Callable) -> void:
 	var gun := Node3D.new()
 	add_child(gun)
-	var metal := _material(Color(0.12, 0.12, 0.15), 0.35, 0.8)
-	# The gun points along -x, toward the finger.
-	_box(gun, Vector3(0.55, 0.07, 0.07), Vector3(-0.3, 0.0, 0.0), metal)
-	_box(gun, Vector3(0.16, 0.13, 0.13), Vector3(0.02, 0.0, 0.0), metal)
-	_box(gun, Vector3(0.09, 0.26, 0.09), Vector3(0.1, -0.17, 0.0), _material(Color(0.28, 0.15, 0.08), 0.8))
-	_box(gun, Vector3(0.04, 0.07, 0.03), Vector3(0.1, 0.09, 0.0), metal)
-	_box(gun, Vector3(0.2, 0.2, 0.2), Vector3(0.28, -0.22, 0.0), _material(Color(0.04, 0.04, 0.05), 0.5))
-	_box(gun, Vector3(1.2, 0.22, 0.22), Vector3(0.95, -0.3, 0.0), _material(Color(0.04, 0.04, 0.06), 0.8))
-	var muzzle := Vector3(-0.58, 0.0, 0.0)
-	var aim := tip + Vector3(0.62, 0.0, 0.0)
+	# The revolver model (CC0) points its barrel along -z and its grip down; turn it to point along -x, at the finger.
+	var model := MeshInstance3D.new()
+	model.mesh = REVOLVER
+	model.material_override = _revolver_material()
+	model.scale = Vector3.ONE * REVOLVER_SCALE
+	model.rotation_degrees.y = 90.0
+	model.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	gun.add_child(model)
+	_box(gun, Vector3(0.16, 0.16, 0.16), Vector3(0.2, -0.17, 0.0), _material(Color(0.04, 0.04, 0.05), 0.5))
+	_box(gun, Vector3(1.2, 0.22, 0.22), Vector3(0.9, -0.2, 0.0), _material(Color(0.04, 0.04, 0.06), 0.8))
+	var muzzle := Vector3(-0.47, 0.03, 0.0)
+	var aim := tip + Vector3(0.6, 0.0, 0.0)
 	gun.position = aim + Vector3(1.4, 0.2, 0.0)
 	var slide := create_tween()
 	slide.tween_property(gun, "position", aim, 0.45).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
@@ -137,6 +143,16 @@ func _pistol(tip: Vector3, on_hit: Callable) -> void:
 	out.tween_property(gun, "position", aim + Vector3(1.6, 0.4, 0.0), 0.4)
 	await _wait(0.4)
 	gun.queue_free()
+
+func _revolver_material() -> StandardMaterial3D:
+	var mat := StandardMaterial3D.new()
+	mat.albedo_texture = REVOLVER_TEXTURE
+	mat.roughness = 0.5
+	mat.metallic = 0.4
+	mat.emission_enabled = true
+	mat.emission_texture = REVOLVER_TEXTURE
+	mat.emission_energy_multiplier = 0.3
+	return mat
 
 # ---------------------------------------------------------------- shared effects
 

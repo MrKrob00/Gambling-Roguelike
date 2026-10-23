@@ -52,7 +52,7 @@ const RAIL_Z := 1.27
 const RAIL_TOP := TOP + 0.04
 const ACTION_Z := 0.96
 ## Early repayment sits at the right end of the action row, away from the deal button.
-const ENFORCERS_POS := Vector3(0.0, 0.0, 0.3)
+const ENFORCERS_POS := Vector3(0.0, 0.0, -0.5)
 const HAND_POS := Vector3(0.0, TOP + 0.02, 0.3)
 const PAY_OFF_X := 0.8
 ## The left hand rests on the table at the left of the near edge, the right one (PlayerHand) at the right.
@@ -623,7 +623,11 @@ func _lose_finger(left: int, reason: StringName, forced_kind: int = -1) -> void:
 	options = options.filter(func(k: int) -> bool: return k != _last_cut)
 	var kind: int = forced_kind if forced_kind >= 0 else options[randi() % options.size()]
 	_last_cut = kind
-	await _player_hand.raise_for_cut()
+	## The skeleton bites a hand held up to him; every other scene comes to a hand lying flat on the table.
+	if kind == FingerCut.Kind.BITE:
+		await _player_hand.raise_for_cut()
+	else:
+		await _player_hand.lay_for_cut()
 	var tip: Vector3 = _player_hand.finger_tip(left)
 	await _finger_cut.play(kind, tip, _player_hand.cut_finger.bind(left))
 	await _player_hand.lower_after_cut(left)

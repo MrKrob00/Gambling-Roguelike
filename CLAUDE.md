@@ -77,8 +77,8 @@ integer. The 3D view renders at the window's real resolution.
 - **Performance is a feature, measure it.** `SHOT=table3d_play INFO=1 tools/shot.gd` prints objects, draw
   calls and lights in the frame. Build only what the player can see: every extra mesh is a draw call and every
   extra light multiplies shading on a phone. A column of chips is one striped cylinder (`ChipVisual.make_column`),
-  not one mesh per chip; small things cast no shadow; only the table lamp casts one. Current frame: ~180
-  objects, ~116 draw calls, 3 lights. All sounds are loaded at startup (`Audio._preload_dir`): a lazy load made
+  not one mesh per chip; small things cast no shadow; only the table lamp casts one. Current frame: ~200
+  objects, ~144 draw calls, 3 lights (the two enforcer characters cost about 25 draw calls; watch phones). All sounds are loaded at startup (`Audio._preload_dir`): a lazy load made
   the first click lag behind the tap.
 
 - Everything is built in code from `blackjack_view_3d.gd`'s layout constants (metres, `TOP` is the felt):
@@ -95,7 +95,8 @@ integer. The 3D view renders at the window's real resolution.
   every press: `BlackjackView3D._act_on` carries it over the felt to the object, taps it and activates the object at
   contact, input is ignored while it reaches. Each death takes a finger of this hand (`set_lives`, `Rules.LIVES` = 5), in one of four scenes
   (`world/finger_cut_3d.gd`, primitives and particles, no assets): the skeleton bites, an enforcer chops it with a cleaver, a bomb
-  blows it up, a revolver shoots it off. The collectors' deaths (debt) get the cleaver or the gun, the dealer's (broke) the teeth or
+  blows it up, a revolver (a CC0 model) shoots it off. Only the bite raises the hand to the camera; for the other three the hand lies flat on
+  the table and waits. The collectors' deaths (debt) get the cleaver or the gun, the dealer's (broke) the teeth or
   the bomb. The scene calls back at the instant of impact and talks to the view only through signals.
 - **A collider that sits in front of another pickable eats its taps**; `pickcheck` catches an overlap.
 - **Every control is an object on the table** (`world/pickable_3d.gd`, physics layer 2): plaques,
@@ -158,8 +159,8 @@ integer. The 3D view renders at the window's real resolution.
   `prevent_death` saves it. **A death costs a life** (`RunState.lives`, `life_lost` signal): the house lends the current
   loan again and the run goes on; the fifth death ends it (`died`).
 - The purse is shown as chip columns standing on a rack at the near rim, one per denomination (`world/chip_rack_3d.gd`), display only.
-- The debt is physical too: two enforcers stand at the player's shoulders and lean in as the deadline nears
-  (`world/enforcers_3d.gd`); on the last hand a gloved hand (the same rigged hand scene) raps three times on the felt (`world/warning_hand_3d.gd`).
+- The debt is physical too: two enforcers (KayKit Barbarian and hooded Rogue, weapons hidden) stand at the player's shoulders and lean in as the
+  deadline nears (`world/enforcers_3d.gd`); on the last hand a gloved hand (the same rigged hand scene) raps three times on the felt (`world/warning_hand_3d.gd`).
 - The deadline is physical: `world/deadline_candles_3d.gd` burns one candle per hand toward the payment, the
   dealer's rim light reddens and the vignette darkens as it nears, the last hand has a heartbeat, and the
   payment is three knocks.

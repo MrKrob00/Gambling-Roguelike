@@ -10,6 +10,8 @@ const HAND_SCALE := 3.5
 ## The felt is at y 1.03; the hand rests a little above it, at the right of the near edge.
 const REST_POS := Vector3(1.2, 1.14, 1.45)
 const PRESENT_POS := Vector3(0.5, 1.7, 1.3)
+## For the scenes that come to the hand (cleaver, bomb, gun) it lies flat on the table, in the open, and waits.
+const LAY_POS := Vector3(0.3, 1.14, 0.95)
 const HOVER := 0.3
 const REACH_TIME := 0.2
 const DIP_TIME := 0.07
@@ -99,6 +101,15 @@ func raise_for_cut() -> void:
 	var gen := _begin()
 	_anim.play("open")
 	_move(PRESENT_POS, 0.4, Tween.TRANS_CUBIC)
+	await get_tree().create_timer(0.6).timeout
+	if gen != _gen:
+		return
+
+## Lays the hand flat on the felt in front of the player and waits. Awaitable.
+func lay_for_cut() -> void:
+	var gen := _begin()
+	_anim.play("open")
+	_move(LAY_POS, 0.45, Tween.TRANS_CUBIC)
 	await get_tree().create_timer(0.6).timeout
 	if gen != _gen:
 		return
