@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://42q2g7jnmpc5"
+path="res://.godot/imported/Final Captain&#039;s Log.mp3-a738b6e468c20974240b0c45fe3daf25.mp3str"
+
+[deps]
+
+source_file="res://sounds/Final Captain&#039;s Log.mp3"
+dest_files=["res://.godot/imported/Final Captain&#039;s Log.mp3-a738b6e468c20974240b0c45fe3daf25.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
