@@ -323,21 +323,26 @@ func _payments_and_death() -> void:
 	table = Table.new(run, 1)
 	run.chips = 60
 	var reason := []
-	run.died.connect(func(r: StringName) -> void: reason.append(r))
+	run.life_lost.connect(func(_left: int, r: StringName) -> void: reason.append(r))
 	_push_hands(table, 5, 10)
-	check(reason == [&"debt"] and not run.alive, "unpaid payment kills, got %s" % str(reason))
+	check(reason == [&"debt"] and run.alive and run.lives == 4, "an unpaid debt costs a finger, got %s" % str(reason))
+	check(run.chips == 100 and run.debt == 500 and run.hands_to_payment == 5, "the house lends the loan again, chips %d" % run.chips)
+	for i in 4:
+		run.chips = 0
+		run._die(&"debt")
+	check(not run.alive and run.lives == 0, "the fifth finger ends the run")
 
 	# Broke: below the minimum bet with nothing on the table.
 	run = _run()
 	table = Table.new(run, 1)
 	run.chips = 10
 	reason.clear()
-	run.died.connect(func(r: StringName) -> void: reason.append(r))
+	run.life_lost.connect(func(_left: int, r: StringName) -> void: reason.append(r))
 	_stack(table, [[10], [10], [6], [7], [10]])
 	table.add_bet(10)
 	table.deal()
 	table.hit()
-	check(reason == [&"broke"], "out of chips kills, got %s" % str(reason))
+	check(reason == [&"broke"], "out of chips costs a finger, got %s" % str(reason))
 
 	# Candle of mercy forgives one payment.
 	run = _run([&"candle_of_mercy"])

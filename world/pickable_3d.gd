@@ -11,6 +11,8 @@ const RING_COLOR := Color(0.96, 0.63, 0.23)
 
 var enabled: bool = true
 var hovered: bool = false
+var held: bool = false
+var _held_scale := Vector3.ONE
 var _tween: Tween
 var _ring: MeshInstance3D
 
@@ -69,6 +71,17 @@ func set_hovered(value: bool) -> void:
 	if _ring != null:
 		_ring.visible = value
 	_refresh_visual()
+
+## The pointer is down on it: it sinks a little, and only a release on the same object acts.
+func set_held(value: bool) -> void:
+	if value == held:
+		return
+	held = value
+	if value:
+		_held_scale = scale
+		scale = _held_scale * 0.9
+	else:
+		scale = _held_scale
 
 func activate() -> void:
 	if enabled:

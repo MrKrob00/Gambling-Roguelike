@@ -2,6 +2,8 @@ extends RefCounted
 ## Numbers that tune the whole game. One place, so balance is not hunted through scripts.
 
 const MIN_BET := 10
+## Each death costs a finger of the right hand; the run ends with the fifth.
+const LIVES := 5
 const ARTIFACT_SLOTS := 3
 ## Artifacts come in offers: one free at the start, then one free for every debt paid.
 const OFFER_SIZE := 3

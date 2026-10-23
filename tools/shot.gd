@@ -66,6 +66,10 @@ func _initialize() -> void:
 					failures += 1
 					print("PICK MISS ", phase_name, " ", p.name, " at ", screen, " hit ", hit)
 		print("pickcheck: ", checked, " objects, ", failures, " misses")
+	if shot == "table3d" and OS.has_environment("LIVES"):
+		scene._player_hand.set_lives(int(OS.get_environment("LIVES")))
+		scene._player_hand.position = scene._player_hand.PRESENT_POS
+		await create_timer(0.5).timeout
 	if shot == "table3d" and OS.has_environment("PRESS"):
 		scene._act_on(scene._plaques[&"pay_off" if OS.get_environment("PRESS") == "off" else &"deal"])
 		while scene._player_hand._anim.current_animation != "tap":

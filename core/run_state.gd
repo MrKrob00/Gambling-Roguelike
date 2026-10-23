@@ -11,6 +11,8 @@ signal payment_waived(index: int)
 signal debt_changed(debt: int)
 ## A debt was paid (on the deadline or early): the house lends `new_loan` chips and writes `new_debt`.
 signal loan_closed(paid: int, new_loan: int, new_debt: int)
+## A death that cost a finger: the house lends the current loan again and the run goes on.
+signal life_lost(lives_left: int, reason: StringName)
 signal died(reason: StringName)
 signal artifacts_changed
 signal artifact_triggered(effect)
@@ -29,6 +31,7 @@ var hands_to_payment: int = Rules.PAYMENT_EVERY
 var win_streak: int = 0
 var peak_chips: int = 0
 var alive: bool = true
+var lives: int = Rules.LIVES
 var artifacts: Array = []
 var effects: Array = []
 
@@ -197,13 +200,28 @@ func _survives() -> bool:
 			return true
 	return false
 
+## After losing a finger the house lends the current loan again and rewrites its debt.
+func _restart_loan() -> void:
+	chips = 0
+	add_chips(Rules.loan_for(payments_paid))
+	debt = Rules.debt_for(payments_paid)
+	hands_to_payment = Rules.PAYMENT_EVERY
+	win_streak = 0
+	debt_changed.emit(debt)
+	countdown_changed.emit(hands_to_payment, next_payment())
+
 func _die(reason: StringName) -> void:
 	if not alive:
 		return
-	alive = false
 	Events.stat_added.emit(Stat.DEATHS, 1)
 	if reason == DEATH_DEBT:
 		Events.stat_added.emit(Stat.DEBT_DEATHS, 1)
+	lives -= 1
+	if lives > 0:
+		_restart_loan()
+		life_lost.emit(lives, reason)
+		return
+	alive = false
 	Events.stat_peaked.emit(Stat.BEST_PAYMENTS, payments_paid)
 	died.emit(reason)
 	Events.run_ended.emit(self, reason)

@@ -91,6 +91,7 @@ var _enforcers
 var _hand_rig
 var _player_hand
 var _reaching: bool = false
+var _held
 var _warning_hand
 var _debt_text: int = 0
 var _rim: OmniLight3D
@@ -149,6 +150,7 @@ func _build_world() -> void:
 	_rig.camera.add_child(_hand_rig)
 	_player_hand = PlayerHand.new()
 	_rig.camera.add_child(_player_hand)
+	_player_hand.set_lives.call_deferred(run.lives)
 	_faces = CardFaces.new()
 	add_child(_faces)
 	_bet_stack = ChipStack.new()
@@ -350,6 +352,7 @@ func _connect_run() -> void:
 	run.payment_waived.connect(func(i: int) -> void: _enqueue(_do_waived.bind(i)))
 	run.debt_changed.connect(func(d: int) -> void: _enqueue(_do_debt.bind(d)))
 	run.loan_closed.connect(func(p: int, n: int, d: int) -> void: _enqueue(_do_loan_closed.bind(p, n, d)))
+	run.life_lost.connect(func(n: int, r: StringName) -> void: _enqueue(_do_life_lost.bind(n, r)))
 	run.died.connect(func(r: StringName) -> void: _enqueue(_do_death.bind(r)))
 	run.artifacts_changed.connect(func() -> void: _enqueue(_do_artifacts))
 	run.artifact_triggered.connect(func(fx) -> void: _enqueue(_do_triggered.bind(fx)))
@@ -571,7 +574,20 @@ func _do_waived(_index: int) -> void:
 	Audio.sfx(&"trick/sparkle")
 	await _pause(1.3)
 
+## A death costs a finger of the right hand; the house lends the loan again and the run goes on.
+func _do_life_lost(left: int, reason: StringName) -> void:
+	_say(&"death_broke" if reason == run.DEATH_BROKE else &"death_debt")
+	_dealer.react(&"death")
+	Audio.sfx(&"game/lose_sting")
+	_vignette.flash_color(RED, 1.0, 1.6)
+	_rig.shake(0.08, 0.6)
+	_subtitle.text = tr("LIFE_LOST") % left
+	await _player_hand.present_cut(left)
+	Audio.sfx(&"game/knock")
+	await _pause(0.4)
+
 func _do_death(reason: StringName) -> void:
+	await _player_hand.present_cut(0)
 	_say(&"death_broke" if reason == run.DEATH_BROKE else &"death_debt")
 	_dealer.react(&"death")
 	Audio.sfx(&"game/lose_sting")
@@ -588,26 +604,47 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if event is InputEventMouseMotion:
 		_set_hover(_pick(event.position))
-	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		var hit = _pick(event.position)
-		var from_touch: bool = event.device == InputEvent.DEVICE_ID_EMULATION
-		_set_hover(hit)
-		if hit == null:
-			_pinned = null
-			_info.clear()
-			_sync_focus()
-			return
-		## A touch screen has no hover, so the first tap on an artifact only shows what it is; the second
-		## tap acts. With a mouse the hover already showed it, so one click acts.
-		if from_touch and _is_artifact(hit) and _pinned != hit:
-			_pinned = hit
-			_show_info(hit)
-			Audio.sfx(&"ui/ui_hover")
-			_sync_focus()
-			return
+	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed:
+			_on_pointer_down(event)
+		else:
+			_on_pointer_up(event)
+
+## A press only shows that the object is held. It acts on release, and only if the pointer is still on it: slide
+## the finger off and let go to cancel.
+func _on_pointer_down(event: InputEventMouseButton) -> void:
+	var hit = _pick(event.position)
+	_set_hover(hit)
+	if is_instance_valid(_held):
+		_held.set_held(false)
+	_held = hit
+	if hit == null:
 		_pinned = null
+		_info.clear()
 		_sync_focus()
-		_act_on(hit)
+		return
+	hit.set_held(true)
+
+func _on_pointer_up(event: InputEventMouseButton) -> void:
+	var target = _held
+	_held = null
+	if not is_instance_valid(target):
+		return
+	target.set_held(false)
+	if _pick(event.position) != target:
+		return
+	## A touch screen has no hover, so the first tap on an artifact only shows what it is; the second tap
+	## acts. With a mouse the hover already showed it, so one click acts.
+	var from_touch: bool = event.device == InputEvent.DEVICE_ID_EMULATION
+	if from_touch and _is_artifact(target) and _pinned != target:
+		_pinned = target
+		_show_info(target)
+		Audio.sfx(&"ui/ui_hover")
+		_sync_focus()
+		return
+	_pinned = null
+	_sync_focus()
+	_act_on(target)
 
 ## The right hand does every press: it reaches the object and taps it. A pickable that cannot act right now
 ## answers with a shake, so a tap is never silent.

@@ -626,5 +626,9 @@
  "COOLDOWN": {
   "en": "recharge: %d hands",
   "ru": "перезарядка: %d раздачи"
+ },
+ "LIFE_LOST": {
+  "en": "They take a finger for it.\nFingers left: %d",
+  "ru": "Они забирают палец.\nОсталось пальцев: %d"
  }
 }
