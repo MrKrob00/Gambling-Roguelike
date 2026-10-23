@@ -26,7 +26,7 @@ Design decisions and numbers: `docs/GAME_DESIGN.md`. Asset register: `assets/REA
 10. UI strings are translation **keys** (`TABLE_DEAL`), never literals. Controls translate `text` on
     their own; strings built in code go through `tr()`. Add both `en` and `ru` to `i18n/strings.json`.
 11. **Pirata One and Metamorphous have no Cyrillic.** Text always uses `ui/fonts/title_font.tres` and
-    `body_font.tres` (`FontVariation`: the Latin gothic face first, Ruslan Display / Philosopher as the
+    `body_font.tres` (`FontVariation`: the Latin gothic face first, Underdog as the
     fallback for Russian). Never reference the raw `.ttf` from a scene; a missing glyph silently falls
     back to a system font. Rebuilt by `tools/build_theme.gd`.
 12. Pixel art is shown with Nearest filtering (project default). Icons that are SVG are shown with
