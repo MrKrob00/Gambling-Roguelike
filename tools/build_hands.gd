@@ -8,6 +8,7 @@ const OUT := "res://world/hands/hand_%s.tscn"
 const FINGERS := ["Index", "Middle", "Ring", "Little"]
 const JOINTS := ["Proximal", "Intermediate", "Distal"]
 
+
 ## Curl in radians per joint; positive closes the finger. Missing fingers use `all`.
 const POSES := {
 	"idle": {"all": 0.45, "Thumb": 0.25},
@@ -72,11 +73,11 @@ func _pose_animation(root: Node, skeleton: Skeleton3D, side: String, pose: Dicti
 			var rest := skeleton.get_bone_rest(index).basis.get_rotation_quaternion()
 			var curl := _curl_of(pose, finger)
 			if breathe:
-				anim.rotation_track_insert_key(track, 0.0, rest * Quaternion(Vector3.RIGHT, curl - 0.05))
-				anim.rotation_track_insert_key(track, 0.6, rest * Quaternion(Vector3.RIGHT, curl + 0.05))
-				anim.rotation_track_insert_key(track, 1.2, rest * Quaternion(Vector3.RIGHT, curl - 0.05))
+				anim.rotation_track_insert_key(track, 0.0, rest * Quaternion(Vector3.RIGHT, -curl - 0.05))
+				anim.rotation_track_insert_key(track, 0.6, rest * Quaternion(Vector3.RIGHT, -curl + 0.05))
+				anim.rotation_track_insert_key(track, 1.2, rest * Quaternion(Vector3.RIGHT, -curl - 0.05))
 			else:
-				anim.rotation_track_insert_key(track, 0.0, rest * Quaternion(Vector3.RIGHT, curl))
+				anim.rotation_track_insert_key(track, 0.0, rest * Quaternion(Vector3.RIGHT, -curl))
 	return anim
 
 ## The index finger pointing, then pressing down and back up: a tap.
@@ -88,6 +89,6 @@ func _tap_animation(root: Node, skeleton: Skeleton3D, side: String) -> Animation
 		var track := anim.find_track(NodePath("%s:%s" % [root.get_path_to(skeleton), bone]), Animation.TYPE_ROTATION_3D)
 		var rest := skeleton.get_bone_rest(skeleton.find_bone(bone)).basis.get_rotation_quaternion()
 		anim.rotation_track_insert_key(track, 0.0, rest)
-		anim.rotation_track_insert_key(track, 0.12, rest * Quaternion(Vector3.RIGHT, 0.5))
+		anim.rotation_track_insert_key(track, 0.12, rest * Quaternion(Vector3.RIGHT, -0.5))
 		anim.rotation_track_insert_key(track, 0.3, rest)
 	return anim
