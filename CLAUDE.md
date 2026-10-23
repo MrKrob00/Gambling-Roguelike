@@ -79,15 +79,14 @@ integer. The 3D view renders at the window's real resolution.
   the first click lag behind the tap.
 
 - Everything is built in code from `blackjack_view_3d.gd`'s layout constants (metres, `TOP` is the felt):
-  the table runs **across** the view with the dealer opposite. The chip piles stand in one row on a rack along the
-  near rim, the action buttons in a row above it, the bet circle in the middle. The artifacts are not on the table:
+  the table runs **across** the view with the dealer opposite. The chip rack lies along the
+  near rim (display only), the action buttons in a row above it, the bet circle in the middle. The artifacts are not on the table:
   they are in the player's left hand (`world/artifact_hand_3d.gd`: a rigged glove, `assets/models/hand`, its finger bones are bent in code), a child of the camera, so they stay at a fixed
   size in the lower-left corner (anything on the table shrinks with distance). They are fanned half edge-on; the
   hovered or pinned one lifts and spins like a coin to show its emblem (`focus()`), the info panel stays a 2D
   overlay. Change a position in the view's constants, not in a scene.
-- **A collider that sits in front of another pickable eats its taps.** The chip piles stand nearer the camera than the
-  buttons, so their colliders are short; `pickcheck` catches an overlap.
-- **Every control is an object on the table** (`world/pickable_3d.gd`, physics layer 2): chip piles, plaques,
+- **A collider that sits in front of another pickable eats its taps**; `pickcheck` catches an overlap.
+- **Every control is an object on the table** (`world/pickable_3d.gd`, physics layer 2): plaques,
   artifact tokens. The view casts a ray from the pointer or a tap and calls `activate()` on what it hits. A
   touch arrives as an emulated mouse event, so one code path serves both.
 - **Buttons are billboards aligned with the camera's image plane** (`world/plaque_3d.gd`): always an upright,
@@ -136,12 +135,14 @@ integer. The 3D view renders at the window's real resolution.
   off** (`RunState.pay_off`). With full slots (`Rules.ARTIFACT_SLOTS`) a pick must name an artifact to replace. Any
   artifact can also be discarded while betting. All of this is `RunState` (`offer_stage`, `choose_offer`,
   `skip_offer`, `discard`, `pay_off`), tested in `selftest.gd`; the view only shows the state.
-- **The debt** (`RunState.debt`, numbers in `Rules`): every `PAYMENT_EVERY` hands the collectors take
-  `INSTALLMENT_SHARE` of the debt, then charge interest on the **rest**; `rest + interest` is the new debt
-  (`interest_added` signal, spelled out on screen). The rate is `INTEREST_BASE + INTEREST_STEP * payments_paid`
-  (capped), so paying slowly gets more expensive. `pay_off()` between hands pays the whole debt at once: it closes
-  the loan, the house lends a bigger one (`Rules.loan_for`, chips included, so net worth does not jump) and a free
-  offer opens. Out of chips for an installment is death unless `prevent_death` saves it (interest still accrues).
+- **The debt** (`RunState.debt`, numbers in `Rules`): the house lends `Rules.loan_for(n)` chips (100, 200, 400...,
+  exponential) and writes the debt down at once as `DEBT_MULTIPLIER` times the loan (500, 1000, 2000...). **The stake
+  is always the whole purse** (`BlackjackTable.deal_all_in`, the one door the view uses; there are no bet buttons). The
+  debt falls due after `PAYMENT_EVERY` hands and is taken from the purse (`next_payment()`, artifacts may shrink it);
+  `pay_off()` pays it early. A paid debt hands out the next loan's chips, writes the next debt and opens a free
+  artifact offer (`loan_closed` signal). Not enough chips at the deadline, or an empty purse, is death unless
+  `prevent_death` saves it.
+- The purse is shown as chips lying on their side in a rack at the near rim (`world/chip_rack_3d.gd`), display only.
 - The debt is physical too: two enforcers stand at the player's shoulders and lean in as the deadline nears
   (`world/enforcers_3d.gd`); on the last hand a hand raps three times on the felt (`world/warning_hand_3d.gd`).
 - The deadline is physical: `world/deadline_candles_3d.gd` burns one candle per hand toward the payment, the

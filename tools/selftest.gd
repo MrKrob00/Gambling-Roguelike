@@ -97,7 +97,9 @@ func _run(ids: Array = []):
 	var loadout := []
 	for id in ids:
 		loadout.append(_artifact(id))
-	return RunState.new(&"blackjack", loadout)
+	var run = RunState.new(&"blackjack", loadout)
+	run.chips = 500  # the mechanics tests below want a fat purse; the economy has its own tests
+	return run
 
 ## `spec` lists cards in the order they are drawn: player, dealer up, player, dealer hole, then extras.
 func _stack(table, spec: Array) -> void:
@@ -270,9 +272,9 @@ func _artifacts() -> void:
 	# Collector's ledger raises the minimum bet and lowers payments.
 	run = _run([&"collectors_ledger"])
 	check(run.min_bet() == 25, "ledger raises the minimum bet")
-	check(run.next_payment() == 88, "ledger cuts the first installment to 88, got %d" % run.next_payment())
+	check(run.next_payment() == 350, "ledger cuts the debt due to 350, got %d" % run.next_payment())
 	run = _run([&"silver_chip"])
-	check(run.next_payment() == 113, "silver chip cuts the first installment to 113, got %d" % run.next_payment())
+	check(run.next_payment() == 450, "silver chip cuts the debt due to 450, got %d" % run.next_payment())
 
 # ---------------------------------------------------------------- payments and death
 
@@ -287,17 +289,26 @@ func _push_hands(table, count: int, bet: int) -> void:
 		table.next_hand()
 
 func _payments_and_death() -> void:
+	var fresh = RunState.new(&"blackjack", [])
+	check(fresh.chips == 100 and fresh.debt == 500, "the house lends 100 and writes 500, got %d / %d" % [fresh.chips, fresh.debt])
+	check([Rules.loan_for(1), Rules.loan_for(2), Rules.loan_for(3)] == [200, 400, 800], "loans grow exponentially")
+	check([Rules.debt_for(1), Rules.debt_for(2)] == [1000, 2000], "each debt is five times its loan")
 	var run = _run()
 	var table = Table.new(run, 1)
 	var paid := []
 	run.payment_made.connect(func(amount: int, index: int) -> void: paid.append([amount, index]))
 	_push_hands(table, 5, 10)
-	check(paid == [[125, 1]], "first installment of 125 after 5 hands, got %s" % str(paid))
-	check(run.chips == 375 and run.hands_to_payment == 5, "chips %d, clock reset" % run.chips)
-	check(run.debt == 435, "500 - 125 = 375, plus 15%% interest (60) = 435, got %d" % run.debt)
-	_push_hands(table, 5, 10)
-	check(run.payments_paid == 2 and run.chips == 265, "second installment is 110, chips %d" % run.chips)
-	check(run.debt == 390, "325 + 20%% interest (65) = 390, got %d" % run.debt)
+	check(paid == [[500, 1]], "the debt of 500 is taken after 5 hands, got %s" % str(paid))
+	check(run.chips == 200 and run.hands_to_payment == 5, "paid, the new loan of 200 arrives, chips %d" % run.chips)
+	check(run.debt == 1000 and run.payments_paid == 1, "the next debt is 1000, got %d" % run.debt)
+	check(run.offer_stage == RunState.Offer.CHOOSING, "a paid debt opens the free offer")
+
+	# All in is the only stake.
+	run = _run()
+	table = Table.new(run, 1)
+	_stack(table, [[10], [10], [9], [9]])
+	table.deal_all_in()
+	check(table.phase == Table.Phase.PLAYER_TURN and run.chips == 0 and table.bet == 500, "deal_all_in stakes the whole purse")
 
 	# Cannot pay: death by debt.
 	run = _run()
@@ -325,7 +336,7 @@ func _payments_and_death() -> void:
 	table = Table.new(run, 1)
 	run.chips = 60
 	_push_hands(table, 5, 10)
-	check(run.alive and run.chips == 60 and run.payments_paid == 1, "candle forgives the payment, chips %d" % run.chips)
+	check(run.alive and run.chips == 60 and run.payments_paid == 0 and run.debt == 500, "candle forgives the payment, the debt stays, chips %d" % run.chips)
 	check(_fx(run, &"candle_of_mercy").charges_left == 0, "candle is spent")
 
 # ---------------------------------------------------------------- offers
@@ -368,24 +379,21 @@ func _offers() -> void:
 	var dropped = run.effects[0]
 	run.discard(dropped)
 	check(run.effects.size() == 2 and not (dropped in run.effects), "discard removes an artifact")
-	# Payments alone never open an offer; closing the loan does.
+	# Closing a debt opens the free offer, early or on the deadline.
 	run = RunState.new(&"blackjack", [])
-	var table = Table.new(run, 1)
-	_push_hands(table, 5, 10)
-	check(run.offer_stage == Offer.NONE, "an installment opens no offer")
 	run.chips = 1000
+	var table = Table.new(run, 1)
+	check(run.offer_stage == Offer.NONE, "no offer before a debt is paid")
 	check(table.can_pay_off(), "a rich player can pay the debt off between hands")
-	var owed: int = run.debt
 	var closed := []
-	run.loan_closed.connect(func(p: int, n: int) -> void: closed.append([p, n]))
+	run.loan_closed.connect(func(p: int, n: int, d: int) -> void: closed.append([p, n, d]))
 	table.pay_off()
-	check(closed == [[owed, 750]], "paying off closes the loan and opens a bigger one: %s" % str(closed))
-	check(run.chips == 1000 - owed + 750 and run.debt == 750, "the new loan comes with its chips, chips %d" % run.chips)
-	check(run.offer_stage == Offer.CHOOSING, "a closed loan opens the free offer")
+	check(closed == [[500, 200, 1000]], "paying off closes the debt and writes a bigger one: %s" % str(closed))
+	check(run.chips == 700 and run.debt == 1000 and run.payments_paid == 1, "the new loan comes with its chips, chips %d" % run.chips)
+	check(run.offer_stage == Offer.CHOOSING, "a paid debt opens the free offer")
 	run.skip_offer()
 	check(run.offer_stage == Offer.NONE, "skipping closes the offer")
 	run = RunState.new(&"blackjack", [])
-	run.chips = 15
 	check(not run.can_pay_off() and not run.pay_off(), "a poor player cannot pay off")
 	profile.reset()
 
@@ -426,7 +434,7 @@ func _fuzz() -> void:
 			guard += 1
 			if run.chips < table.min_bet():
 				break
-			var steps: Array = Rules.BET_STEPS.filter(func(s: int) -> bool: return s <= run.chips)
+			var steps: Array = [10, 25, 100, 500].filter(func(s: int) -> bool: return s <= run.chips)
 			table.add_bet(steps[rng.randi() % steps.size()])
 			if not table.can_deal():
 				table.clear_bet()

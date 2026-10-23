@@ -15,7 +15,7 @@ const CardActor := preload("res://world/card_actor.gd")
 const CardFaces := preload("res://world/card_faces.gd")
 const CameraRig := preload("res://world/camera_rig.gd")
 const ChipStack := preload("res://world/chip_stack_3d.gd")
-const ChipPile := preload("res://world/chip_pile_3d.gd")
+const ChipRack := preload("res://world/chip_rack_3d.gd")
 const Plaque := preload("res://world/plaque_3d.gd")
 const Token := preload("res://world/artifact_token_3d.gd")
 const OfferCard := preload("res://world/offer_card_3d.gd")
@@ -45,7 +45,6 @@ const DEALER_SPOT := Vector3(0.0, 0.0, -2.4)
 ## the chip plate each stand on their own plate so they never blend into the felt.
 const TRAY_Z := 1.28
 const TRAY_SIZE := Vector2(1.8, 0.26)
-const PILE_X: Array[float] = [-0.6, -0.2, 0.2, 0.6]
 const ACTION_Z := 0.96
 ## Early repayment sits at the right end of the action row, away from the deal button.
 const ENFORCERS_POS := Vector3(0.0, 0.0, 0.3)
@@ -76,7 +75,7 @@ var _bet_stack
 var _hud: Label
 var _dealer_total: Label3D
 var _player_total: Label3D
-var _piles: Array = []
+var _rack
 var _tokens: Array = []
 var _plaques: Dictionary = {}
 var _dealer_cards: Array = []
@@ -91,7 +90,6 @@ var _enforcers
 var _hand_rig
 var _warning_hand
 var _debt_text: int = 0
-var _rate: float = 0.0
 var _rim: OmniLight3D
 var _info
 var _flash
@@ -253,16 +251,13 @@ func _add_shoe() -> void:
 	add_child(shoe)
 
 func _build_controls() -> void:
-	for i in Rules.BET_STEPS.size():
-		var pile := ChipPile.new()
-		add_child(pile)
-		pile.setup(Rules.BET_STEPS[i])
-		pile.position = Vector3(PILE_X[i], TOP + 0.012, TRAY_Z)
-		pile.activated.connect(_on_pile.bind(pile))
-		_piles.append(pile)
+	_rack = ChipRack.new()
+	_rack.position = Vector3(0.0, TOP + 0.012, TRAY_Z)
+	add_child(_rack)
+	_rack.show_amount(run.chips)
 	## Slot 0 is left, 1 centre, 2 right. The phases share slots.
 	var defs := {
-		&"clear": ["TABLE_CLEAR", 0], &"deal": ["TABLE_DEAL", 1], &"all_in": ["TABLE_ALL_IN", 2],
+		&"deal": ["TABLE_DEAL", 1],
 		&"hit": ["TABLE_HIT", 0], &"stand": ["TABLE_STAND", 1], &"double": ["TABLE_DOUBLE", 2],
 		&"next": ["TABLE_NEXT", 1],
 		&"skip": ["OFFER_SKIP", 2], &"cancel": ["OFFER_CANCEL", 1],
@@ -349,8 +344,7 @@ func _connect_run() -> void:
 	run.payment_made.connect(func(a: int, i: int) -> void: _enqueue(_do_payment.bind(a, i)))
 	run.payment_waived.connect(func(i: int) -> void: _enqueue(_do_waived.bind(i)))
 	run.debt_changed.connect(func(d: int) -> void: _enqueue(_do_debt.bind(d)))
-	run.interest_added.connect(func(r: int, i: int, rate: float, d: int) -> void: _enqueue(_do_interest.bind(r, i, rate, d)))
-	run.loan_closed.connect(func(p: int, n: int) -> void: _enqueue(_do_loan_closed.bind(p, n)))
+	run.loan_closed.connect(func(p: int, n: int, d: int) -> void: _enqueue(_do_loan_closed.bind(p, n, d)))
 	run.died.connect(func(r: StringName) -> void: _enqueue(_do_death.bind(r)))
 	run.artifacts_changed.connect(func() -> void: _enqueue(_do_artifacts))
 	run.artifact_triggered.connect(func(fx) -> void: _enqueue(_do_triggered.bind(fx)))
@@ -519,6 +513,7 @@ func _do_trick(fx) -> void:
 
 func _do_chips(chips: int) -> void:
 	_chips_text = chips
+	_rack.show_amount(chips)
 	_update_ledger()
 
 func _do_countdown(hands_left: int, amount: int) -> void:
@@ -545,16 +540,10 @@ func _do_debt(debt: int) -> void:
 	_debt_text = debt
 	_update_ledger()
 
-## Spells out where the new debt comes from: what is left, the interest on it, the sum.
-func _do_interest(remainder: int, interest: int, rate: float, new_debt: int) -> void:
-	_rate = rate
-	_subtitle.text = tr("DEBT_INTEREST") % [remainder, int(round(rate * 100.0)), interest, new_debt]
-	_add_text_node(BET_SPOT + Vector3(0.0, 0.5, 0.0), "+%d" % interest, RED)
-	Audio.sfx(&"game/coin_ding", 0.7)
-	await _pause(2.4)
-
-func _do_loan_closed(paid: int, new_loan: int) -> void:
-	_subtitle.text = tr("DEBT_CLOSED") % [paid, new_loan]
+## Spells out where the new debt comes from: the house lends a bigger loan and writes it down at once.
+func _do_loan_closed(paid: int, new_loan: int, new_debt: int) -> void:
+	_subtitle.text = tr("DEBT_CLOSED") % [paid, new_loan, new_debt]
+	_add_text_node(BET_SPOT + Vector3(0.0, 0.5, 0.0), "+%d" % new_loan, GOLD)
 	Audio.sfx(&"trick/sparkle")
 	_vignette.flash_color(Color(0.9, 0.8, 0.4), 0.5, 0.8)
 	await _pause(2.0)
@@ -662,10 +651,6 @@ func _sync_focus() -> void:
 func _is_artifact_valid(obj) -> bool:
 	return is_instance_valid(obj) and _is_artifact(obj)
 
-func _on_pile(pile) -> void:
-	table.add_bet(pile.denomination)
-	_refresh()
-
 func _on_token(token) -> void:
 	if _discarding:
 		_subtitle.text = tr("DISCARDED") % token.fx.data.title()
@@ -692,12 +677,10 @@ func _slot_x(slot: int) -> float:
 
 func _on_plaque(id: StringName) -> void:
 	match id:
-		&"clear": table.clear_bet()
-		&"all_in": table.all_in()
 		&"deal":
 			_say(&"deal")
 			Audio.sfx(&"tabletop/deck_deal_1")
-			table.deal()
+			table.deal_all_in()
 		&"hit": table.hit()
 		&"stand": table.stand()
 		&"double": table.double_down()
@@ -747,7 +730,7 @@ func _update_totals() -> void:
 
 func _update_ledger() -> void:
 	var lines := ["%s %d" % [tr("TABLE_CHIPS"), _chips_text]]
-	lines.append(tr("TABLE_DEBT") % [_debt_text, int(round(run.interest_rate() * 100.0))])
+	lines.append(tr("TABLE_DEBT") % _debt_text)
 	if run.win_streak >= 2:
 		lines.append(tr("TABLE_STREAK") % run.win_streak)
 	_hud.text = "\n".join(lines)
@@ -756,8 +739,6 @@ func _update_ledger() -> void:
 func _set_interactive(on: bool) -> void:
 	if on:
 		return
-	for p in _piles:
-		p.set_enabled(false)
 	for id in _plaques:
 		_plaques[id].set_enabled(false)
 	for t in _tokens:
@@ -780,7 +761,7 @@ func _refresh() -> void:
 	var normal := betting and not picking and not _discarding
 	var show: Array = []
 	if normal:
-		show = [&"deal", &"clear", &"all_in", &"pay_off"]
+		show = [&"deal", &"pay_off"]
 		if not run.effects.is_empty():
 			show.append(&"discard")
 	elif _discarding or replacing:
@@ -788,14 +769,14 @@ func _refresh() -> void:
 	elif picking:
 		show = [&"skip"]
 	elif playing:
-		show = [&"hit", &"stand", &"double"]
+		show = [&"hit", &"stand"]
+		if table.can_double():
+			show.append(&"double")
 	elif phase == Table.Phase.RESOLVED and alive:
 		show = [&"next"]
 	for id in _plaques:
 		_plaques[id].show_plaque(id in show)
-	_plaques[&"deal"].set_enabled(table.can_deal())
-	_plaques[&"clear"].set_enabled(table.bet > 0)
-	_plaques[&"all_in"].set_enabled(run.chips > 0)
+	_plaques[&"deal"].set_enabled(table.can_deal_all_in())
 	_plaques[&"hit"].set_enabled(playing)
 	_plaques[&"stand"].set_enabled(playing)
 	_plaques[&"double"].set_enabled(table.can_double())
@@ -805,8 +786,6 @@ func _refresh() -> void:
 	_plaques[&"skip"].set_enabled(true)
 	_plaques[&"pay_off"].set_caption(tr("TABLE_PAY_OFF") % run.debt)
 	_plaques[&"pay_off"].set_enabled(table.can_pay_off())
-	for p in _piles:
-		p.set_enabled(normal and table.can_add_bet(p.denomination))
 	var selecting := _discarding or replacing
 	for t in _tokens:
 		if is_instance_valid(t):

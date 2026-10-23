@@ -50,11 +50,10 @@ func _initialize() -> void:
 		var view = scene
 		var failures := 0
 		var checked := 0
-		var everything: Array = view._piles + view._tokens + view._plaques.values()
+		var everything: Array = view._tokens + view._plaques.values()
 		for phase_name in ["betting", "playing"]:
 			if phase_name == "playing":
-				view.table.add_bet(25)
-				view.table.deal()
+				view.table.deal_all_in()
 				await create_timer(5.0).timeout
 			else:
 				await create_timer(0.5).timeout
@@ -106,10 +105,8 @@ func _initialize() -> void:
 	if shot == "table3d_play":
 		await create_timer(0.8).timeout
 		var view = scene
-		view.table.add_bet(25)
-		view.table.add_bet(100)
 		await create_timer(0.6).timeout
-		view.table.deal()
+		view.table.deal_all_in()
 		await create_timer(5.0).timeout
 		if OS.has_environment("HOVER"):
 			var target = view._plaques[&"hit"]

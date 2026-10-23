@@ -99,14 +99,6 @@
   "en": "Double",
   "ru": "Удвоить"
  },
- "TABLE_CLEAR": {
-  "en": "Clear",
-  "ru": "Сброс"
- },
- "TABLE_ALL_IN": {
-  "en": "All in",
-  "ru": "Ва-банк"
- },
  "TABLE_NEXT": {
   "en": "Next hand",
   "ru": "Следующая раздача"
@@ -620,19 +612,15 @@
   "ru": "Погасить %d"
  },
  "TABLE_DEBT": {
-  "en": "Debt %d  (interest %d%%)",
-  "ru": "Долг %d  (проценты %d%%)"
+  "en": "Debt %d",
+  "ru": "Долг %d"
  },
  "DEBT_WARNING": {
-  "en": "They come next hand.\nInstallment: %d",
-  "ru": "Они придут со следующей раздачей.\nВзнос: %d"
- },
- "DEBT_INTEREST": {
-  "en": "Left %d + interest %d%% (%d)\n= new debt %d",
-  "ru": "Остаток %d + проценты %d%% (%d)\n= новый долг %d"
+  "en": "They come next hand.\nThey will take %d",
+  "ru": "Они придут со следующей раздачей.\nОни заберут %d"
  },
  "DEBT_CLOSED": {
-  "en": "Debt paid: %d.\nThe house lends you %d more.",
-  "ru": "Долг закрыт: %d.\nДом ссужает ещё %d."
+  "en": "Debt paid: %d.\nThe house lends %d chips and writes down %d.",
+  "ru": "Долг выплачен: %d.\nДом ссужает %d фишек и записывает %d."
  }
 }

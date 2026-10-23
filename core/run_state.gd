@@ -8,10 +8,9 @@ signal chips_changed(chips: int)
 signal countdown_changed(hands_left: int, amount: int)
 signal payment_made(amount: int, index: int)
 signal payment_waived(index: int)
-## What the collectors do after a payment: `remainder` + `interest` (at `rate`) = `new_debt`.
-signal interest_added(remainder: int, interest: int, rate: float, new_debt: int)
 signal debt_changed(debt: int)
-signal loan_closed(paid: int, new_loan: int)
+## A debt was paid (on the deadline or early): the house lends `new_loan` chips and writes `new_debt`.
+signal loan_closed(paid: int, new_loan: int, new_debt: int)
 signal died(reason: StringName)
 signal artifacts_changed
 signal artifact_triggered(effect)
@@ -24,9 +23,8 @@ var game_id: StringName = &"blackjack"
 var chips: int = 0
 var hands_played: int = 0
 var payments_paid: int = 0
-var loans_closed: int = 0
-## What is owed right now. The chips of every loan were handed over when it was taken.
-var debt: int = Rules.FIRST_LOAN
+## What is owed right now (`payments_paid` counts the debts already paid).
+var debt: int = Rules.debt_for(0)
 var hands_to_payment: int = Rules.PAYMENT_EVERY
 var win_streak: int = 0
 var peak_chips: int = 0
@@ -45,7 +43,7 @@ func _init(game: StringName, loadout: Array) -> void:
 	artifacts = loadout
 	for a in loadout:
 		_equip(a)
-	chips = Rules.START_CHIPS
+	chips = Rules.loan_for(0)
 	peak_chips = chips
 	rng.randomize()
 
@@ -61,34 +59,21 @@ func min_bet() -> int:
 		m = fx.modify_min_bet(m)
 	return m
 
+## What the collectors take at the deadline.
 func next_payment() -> int:
-	var amount := Rules.installment_for(debt)
+	var amount := debt
 	for fx in effects:
 		amount = fx.modify_payment(amount)
-	return clampi(amount, 0, debt)
-
-func interest_rate() -> float:
-	return Rules.interest_rate_for(payments_paid)
+	return maxi(amount, 0)
 
 func can_pay_off() -> bool:
-	return alive and chips >= debt
+	return alive and chips >= next_payment()
 
-## Pays everything owed at once: the only way to close a loan. The house lends a bigger one and
-## opens a free artifact offer.
+## Pays the debt now instead of waiting for the deadline.
 func pay_off() -> bool:
 	if not can_pay_off():
 		return false
-	var paid := debt
-	add_chips(-paid)
-	loans_closed += 1
-	debt = Rules.loan_for(loans_closed)
-	add_chips(debt)
-	hands_to_payment = Rules.PAYMENT_EVERY
-	Events.stat_added.emit(Stat.LOANS_CLOSED, 1)
-	loan_closed.emit(paid, debt)
-	debt_changed.emit(debt)
-	countdown_changed.emit(hands_to_payment, next_payment())
-	start_free_offer()
+	_pay()
 	return true
 
 func add_chips(delta: int) -> void:
@@ -165,36 +150,32 @@ func hand_finished(bet_on_table: int) -> void:
 		countdown_changed.emit(hands_to_payment, next_payment())
 
 func _collect_payment() -> void:
-	var amount := next_payment()
-	var rate := interest_rate()
-	if chips >= amount:
-		for fx in effects:
-			if fx.affects_payment():
-				fx.notify()
-		add_chips(-amount)
-		debt -= amount
-		payments_paid += 1
-		hands_to_payment = Rules.PAYMENT_EVERY
-		Events.stat_added.emit(Stat.PAYMENTS_PAID, 1)
-		payment_made.emit(amount, payments_paid)
-		_charge_interest(rate)
-		if chips < min_bet():
-			_try_die(DEATH_BROKE)
+	if chips >= next_payment():
+		payment_made.emit(next_payment(), payments_paid + 1)
+		_pay()
 	elif _survives():
-		payments_paid += 1
 		hands_to_payment = Rules.PAYMENT_EVERY
 		payment_waived.emit(payments_paid)
-		_charge_interest(rate)
 	else:
 		_die(DEATH_DEBT)
 
-## The unpaid rest grows: this is where the next debt comes from.
-func _charge_interest(rate: float) -> void:
-	var remainder := debt
-	var interest := int(ceil(remainder * rate / Rules.MONEY_ROUND_TO)) * Rules.MONEY_ROUND_TO
-	debt = remainder + interest
-	interest_added.emit(remainder, interest, rate, debt)
+## Takes the debt out of the purse, then the house lends a bigger loan and writes a bigger debt.
+func _pay() -> void:
+	var amount := next_payment()
+	for fx in effects:
+		if fx.affects_payment():
+			fx.notify()
+	add_chips(-amount)
+	payments_paid += 1
+	Events.stat_added.emit(Stat.PAYMENTS_PAID, 1)
+	var loan := Rules.loan_for(payments_paid)
+	debt = Rules.debt_for(payments_paid)
+	add_chips(loan)
+	hands_to_payment = Rules.PAYMENT_EVERY
+	loan_closed.emit(amount, loan, debt)
 	debt_changed.emit(debt)
+	countdown_changed.emit(hands_to_payment, next_payment())
+	start_free_offer()
 
 func _try_die(reason: StringName) -> void:
 	if not _survives():

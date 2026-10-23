@@ -63,10 +63,8 @@ func _act(scene: Node, rng: RandomNumberGenerator) -> void:
 				else:
 					_press(scene._plaques[&"skip"])
 				return
-			if table.bet == 0:
-				var pile = scene._piles[rng.randi() % 3]  # never the 500 pile: the run should reach payments
-				if pile.enabled:
-					pile.activate()
+			if scene.run.can_pay_off() and rng.randf() < 0.5:
+				_press(scene._plaques[&"pay_off"])
 			else:
 				_press(scene._plaques[&"deal"])
 		1:  # PLAYER_TURN

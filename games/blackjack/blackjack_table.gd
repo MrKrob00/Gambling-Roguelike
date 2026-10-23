@@ -54,6 +54,15 @@ func can_deal() -> bool:
 func can_double() -> bool:
 	return is_player_turn() and player.cards.size() == 2 and not doubled and run.chips >= bet
 
+## The stake is always the whole purse: there is no choosing a bet. The view deals through this door.
+func can_deal_all_in() -> bool:
+	return phase == Phase.BETTING and run.chips + bet >= min_bet()
+
+func deal_all_in() -> void:
+	if can_deal_all_in():
+		all_in()
+		deal()
+
 func can_pay_off() -> bool:
 	return phase == Phase.BETTING and run.can_pay_off()
 
