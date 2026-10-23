@@ -20,6 +20,7 @@ const CUT_ORDER: Array[String] = ["Little", "Ring", "Middle", "Thumb", "Index"]
 var _anim: AnimationPlayer
 var _tween: Tween
 var _skeleton: Skeleton3D
+var _gen: int = 0
 
 func _ready() -> void:
 	position = REST_POS
@@ -48,25 +49,40 @@ func _tip_offset() -> Vector3:
 	return tip - global_position
 
 ## Carries the fingertip over `world_pos`, dips, and calls `on_contact` the moment it lands. Awaitable; the hand then
-## drifts back on its own.
+## drifts back on its own. A newer action (another reach, the finger being cut) cancels this one: it simply returns.
+## Sequenced with timers, never by awaiting a tween, because a killed tween never reports `finished`.
 func reach(world_pos: Vector3, on_contact: Callable) -> void:
-	if _tween != null:
-		_tween.kill()
+	var gen := _begin()
 	_anim.play("point")
 	_anim.advance(0.3)
 	var over := world_pos - _tip_offset() + Vector3(0.0, HOVER, 0.0)
-	_tween = create_tween()
-	_tween.tween_property(self, "global_position", over, REACH_TIME).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	await _tween.finished
+	_move(over, REACH_TIME, Tween.TRANS_CUBIC)
+	await get_tree().create_timer(REACH_TIME).timeout
+	if gen != _gen:
+		return
 	_anim.play("tap")
-	_tween = create_tween()
-	_tween.tween_property(self, "global_position", over - Vector3(0.0, HOVER, 0.0), DIP_TIME).set_ease(Tween.EASE_IN)
-	await _tween.finished
+	_move(over - Vector3(0.0, HOVER, 0.0), DIP_TIME, Tween.TRANS_LINEAR)
+	await get_tree().create_timer(DIP_TIME).timeout
+	if gen != _gen:
+		return
 	on_contact.call()
+	await get_tree().create_timer(0.15).timeout
+	if gen != _gen:
+		return
+	_anim.play("idle")
+	_move(REST_POS, RETURN_TIME, Tween.TRANS_SINE)
+
+func _begin() -> int:
+	_gen += 1
+	if _tween != null:
+		_tween.kill()
+	return _gen
+
+func _move(to: Vector3, time: float, trans: int) -> void:
+	if _tween != null:
+		_tween.kill()
 	_tween = create_tween()
-	_tween.tween_interval(0.15)
-	_tween.tween_callback(_anim.play.bind("idle"))
-	_tween.tween_property(self, "global_position", REST_POS, RETURN_TIME).set_trans(Tween.TRANS_SINE)
+	_tween.tween_property(self, "global_position", to, time).set_trans(trans)
 
 ## Hides the fingers already lost: with `lives` left, 5 - lives fingers are gone.
 func set_lives(lives: int) -> void:
@@ -78,16 +94,17 @@ func _set_finger(finger: String, cut: bool) -> void:
 	if bone >= 0:
 		_skeleton.set_bone_pose_scale(bone, Vector3.ZERO if cut else Vector3.ONE)
 
-## Raises the hand into view and takes the next finger. Awaitable.
+## Raises the hand into view and takes the next finger. Awaitable, and it takes over from any reach in progress.
 func present_cut(lives: int) -> void:
-	if _tween != null:
-		_tween.kill()
+	var gen := _begin()
 	_anim.play("open")
-	_tween = create_tween()
-	_tween.tween_property(self, "global_position", PRESENT_POS, 0.4).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	_tween.tween_interval(0.5)
-	_tween.tween_callback(set_lives.bind(lives))
-	_tween.tween_interval(1.1)
-	_tween.tween_callback(_anim.play.bind("idle"))
-	_tween.tween_property(self, "global_position", REST_POS, 0.4).set_trans(Tween.TRANS_SINE)
-	await _tween.finished
+	_move(PRESENT_POS, 0.4, Tween.TRANS_CUBIC)
+	await get_tree().create_timer(0.9).timeout
+	set_lives(lives)
+	await get_tree().create_timer(1.1).timeout
+	if gen != _gen:
+		set_lives(lives)
+		return
+	_anim.play("idle")
+	_move(REST_POS, 0.4, Tween.TRANS_SINE)
+	await get_tree().create_timer(0.4).timeout

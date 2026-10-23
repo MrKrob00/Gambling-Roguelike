@@ -412,7 +412,7 @@ func _do_remove(to_dealer: bool, card) -> void:
 	await _pause(0.35)
 
 func _do_reveal(card) -> void:
-	if _hole_actor != null:
+	if is_instance_valid(_hole_actor):
 		Audio.sfx(&"game/card_reveal")
 		await _hole_actor.flip_to(true)
 		_hole_actor = null
@@ -425,7 +425,7 @@ func _do_peek(_card) -> void:
 	Audio.sfx(&"trick/sparkle")
 	_dealer.react(&"peek")
 	_say(&"peek")
-	if _hole_actor != null:
+	if is_instance_valid(_hole_actor):
 		await _hole_actor.flip_to(true)
 	await _pause(0.3)
 
@@ -597,7 +597,12 @@ func _do_death(reason: StringName) -> void:
 # ---------------------------------------------------------------- input
 
 func _unhandled_input(event: InputEvent) -> void:
-	if _reaching:
+	## Nothing is pressed while the screen is playing steps or the hand is reaching: a click there would cancel
+	## an animation the game is waiting for.
+	if _reaching or _queue.busy:
+		if event is InputEventMouseButton and not event.pressed and is_instance_valid(_held):
+			_held.set_held(false)
+			_held = null
 		return
 	if event is InputEventMouseMotion:
 		_set_hover(_pick(event.position))

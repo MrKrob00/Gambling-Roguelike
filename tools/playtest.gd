@@ -8,6 +8,7 @@ const MAX_REAL_SECONDS := 150.0
 
 var scene_log: Array = []
 var steps := 0
+var chaos_clicks := 0
 
 func _initialize() -> void:
 	await process_frame
@@ -20,7 +21,7 @@ func _initialize() -> void:
 	game.start_run(&"blackjack")  # no loadout: the run opens with the free offer, like a real one
 	var started := Time.get_ticks_msec()
 	var rng := RandomNumberGenerator.new()
-	rng.seed = 7
+	rng.seed = int(OS.get_environment("SEED")) if OS.has_environment("SEED") else 7
 	while (Time.get_ticks_msec() - started) / 1000.0 < MAX_REAL_SECONDS:
 		await process_frame
 		var scene := current_scene
@@ -33,7 +34,7 @@ func _initialize() -> void:
 		if scene.name == "BlackjackView3D":
 			_act(scene, rng)
 	print("scenes visited: ", scene_log)
-	print("steps: ", steps, " stats: ", profile.stats)
+	print("steps: ", steps, " chaos clicks: ", chaos_clicks, " stats: ", profile.stats)
 	print("unlocked: ", profile.unlocked)
 	var ok: bool = scene_log.has("Result")
 	if ok:
@@ -47,7 +48,30 @@ func _press(plaque) -> void:
 	if plaque.enabled:
 		plaque.activate()
 
+## A player who mashes the screen: presses on real objects while animations play, sometimes slides off before
+## releasing. Nothing may hang or break; the run must still reach the result screen.
+func _chaos(scene: Node, rng: RandomNumberGenerator) -> void:
+	if rng.randf() > 0.35:
+		return
+	var targets: Array = scene._plaques.values() + scene._tokens + scene._offer_cards
+	var target = targets[rng.randi() % targets.size()]
+	if not is_instance_valid(target):
+		return
+	var pos: Vector2 = scene._rig.camera.unproject_position(target.global_position)
+	var press := InputEventMouseButton.new()
+	press.button_index = MOUSE_BUTTON_LEFT
+	press.pressed = true
+	press.position = pos
+	scene._unhandled_input(press)
+	var release := InputEventMouseButton.new()
+	release.button_index = MOUSE_BUTTON_LEFT
+	release.pressed = false
+	release.position = pos if rng.randf() < 0.7 else pos + Vector2(300, 100)
+	scene._unhandled_input(release)
+	chaos_clicks += 1
+
 func _act(scene: Node, rng: RandomNumberGenerator) -> void:
+	_chaos(scene, rng)
 	if scene._queue.busy or not scene.run.alive:
 		return
 	var table = scene.table

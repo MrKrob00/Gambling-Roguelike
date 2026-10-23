@@ -35,6 +35,7 @@ func _initialize() -> void:
 	_artifacts()
 	_payments_and_death()
 	_offers()
+	await _step_queue()
 	_fuzz()
 	_unlocks()
 	DirAccess.remove_absolute(ProjectSettings.globalize_path("user://selftest_profile.json"))
@@ -502,6 +503,24 @@ func _offers() -> void:
 	run = RunState.new(&"blackjack", [])
 	check(not run.can_pay_off() and not run.pay_off(), "a poor player cannot pay off")
 	profile.reset()
+
+# ---------------------------------------------------------------- the step queue
+
+func _hung_step() -> void:
+	await Signal(self, "never_emitted")
+
+signal never_emitted
+
+## A step that never finishes must not freeze the game: the queue gives up on it and plays the next one.
+func _step_queue() -> void:
+	var queue = load("res://core/step_queue.gd").new()
+	queue.timeout = 0.2
+	var order := []
+	queue.push(func() -> void: order.append(1))
+	queue.push(_hung_step)
+	queue.push(func() -> void: order.append(3))
+	await queue.drained
+	check(order == [1, 3] and not queue.busy, "the queue survives a hung step, ran %s" % str(order))
 
 # ---------------------------------------------------------------- unlocks
 

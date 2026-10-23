@@ -65,7 +65,10 @@ integer. The 3D view renders at the window's real resolution.
 - `blackjack_view_3d.gd` turns each signal into a **queued animation step** (`core/step_queue.gd`). The
   rules resolve instantly; the screen lags a beat behind so nothing is spoiled (a payout never shows before
   the dealer's last card lands). Input is ignored while the queue runs. Every visible change goes through
-  the queue, including numbers, or they would run ahead of the cards.
+  the queue, including numbers, or they would run ahead of the cards. **Pointer input is ignored while the queue runs or
+  the hand reaches**, and the queue has a watchdog (`StepQueue.STEP_TIMEOUT`): a step that never finishes is abandoned,
+  not allowed to freeze the game. **Never `await tween.finished` on a tween something else may kill** (a killed tween
+  never reports): sequence with `await get_tree().create_timer(t).timeout` and a generation counter, as `player_hand_3d.gd` does.
 - A new game is a new `games/<name>/` folder with the same shape, a row in `Game.TABLES`, its own artifacts
   in `data/artifacts/<name>/`, and a way to pick it in the lobby.
 
@@ -216,7 +219,8 @@ $G --headless --path /tmp/run --script res://tools/selftest.gd
 - `tools/balance.gd`: plays thousands of runs with a basic-strategy bot and prints debts closed per run, hands per run
   and how often the first debt is closed on the first life. **Run it after touching `core/rules.gd`**; the all-in economy
   is sensitive (a hand is a death about half the time, so a run is about ten hands).
-- `tools/playtest.gd`: plays a whole run through the real 3D table by activating the real objects on it.
+- `tools/playtest.gd`: plays a whole run through the real 3D table by activating the real objects on it, while a chaotic
+  player mashes presses and releases on random objects, sliding off some (`SEED=n` varies it). It must reach the result.
 - `tools/shot.gd`: renders a screen to a PNG (`SHOT=menu|lobby|result|table3d|table3d_play LOCALE=en|ru OUT=...`);
   needs a real driver: `xvfb-run -a -s "-screen 0 1280x720x24" $G --path /tmp/run --rendering-driver opengl3
   --resolution 960x540 --script res://tools/shot.gd`. Headless never compiles a shader or draws a frame.
