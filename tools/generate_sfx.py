@@ -365,10 +365,78 @@ def candle_snuff():
     return puff + tick
 
 
+def gunshot():
+    dur = 1.1
+    n = int(SR * dur)
+    crack = highpass(noise(dur), 1800) * env(n, 0.0004, 0.05, 7)
+    thump = sine(np.linspace(150, 45, n), dur) * env(n, 0.0008, 0.18, 5)
+    body = lowpass(noise(dur), 1200) * env(n, 0.001, 0.2, 4) * 0.5
+    return reverb(crack * 0.9 + thump * 0.9 + body, 0.8, 0.35)
+
+
+def hammer_click():
+    out = np.zeros(int(SR * 0.5))
+    for t_s, f in ((0.0, 2600), (0.16, 1900), (0.3, 3200)):
+        s0 = int(SR * t_s)
+        b = bell(f, 0.08, ((1, 1.0), (2.1, 0.5))) * 0.6
+        out[s0 : s0 + len(b)] += b
+    return out
+
+
+def explosion():
+    dur = 1.6
+    n = int(SR * dur)
+    boom = sine(np.linspace(90, 28, n), dur) * env(n, 0.002, 0.5, 4)
+    roar = lowpass(noise(dur), 900) * env(n, 0.002, 0.55, 3.5)
+    crack = highpass(noise(dur), 2200) * env(n, 0.0005, 0.07, 7) * 0.7
+    return reverb(boom * 1.0 + roar * 0.9 + crack, 1.0, 0.35)
+
+
+def cleaver_chop():
+    dur = 0.9
+    n = int(SR * dur)
+    swish = highpass(lowpass(noise(0.25), 5000), 800) * np.sin(np.linspace(0, np.pi, int(SR * 0.25))) * 0.5
+    thud = sine(np.linspace(220, 60, n), dur) * env(n, 0.0008, 0.12, 6)
+    ring = bell(1900, 0.5, ((1, 1.0), (2.76, 0.4))) * 0.25
+    out = np.zeros(n)
+    out[: len(swish)] += swish
+    s0 = int(SR * 0.22)
+    tail = np.zeros(n - s0)
+    tail[: len(ring)] = ring[: n - s0] * 0.6
+    out[s0:] += thud[: n - s0] + tail + lowpass(noise(dur), 700)[: n - s0] * env(n - s0, 0.0005, 0.05, 7) * 0.5
+    return reverb(out, 0.4, 0.2)
+
+
+def bite_crunch():
+    dur = 0.8
+    n = int(SR * dur)
+    out = np.zeros(n)
+    for t_s in (0.0, 0.09, 0.2):
+        s0 = int(SR * t_s)
+        m = int(SR * 0.09)
+        out[s0 : s0 + m] += highpass(noise(0.09), 500) * env(m, 0.0005, 0.03, 8) * 0.8
+    snap = sine(np.linspace(420, 120, int(SR * 0.2)), 0.2) * env(int(SR * 0.2), 0.0005, 0.06, 7)
+    out[int(SR * 0.12) : int(SR * 0.12) + len(snap)] += snap * 0.6
+    return reverb(out, 0.3, 0.2)
+
+
+def fuse_hiss():
+    dur = 1.0
+    n = int(SR * dur)
+    return highpass(noise(dur), 3000) * (0.3 + 0.2 * np.sin(np.linspace(0, 40, n))) * env(n, 0.01, 1.2, 1.5)
+
+
+def blood_splat():
+    dur = 0.5
+    n = int(SR * dur)
+    return lowpass(noise(dur), 1500) * env(n, 0.002, 0.08, 6) * 0.8 + sine(np.linspace(180, 70, n), dur) * env(n, 0.001, 0.1, 6) * 0.5
+
+
 JOBS = {
     "ui": [ui_click, ui_hover, ui_confirm, ui_cancel, ui_error],
     "game": [knock, candle_snuff, coin_ding, win_small, win_jackpot, lose_sting, reel_stop, reel_spin, lever_pull,
-             curse_hit, heartbeat, tension_drone, card_reveal, item_use],
+             curse_hit, heartbeat, tension_drone, card_reveal, item_use,
+             gunshot, hammer_click, explosion, cleaver_chop, bite_crunch, fuse_hiss, blood_splat],
     "trick": [poof, whoosh, card_flick, sparkle, drumroll, ta_da, reveal_sting, caught,
               lockpick_click, safe_open, glass_shatter, swap],
 }

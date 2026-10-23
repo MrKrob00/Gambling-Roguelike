@@ -94,16 +94,31 @@ func _set_finger(finger: String, cut: bool) -> void:
 	if bone >= 0:
 		_skeleton.set_bone_pose_scale(bone, Vector3.ZERO if cut else Vector3.ONE)
 
-## Raises the hand into view and takes the next finger. Awaitable, and it takes over from any reach in progress.
-func present_cut(lives: int) -> void:
+## Raises the hand into view, open, ready to lose a finger. Awaitable.
+func raise_for_cut() -> void:
 	var gen := _begin()
 	_anim.play("open")
 	_move(PRESENT_POS, 0.4, Tween.TRANS_CUBIC)
-	await get_tree().create_timer(0.9).timeout
-	set_lives(lives)
-	await get_tree().create_timer(1.1).timeout
+	await get_tree().create_timer(0.6).timeout
 	if gen != _gen:
-		set_lives(lives)
+		return
+
+## Where the finger that the next loss takes is, in the world.
+func finger_tip(lives_after: int) -> Vector3:
+	var bone := _skeleton.find_bone("%s_Tip_R" % CUT_ORDER[clampi(Rules.LIVES - lives_after - 1, 0, CUT_ORDER.size() - 1)])
+	return (_skeleton.global_transform * _skeleton.get_bone_global_pose(bone)).origin
+
+## The finger goes and the hand clenches.
+func cut_finger(lives_after: int) -> void:
+	set_lives(lives_after)
+	_anim.play("fist")
+
+## Lowers the hand back to the table. Awaitable.
+func lower_after_cut(lives_after: int) -> void:
+	var gen := _begin()
+	set_lives(lives_after)
+	await get_tree().create_timer(0.5).timeout
+	if gen != _gen:
 		return
 	_anim.play("idle")
 	_move(REST_POS, 0.4, Tween.TRANS_SINE)

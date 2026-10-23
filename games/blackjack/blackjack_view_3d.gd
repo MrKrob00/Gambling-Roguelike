@@ -22,6 +22,7 @@ const OfferCard := preload("res://world/offer_card_3d.gd")
 const Candles := preload("res://world/deadline_candles_3d.gd")
 const PlayerHand := preload("res://world/player_hand_3d.gd")
 const ArtifactHand := preload("res://world/artifact_hand_3d.gd")
+const FingerCut := preload("res://world/finger_cut_3d.gd")
 const Enforcers := preload("res://world/enforcers_3d.gd")
 const WarningHand := preload("res://world/warning_hand_3d.gd")
 const InfoPanel := preload("res://ui/common/artifact_info_panel.gd")
@@ -93,6 +94,8 @@ var _candles
 var _enforcers
 var _hand_rig
 var _player_hand
+var _finger_cut
+var _last_cut: int = -1
 var _reaching: bool = false
 var _held
 var _warning_hand
@@ -155,6 +158,11 @@ func _build_world() -> void:
 	_player_hand = PlayerHand.new()
 	add_child(_player_hand)
 	_player_hand.set_lives.call_deferred(run.lives)
+	_finger_cut = FingerCut.new()
+	_finger_cut.dealer = _dealer
+	_finger_cut.camera_shake.connect(func(s: float, d: float) -> void: _rig.shake(s, d))
+	_finger_cut.screen_flash.connect(func(c: Color, s: float, t: float) -> void: _vignette.flash_color(c, s, t))
+	add_child(_finger_cut)
 	_faces = CardFaces.new()
 	add_child(_faces)
 	_bet_stack = ChipStack.new()
@@ -579,12 +587,23 @@ func _do_life_lost(left: int, reason: StringName) -> void:
 	_vignette.flash_color(RED, 1.0, 1.6)
 	_rig.shake(0.08, 0.6)
 	_subtitle.text = tr("LIFE_LOST") % left
-	await _player_hand.present_cut(left)
-	Audio.sfx(&"game/knock")
-	await _pause(0.4)
+	await _lose_finger(left, reason)
+	await _pause(0.3)
+
+## The hand is raised and one of four scenes takes the finger: the skeleton bites, an enforcer chops it off, a bomb
+## blows it up, or it is shot off. The collectors prefer the cleaver and the gun, the dealer his teeth and bombs.
+func _lose_finger(left: int, reason: StringName, forced_kind: int = -1) -> void:
+	var options: Array = [FingerCut.Kind.CLEAVER, FingerCut.Kind.PISTOL] if reason == run.DEATH_DEBT else [FingerCut.Kind.BITE, FingerCut.Kind.BOMB]
+	options = options.filter(func(k: int) -> bool: return k != _last_cut)
+	var kind: int = forced_kind if forced_kind >= 0 else options[randi() % options.size()]
+	_last_cut = kind
+	await _player_hand.raise_for_cut()
+	var tip: Vector3 = _player_hand.finger_tip(left)
+	await _finger_cut.play(kind, tip, _player_hand.cut_finger.bind(left))
+	await _player_hand.lower_after_cut(left)
 
 func _do_death(reason: StringName) -> void:
-	await _player_hand.present_cut(0)
+	await _lose_finger(0, reason)
 	_say(&"death_broke" if reason == run.DEATH_BROKE else &"death_debt")
 	_dealer.react(&"death")
 	Audio.sfx(&"game/lose_sting")

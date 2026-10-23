@@ -93,7 +93,10 @@ integer. The 3D view renders at the window's real resolution.
   Open them in the editor to pose and animate; `tools/build_hands.gd` regenerates them from `assets/models/hand` and
   **overwrites those edits**. The scripts only call `play(name)`. The right hand (`world/player_hand_3d.gd`) does
   every press: `BlackjackView3D._act_on` carries it over the felt to the object, taps it and activates the object at
-  contact, input is ignored while it reaches. Each death takes a finger of this hand (`set_lives`, `Rules.LIVES` = 5).
+  contact, input is ignored while it reaches. Each death takes a finger of this hand (`set_lives`, `Rules.LIVES` = 5), in one of four scenes
+  (`world/finger_cut_3d.gd`, primitives and particles, no assets): the skeleton bites, an enforcer chops it with a cleaver, a bomb
+  blows it up, a revolver shoots it off. The collectors' deaths (debt) get the cleaver or the gun, the dealer's (broke) the teeth or
+  the bomb. The scene calls back at the instant of impact and talks to the view only through signals.
 - **A collider that sits in front of another pickable eats its taps**; `pickcheck` catches an overlap.
 - **Every control is an object on the table** (`world/pickable_3d.gd`, physics layer 2): plaques,
   artifact tokens. The view casts a ray from the pointer or a tap and calls `activate()` on what it hits. A

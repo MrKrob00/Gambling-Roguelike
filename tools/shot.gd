@@ -75,6 +75,16 @@ func _initialize() -> void:
 		scene._player_hand.set_lives(int(OS.get_environment("LIVES")))
 		scene._player_hand.global_position = scene._player_hand.PRESENT_POS
 		await create_timer(0.5).timeout
+	if shot == "table3d" and OS.has_environment("CUT"):
+		scene._lose_finger(int(OS.get_environment("LIVES")) if OS.has_environment("LIVES") else 4, &"debt", int(OS.get_environment("CUT")))
+		await scene._finger_cut.impact
+		await create_timer(float(OS.get_environment("AFTER")) if OS.has_environment("AFTER") else 0.05).timeout
+		Engine.time_scale = 0.02
+		await process_frame
+		await process_frame
+		root.get_viewport().get_texture().get_image().save_png(out)
+		quit()
+		return
 	if shot == "table3d" and OS.has_environment("PRESS"):
 		scene._act_on(scene._plaques[&"pay_off" if OS.get_environment("PRESS") == "off" else &"deal"])
 		while scene._player_hand._anim.current_animation != "tap":
