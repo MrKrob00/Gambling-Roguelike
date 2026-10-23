@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://b5vfml5taei0j"
+path="res://.godot/imported/JDSherbert - Tabletop Games SFX Pack - Dice Pickup - 2.wav-64f67a1bf657440a7668692c3f7983a0.sample"
+
+[deps]
+
+source_file="res://assets/JDSherbert - Tabletop Games SFX Pack (FREE)/Mono/wav (SD)/JDSherbert - Tabletop Games SFX Pack - Dice Pickup - 2.wav"
+dest_files=["res://.godot/imported/JDSherbert - Tabletop Games SFX Pack - Dice Pickup - 2.wav-64f67a1bf657440a7668692c3f7983a0.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

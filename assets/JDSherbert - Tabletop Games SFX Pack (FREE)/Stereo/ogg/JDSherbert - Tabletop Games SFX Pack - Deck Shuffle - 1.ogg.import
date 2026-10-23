@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://betewp7lc5gtr"
+path="res://.godot/imported/JDSherbert - Tabletop Games SFX Pack - Deck Shuffle - 1.ogg-61120b64c769eed50e2ab19ba65f48e7.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/JDSherbert - Tabletop Games SFX Pack (FREE)/Stereo/ogg/JDSherbert - Tabletop Games SFX Pack - Deck Shuffle - 1.ogg"
+dest_files=["res://.godot/imported/JDSherbert - Tabletop Games SFX Pack - Deck Shuffle - 1.ogg-61120b64c769eed50e2ab19ba65f48e7.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

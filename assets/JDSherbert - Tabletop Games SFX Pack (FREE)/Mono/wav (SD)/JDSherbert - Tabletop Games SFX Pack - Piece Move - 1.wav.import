@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://cu0pcan1pp1f3"
+path="res://.godot/imported/JDSherbert - Tabletop Games SFX Pack - Piece Move - 1.wav-4ec3bc78ae2be8ab773a8a6272ffab6d.sample"
+
+[deps]
+
+source_file="res://assets/JDSherbert - Tabletop Games SFX Pack (FREE)/Mono/wav (SD)/JDSherbert - Tabletop Games SFX Pack - Piece Move - 1.wav"
+dest_files=["res://.godot/imported/JDSherbert - Tabletop Games SFX Pack - Piece Move - 1.wav-4ec3bc78ae2be8ab773a8a6272ffab6d.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

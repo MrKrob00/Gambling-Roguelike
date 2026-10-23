@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://bhvht3dbhqude"
+path="res://.godot/imported/tile_rogue_red.obj-b4f0567566f43b5f1e0335d013b96a03.mesh"
+
+[deps]
+
+files=["res://.godot/imported/tile_rogue_red.obj-b4f0567566f43b5f1e0335d013b96a03.mesh"]
+
+source_file="res://assets/KayKit_BoardGameBits_1.0_FREE/Assets/obj/tile_rogue_red.obj"
+dest_files=["res://.godot/imported/tile_rogue_red.obj-b4f0567566f43b5f1e0335d013b96a03.mesh", "res://.godot/imported/tile_rogue_red.obj-b4f0567566f43b5f1e0335d013b96a03.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

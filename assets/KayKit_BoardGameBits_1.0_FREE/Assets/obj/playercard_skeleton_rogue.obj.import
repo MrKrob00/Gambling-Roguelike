@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://6br6y2tb6yk3"
+path="res://.godot/imported/playercard_skeleton_rogue.obj-9b2943309ad0cc0385b6ccee5d674345.mesh"
+
+[deps]
+
+files=["res://.godot/imported/playercard_skeleton_rogue.obj-9b2943309ad0cc0385b6ccee5d674345.mesh"]
+
+source_file="res://assets/KayKit_BoardGameBits_1.0_FREE/Assets/obj/playercard_skeleton_rogue.obj"
+dest_files=["res://.godot/imported/playercard_skeleton_rogue.obj-9b2943309ad0cc0385b6ccee5d674345.mesh", "res://.godot/imported/playercard_skeleton_rogue.obj-9b2943309ad0cc0385b6ccee5d674345.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

@@ -1,0 +1,14 @@
+LICENSE - 10 Double or Quits Casino HUD + Item Icons 32x32 (Free)
+
+Copyright (c) 2026 Mulato Factory
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+these assets, to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell them, for COMMERCIAL and NON-COMMERCIAL purposes, in any game,
+application, video, print or other work.
+
+ATTRIBUTION IS NOT REQUIRED. Credit is appreciated but never mandatory.
+
+You may not resell the unmodified pack as a competing asset pack.
+
+THE ASSETS ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
