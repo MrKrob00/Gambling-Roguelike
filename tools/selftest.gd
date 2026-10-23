@@ -68,7 +68,7 @@ func _load_everything(path: String) -> void:
 
 func _catalog() -> void:
 	var cat = root.get_node("Catalog")
-	check(cat.all().size() == 11, "catalog holds 11 artifacts, has %d" % cat.all().size())
+	check(cat.all().size() == 21, "catalog holds 21 artifacts, has %d" % cat.all().size())
 	var tr_ok := true
 	for a in cat.all():
 		for part in ["NAME", "DESC", "HINT"]:
@@ -218,7 +218,7 @@ func _artifacts() -> void:
 	var before: int = run.chips
 	table.use_artifact(_fx(run, &"card_sleeve"))
 	check(table.player.total() == 12, "sleeve swapped 6 for 2, total %d" % table.player.total())
-	check(run.chips == before - 25, "sleeve costs 25%% of the bet, chips %d" % run.chips)
+	check(run.chips == before - 20, "sleeve costs 20%% of the stake, chips %d" % run.chips)
 	check(not _fx(run, &"card_sleeve").can_use(table) or table.phase != Table.Phase.PLAYER_TURN, "sleeve recharges: not usable right after use")
 	check(_fx(run, &"card_sleeve").cooldown_left == 3, "sleeve waits 3 hands")
 
@@ -239,14 +239,21 @@ func _artifacts() -> void:
 	table.add_bet(100)
 	table.deal()
 	table.stand()
-	check(run.chips == 500 - 100 + 225, "doll win pays 225, chips %d" % run.chips)
+	check(run.chips == 500 - 100 + 250, "doll win pays half a stake more, chips %d" % run.chips)
 	run = _run([&"cursed_doll"])
 	table = Table.new(run, 1)
 	_stack(table, [[10], [10], [6], [7], [10]])
 	table.add_bet(100)
 	table.deal()
 	table.hit()
-	check(run.chips == 500 - 100 - 25, "doll loss costs 125, chips %d" % run.chips)
+	check(run.chips == 400, "doll loss takes the stake, chips %d" % run.chips)
+	run = _run([&"cursed_doll"])
+	table = Table.new(run, 1)
+	_stack(table, [[10], [10], [9], [9]])
+	table.add_bet(100)
+	table.deal()
+	table.stand()
+	check(run.chips == 400, "doll turns a push into a loss, chips %d" % run.chips)
 
 	# Sleight of hand: natural pays 2:1.
 	run = _run([&"sleight_of_hand"])
@@ -256,14 +263,15 @@ func _artifacts() -> void:
 	table.deal()
 	check(run.chips == 500 - 100 + 300, "sleight pays 2:1, chips %d" % run.chips)
 
-	# Gambler's nerve: doubled win pays half a bet more.
+	# Gambler's nerve: a won hand of four cards pays half a stake more.
 	run = _run([&"gamblers_nerve"])
 	table = Table.new(run, 1)
-	_stack(table, [[5], [10], [6], [7], [10]])
+	_stack(table, [[2], [10], [3], [7], [6], [10]])
 	table.add_bet(100)
 	table.deal()
-	table.double_down()
-	check(run.chips == 500 - 200 + 400 + 100, "nerve adds half a doubled bet, chips %d" % run.chips)
+	table.hit()
+	table.hit()
+	check(run.chips == 500 - 100 + 250, "nerve adds half a stake on four cards, chips %d" % run.chips)
 
 	# Rabbit's foot: the third win in a row pays more.
 	run = _run([&"rabbits_foot"])
@@ -277,9 +285,94 @@ func _artifacts() -> void:
 	# wins: +100, then streak 2 pays +100 +20, then streak 3 pays +100 +30
 	check(run.chips == 500 + 100 + 120 + 130, "rabbit foot streak bonus, chips %d" % run.chips)
 
+	# Loose change keeps a quarter of the purse out of the stake.
+	run = _run([&"loose_change"])
+	table = Table.new(run, 1)
+	_stack(table, [[10], [10], [9], [7]])
+	table.deal_all_in()
+	check(table.bet == 375 and run.chips == 125, "loose change stakes 375 of 500, bet %d chips %d" % [table.bet, run.chips])
+
+	# Lucky penny: a push pays half a stake more.
+	run = _run([&"lucky_penny"])
+	table = Table.new(run, 1)
+	_stack(table, [[10], [10], [9], [9]])
+	table.add_bet(100)
+	table.deal()
+	table.stand()
+	check(run.chips == 500 - 100 + 150, "penny pays a push 150, chips %d" % run.chips)
+
+	# Cracked mirror shows the next card and recharges.
+	run = _run([&"cracked_mirror"])
+	table = Table.new(run, 1)
+	_stack(table, [[10], [10], [6], [7], [4]])
+	table.add_bet(100)
+	table.deal()
+	var seen := []
+	table.next_card_peeked.connect(func(c) -> void: seen.append(c.rank))
+	table.use_artifact(_fx(run, &"cracked_mirror"))
+	check(seen == [4] and _fx(run, &"cracked_mirror").cooldown_left == 3, "mirror shows the 4 and waits 3 hands, got %s" % str(seen))
+
+	# Hourglass: two more hands, usable between hands, spent after two uses.
+	run = _run([&"hourglass"])
+	table = Table.new(run, 1)
+	var glass = _fx(run, &"hourglass")
+	check(glass.can_use(table), "hourglass works between hands")
+	table.use_artifact(glass)
+	check(run.hands_to_payment == Rules.PAYMENT_EVERY + 2, "hourglass adds two hands, got %d" % run.hands_to_payment)
+	table.use_artifact(glass)
+	check(_fx(run, &"hourglass") == null and run.hands_to_payment == Rules.PAYMENT_EVERY + 4, "two uses, then it is gone")
+
+	# Hush envelope cuts the debt by a quarter.
+	run = _run([&"hush_envelope"])
+	table = Table.new(run, 1)
+	table.use_artifact(_fx(run, &"hush_envelope"))
+	check(run.debt == 190 and _fx(run, &"hush_envelope") == null, "envelope cuts 250 to 190 and is spent, debt %d" % run.debt)
+
+	# Sleeping powder: the dealer stands on what he has.
+	run = _run([&"sleeping_powder"])
+	table = Table.new(run, 1)
+	_stack(table, [[10], [6], [8], [5]])
+	table.add_bet(100)
+	table.deal()
+	table.use_artifact(_fx(run, &"sleeping_powder"))
+	table.stand()
+	check(table.dealer.cards.size() == 2 and run.chips == 500 - 100 + 200, "the frozen dealer keeps 11 and loses to 18, chips %d" % run.chips)
+
+	# Second wind throws the hand away and deals two new cards; the old ones go to the bottom of the shoe.
+	run = _run([&"second_wind"])
+	table = Table.new(run, 1)
+	_stack(table, [[10], [10], [6], [7], [5], [3]])
+	table.add_bet(100)
+	table.deal()
+	table.use_artifact(_fx(run, &"second_wind"))
+	check(table.player.total() == 8 and table.shoe.cards[0].rank == 10 and table.shoe.cards[1].rank == 6, "second wind redeals 5+3 and buries the old hand, total %d" % table.player.total())
+
+	# Black cat: 19 or more pays double, 17 or less only returns the stake.
+	run = _run([&"black_cat"])
+	table = Table.new(run, 1)
+	_stack(table, [[10], [10], [10], [7]])
+	table.add_bet(100)
+	table.deal()
+	table.stand()
+	check(run.chips == 500 - 100 + 300, "cat pays a 20 three to one, chips %d" % run.chips)
+	run = _run([&"black_cat"])
+	table = Table.new(run, 1)
+	_stack(table, [[10], [10], [7], [6], [10]])
+	table.add_bet(100)
+	table.deal()
+	table.stand()
+	check(run.chips == 500, "cat returns only the stake on a 17, chips %d" % run.chips)
+
+	# Pawn ticket and fat purse change what the house writes.
+	run = _run([&"pawn_ticket"])
+	run.payments_paid = 1
+	check(run.current_debt() == 530, "pawn ticket writes 625 as 530, got %d" % run.current_debt())
+	run = _run([&"fat_purse"])
+	check(run.current_loan() == 225 and run.current_debt() == 440, "fat purse: loan 225, debt 440, got %d / %d" % [run.current_loan(), run.current_debt()])
+
 	# Collector's ledger raises the minimum bet and lowers payments.
 	run = _run([&"collectors_ledger"])
-	check(run.min_bet() == 25, "ledger raises the minimum bet")
+	check(run.payment_every() == Rules.PAYMENT_EVERY - 1, "ledger brings the deadline a hand sooner")
 	check(run.next_payment() == 175, "ledger cuts the debt due to 175, got %d" % run.next_payment())
 	run = _run([&"silver_chip"])
 	check(run.next_payment() == 225, "silver chip cuts the debt due to 225, got %d" % run.next_payment())

@@ -376,8 +376,8 @@
   "ru": "Карта в рукаве"
  },
  "ARTIFACT_CARD_SLEEVE_DESC": {
-  "en": "+ Swaps your last card for a new one\n- Costs 25% of your bet",
-  "ru": "+ Меняет последнюю карту на новую\n- Стоит 25% ставки"
+  "en": "+ Swaps your last card for a new one\n- Costs 20% of your stake",
+  "ru": "+ Меняет последнюю карту на новую\n- Стоит 20% ставки"
  },
  "ARTIFACT_CARD_SLEEVE_HINT": {
   "en": "Win 5 hands",
@@ -388,8 +388,8 @@
   "ru": "Проклятая кукла"
  },
  "ARTIFACT_CURSED_DOLL_DESC": {
-  "en": "+ Wins pay 25% more\n- Losses cost 25% more",
-  "ru": "+ Выигрыш больше на 25%\n- Проигрыш тоже на 25%"
+  "en": "+ Wins pay half a stake more\n- A push counts as a loss",
+  "ru": "+ Победа платит на полставки больше\n- Ничья считается проигрышем"
  },
  "ARTIFACT_CURSED_DOLL_HINT": {
   "en": "Go broke for the first time",
@@ -436,20 +436,20 @@
   "ru": "Нервы игрока"
  },
  "ARTIFACT_GAMBLERS_NERVE_DESC": {
-  "en": "+ A win after a double pays\n  half a bet more",
-  "ru": "+ Выигрыш после удвоения\n  платит ещё полставки"
+  "en": "+ Winning with four or more cards pays half a stake more",
+  "ru": "+ Победа с четырьмя и более картами платит на полставки больше"
  },
  "ARTIFACT_GAMBLERS_NERVE_HINT": {
-  "en": "Win a hand after doubling down",
-  "ru": "Выиграй раздачу после удвоения"
+  "en": "Win 12 hands",
+  "ru": "Выиграть 12 раздач"
  },
  "ARTIFACT_COLLECTORS_LEDGER_NAME": {
   "en": "Collector's Ledger",
   "ru": "Книга коллектора"
  },
  "ARTIFACT_COLLECTORS_LEDGER_DESC": {
-  "en": "+ Payments are 30% smaller\n- Minimum bet becomes 25",
-  "ru": "+ Выплаты меньше на 30%\n- Минимальная ставка 25"
+  "en": "+ The debt due is 30% smaller\n- The deadline comes a hand sooner",
+  "ru": "+ Долг к выплате на 30% меньше\n- Срок наступает на раздачу раньше"
  },
  "ARTIFACT_COLLECTORS_LEDGER_HINT": {
   "en": "Be killed by the collectors",
@@ -630,5 +630,137 @@
  "LIFE_LOST": {
   "en": "They take a finger for it.\nFingers left: %d",
   "ru": "Они забирают палец.\nОсталось пальцев: %d"
+ },
+ "ARTIFACT_LOOSE_CHANGE_NAME": {
+  "en": "Loose Change",
+  "ru": "Мелочь в кармане"
+ },
+ "ARTIFACT_LOOSE_CHANGE_DESC": {
+  "en": "+ A quarter of your purse stays in your pocket\n+ A loss no longer takes everything",
+  "ru": "+ Четверть фишек остаётся в кармане\n+ Проигрыш больше не забирает всё"
+ },
+ "ARTIFACT_LOOSE_CHANGE_HINT": {
+  "en": "Go broke twice",
+  "ru": "Разориться дважды"
+ },
+ "ARTIFACT_LUCKY_PENNY_NAME": {
+  "en": "Lucky Penny",
+  "ru": "Счастливая монетка"
+ },
+ "ARTIFACT_LUCKY_PENNY_DESC": {
+  "en": "+ A push pays half a stake more",
+  "ru": "+ Ничья приносит полставки сверху"
+ },
+ "ARTIFACT_LUCKY_PENNY_HINT": {
+  "en": "Play 15 hands",
+  "ru": "Сыграть 15 раздач"
+ },
+ "ARTIFACT_CRACKED_MIRROR_NAME": {
+  "en": "Cracked Mirror",
+  "ru": "Треснувшее зеркало"
+ },
+ "ARTIFACT_CRACKED_MIRROR_DESC": {
+  "en": "+ Shows the next card of the shoe",
+  "ru": "+ Показывает следующую карту из колоды"
+ },
+ "ARTIFACT_CRACKED_MIRROR_HINT": {
+  "en": "Win 3 hands",
+  "ru": "Выиграть 3 раздачи"
+ },
+ "ARTIFACT_HOURGLASS_NAME": {
+  "en": "Hourglass",
+  "ru": "Песочные часы"
+ },
+ "ARTIFACT_HOURGLASS_DESC": {
+  "en": "+ Two more hands before the debt falls due\n+ Works between hands too",
+  "ru": "+ Ещё две раздачи до срока долга\n+ Работает и между раздачами"
+ },
+ "ARTIFACT_HOURGLASS_HINT": {
+  "en": "Pay 2 debts",
+  "ru": "Выплатить 2 долга"
+ },
+ "ARTIFACT_HUSH_ENVELOPE_NAME": {
+  "en": "Hush Envelope",
+  "ru": "Конверт для молчания"
+ },
+ "ARTIFACT_HUSH_ENVELOPE_DESC": {
+  "en": "+ Cuts what you owe by a quarter\n+ Works between hands too",
+  "ru": "+ Уменьшает долг на четверть\n+ Работает и между раздачами"
+ },
+ "ARTIFACT_HUSH_ENVELOPE_HINT": {
+  "en": "Be killed by the collectors",
+  "ru": "Погибнуть от коллекторов"
+ },
+ "ARTIFACT_SLEEPING_POWDER_NAME": {
+  "en": "Sleeping Powder",
+  "ru": "Сонный порошок"
+ },
+ "ARTIFACT_SLEEPING_POWDER_DESC": {
+  "en": "+ The dealer stands on whatever he has",
+  "ru": "+ Крупье останавливается на том, что есть"
+ },
+ "ARTIFACT_SLEEPING_POWDER_HINT": {
+  "en": "Bust 4 times",
+  "ru": "Перебрать 4 раза"
+ },
+ "ARTIFACT_SECOND_WIND_NAME": {
+  "en": "Second Wind",
+  "ru": "Второе дыхание"
+ },
+ "ARTIFACT_SECOND_WIND_DESC": {
+  "en": "+ Throws your hand away and deals two new cards",
+  "ru": "+ Сбрасывает руку и сдаёт две новые карты"
+ },
+ "ARTIFACT_SECOND_WIND_HINT": {
+  "en": "Hold 600 chips",
+  "ru": "Накопить 600 фишек"
+ },
+ "ARTIFACT_BLACK_CAT_NAME": {
+  "en": "Black Cat",
+  "ru": "Чёрный кот"
+ },
+ "ARTIFACT_BLACK_CAT_DESC": {
+  "en": "+ Wins with 19 or more pay double\n- Wins with 17 or less only return your stake",
+  "ru": "+ Победа с 19 и больше платит вдвое\n- Победа с 17 и меньше возвращает только ставку"
+ },
+ "ARTIFACT_BLACK_CAT_HINT": {
+  "en": "Win 4 hands in a row",
+  "ru": "Выиграть 4 раздачи подряд"
+ },
+ "ARTIFACT_PAWN_TICKET_NAME": {
+  "en": "Pawn Ticket",
+  "ru": "Закладная"
+ },
+ "ARTIFACT_PAWN_TICKET_DESC": {
+  "en": "+ New debts are written 15% smaller",
+  "ru": "+ Новые долги записываются на 15% меньше"
+ },
+ "ARTIFACT_PAWN_TICKET_HINT": {
+  "en": "Pay 4 debts",
+  "ru": "Выплатить 4 долга"
+ },
+ "ARTIFACT_FAT_PURSE_NAME": {
+  "en": "Fat Purse",
+  "ru": "Тугой кошелёк"
+ },
+ "ARTIFACT_FAT_PURSE_DESC": {
+  "en": "+ New loans are 50% bigger\n- New debts are 75% bigger",
+  "ru": "+ Новые займы на 50% больше\n- Новые долги на 75% больше"
+ },
+ "ARTIFACT_FAT_PURSE_HINT": {
+  "en": "Hold 1500 chips",
+  "ru": "Накопить 1500 фишек"
+ },
+ "REASON_PAYMENTS_PAID": {
+  "en": "Paid %d debts",
+  "ru": "Выплачено долгов: %d"
+ },
+ "REASON_HANDS_PLAYED": {
+  "en": "Played %d hands",
+  "ru": "Сыграно раздач: %d"
+ },
+ "REASON_BUSTS": {
+  "en": "Went bust %d times",
+  "ru": "Перебор: %d раз"
  }
 }

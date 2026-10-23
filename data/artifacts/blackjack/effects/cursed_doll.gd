@@ -1,14 +1,13 @@
 extends "res://data/artifact_effect.gd"
-## Cursed: wins pay a quarter more, losses cost a quarter more.
+## Cursed: wins pay half a stake more, but a push counts as a loss.
 
-const SWING := 0.25
+const BONUS := 0.5
 
 func modify_payout(table, payout: int, outcome: int) -> int:
-	var extra := int(table.bet * SWING)
+	if outcome == table.Outcome.PUSH:
+		notify()
+		return 0
 	if payout > table.bet:
 		notify()
-		return payout + extra
-	if payout < table.bet:
-		notify()
-		return payout - extra
+		return payout + int(table.bet * BONUS)
 	return payout

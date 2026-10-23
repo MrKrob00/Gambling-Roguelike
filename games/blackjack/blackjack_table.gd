@@ -22,6 +22,7 @@ signal shoe_shuffled
 signal hand_cleared
 signal hand_resolved(outcome: int, bet: int, payout: int)
 signal trick_used(effect)
+signal next_card_peeked(card)
 
 var run
 var shoe
@@ -32,6 +33,8 @@ var bet: int = 0
 var doubled: bool = false
 var hole_known: bool = false
 var hole_shown: bool = false
+## Set by an artifact: the dealer stands on whatever he has this hand.
+var dealer_frozen: bool = false
 
 func _init(run_state, seed_value: int = -1) -> void:
 	run = run_state
@@ -56,11 +59,11 @@ func can_double() -> bool:
 
 ## The stake is always the whole purse: there is no choosing a bet. The view deals through this door.
 func can_deal_all_in() -> bool:
-	return phase == Phase.BETTING and run.chips + bet >= min_bet()
+	return phase == Phase.BETTING and run.stake_for(run.chips + bet) >= min_bet()
 
 func deal_all_in() -> void:
 	if can_deal_all_in():
-		all_in()
+		add_bet(run.stake_for(run.chips + bet) - bet)
 		deal()
 
 func can_pay_off() -> bool:
@@ -103,6 +106,7 @@ func deal() -> void:
 	doubled = false
 	hole_known = false
 	hole_shown = false
+	dealer_frozen = false
 	for fx in run.effects:
 		fx.hand_started(self)
 	_draw(false, true)
@@ -126,7 +130,7 @@ func stand() -> void:
 		return
 	_set_phase(Phase.DEALER_TURN)
 	_reveal_hole()
-	while dealer.total() < Rules.DEALER_STANDS_ON:
+	while not dealer_frozen and dealer.total() < Rules.DEALER_STANDS_ON:
 		_draw(true, true)
 	_settle()
 
@@ -162,6 +166,22 @@ func use_artifact(fx) -> void:
 	Events.stat_added.emit(Stat.TRICKS_USED, 1)
 	trick_used.emit(fx)
 
+## Shows the next card of the shoe without drawing it.
+func peek_next_card() -> void:
+	if not shoe.cards.is_empty():
+		next_card_peeked.emit(shoe.cards.back())
+
+func freeze_dealer() -> void:
+	dealer_frozen = true
+
+## Throws the whole hand to the bottom of the shoe and deals two new cards.
+func redeal_player_hand() -> void:
+	while not player.cards.is_empty():
+		discard_last_player_card(false)
+	_draw(false, true)
+	_draw(false, true)
+	_after_player_card()
+
 func peek_hole() -> void:
 	if dealer.cards.size() < 2 or hole_known:
 		return
@@ -193,10 +213,14 @@ func last_player_card_becomes_ace() -> void:
 
 ## Pays a price for a trick. Returns false if the player cannot afford it.
 func hush_money(amount: int) -> bool:
-	if run.chips < amount:
-		return false
-	run.add_chips(-amount)
-	return true
+	if run.chips >= amount:
+		run.add_chips(-amount)
+		return true
+	if bet > amount:
+		bet -= amount
+		bet_changed.emit(bet)
+		return true
+	return false
 
 # ---------------------------------------------------------------- internals
 

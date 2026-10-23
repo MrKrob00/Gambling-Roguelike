@@ -35,6 +35,35 @@ the player does (die, land a blackjack, cheat, go all-in...).
 5. A paid debt: the next loan (double) arrives, a bigger debt is written (x5 of the loan), a free artifact offer opens.
 6. Cannot pay the debt or out of chips: death. The result screen shows the record and every new unlock. The menu's Collection shows every artifact and how to unlock the closed ones.
 
+## What is in the game (the hooks artifacts can use)
+
+| System | What exists | Hooks / API |
+|---|---|---|
+| The hand | Hit, Stand, (Double only with chips left), natural blackjack 3:2, dealer stands on 17, a 6-deck shoe | `hand_started`, `hand_dealt`, `prevent_bust`, `modify_payout`, `can_use` / `use` |
+| The stake | Always the whole purse (all in) | `modify_stake` |
+| The shoe and cards | Hole card, next card, undo returns a card on top, swap buries it | `peek_hole`, `peek_next_card`, `discard_last_player_card`, `redeal_player_hand`, `freeze_dealer` |
+| The debt | Loan and debt written at once, both exponential, a deadline in hands, early payoff | `modify_payment`, `modify_deadline`, `modify_new_loan`, `modify_new_debt`, `reduce_debt`, `extend_deadline` |
+| Lives | Five fingers; a death lends the current loan again | `prevent_death` |
+| Offers | A free pick of three after every debt paid | none (artifacts are what is offered) |
+| Counters | hands played / won, blackjacks, busts, deaths, debt deaths, chips peak, win streak, tricks used, debts paid | unlock rules (`unlock_stat`, `unlock_value`) |
+| Buttons | A cooldown in hands, charges for consumables, a spent consumable leaves the slot | `cooldown_hands`, `charges` |
+
+## Artifact matrix: kind x system
+
+Each cell is one artifact; an empty cell is room for the next one.
+
+| System | Active (button, cooldown) | Passive (always on) | Consumable (charges, then gone) | Cursed (a price) |
+|---|---|---|---|---|
+| Hand and cards | Card Sleeve (swap a card, 3 hands), Cracked Mirror (next card, 3 hands) | Marked Deck (hole card), Gambler's Nerve (4+ cards) | Lucky Clover (undo a bust), Top Hat (ace), Second Wind (redeal), Sleeping Powder (dealer stands) | |
+| Payout | | Sleight of Hand (blackjack 2:1), Rabbit's Foot (streaks), Lucky Penny (pushes) | | Cursed Doll (+50% wins, pushes lose), Black Cat (19+ pay double, 17- only the stake) |
+| The stake | | Loose Change (keep a quarter) | | |
+| The debt | | Silver Chip (-10% due), Pawn Ticket (new debts -15%) | Hush Envelope (-25% now) | Collector's Ledger (-30% due, a hand sooner), Fat Purse (+50% loans, +75% debts) |
+| The deadline | | | Hourglass (+2 hands) | Collector's Ledger |
+| Lives | | | Candle of Mercy (survive a death, the last loan again) | |
+
+Ideas for the empty cells: an active that trades a finger for a win, a passive that grows the loan with the win streak, a cursed
+artifact that shortens the deadline for bigger payouts.
+
 ## Artifact kinds
 
 - **Active**: a button; limited uses per hand. Some trick costs "hush money".
@@ -42,20 +71,30 @@ the player does (die, land a blackjack, cheat, go all-in...).
 - **Consumable**: a fixed number of charges per run, spent for good.
 - **Cursed**: a strong effect with a price attached.
 
-## Blackjack artifact pool (slice)
+## Blackjack artifact pool
 
 | Id | Kind | Effect | Unlock |
 |---|---|---|---|
-| lucky_clover | consumable, 3 | Undo a bust: the last card is discarded | open |
-| marked_deck | active | Peek at the dealer's hole card, once per hand | open |
-| card_sleeve | active | Swap your last card for a fresh one, costs 25% of the bet | win 5 hands |
-| cursed_doll | cursed | Wins pay +25%, losses cost +25% | die once |
-| silver_chip | passive | Payments are 10% smaller | hold 1000 chips |
+| lucky_clover | consumable, 3 | Undo a bust: the last card goes back on top of the shoe | open |
+| marked_deck | passive | Every hand starts with the dealer's hole card shown | open |
+| card_sleeve | active, 3 hands | Swap your last card for a fresh one, costs 20% of the stake | win 5 hands |
+| cracked_mirror | active, 3 hands | Show the next card of the shoe | win 3 hands |
+| cursed_doll | cursed | Wins pay +50%, a push counts as a loss | die once |
+| black_cat | cursed | 19+ wins pay double, wins on 17 or less only return the stake | win 4 in a row |
+| silver_chip | passive | The debt due is 10% smaller | hold 1000 chips |
 | sleight_of_hand | passive | A natural blackjack pays 2:1 | land a natural blackjack |
-| candle_of_mercy | consumable, 1 | Survive a failed payment with 50 chips | die 3 times |
-| gamblers_nerve | passive | Winning after a double down pays +50% | win a doubled hand |
-| collectors_ledger | cursed | Payments are 30% smaller, the minimum bet is 25 | die to the collectors |
+| lucky_penny | passive | A push pays half a stake more | play 15 hands |
+| gamblers_nerve | passive | Winning with 4+ cards pays +50% | win 12 hands |
 | rabbits_foot | passive | Wins in a streak of 2+ pay +10% per streak step | win 3 in a row |
+| loose_change | passive | A quarter of the purse stays out of the stake | die twice |
+| pawn_ticket | passive | New debts are written 15% smaller | pay 4 debts |
+| fat_purse | cursed | New loans +50%, new debts +75% | hold 1500 chips |
+| collectors_ledger | cursed | The debt due is 30% smaller, the deadline a hand sooner | die to the collectors |
+| candle_of_mercy | consumable, 1 | Survive a death, the house hands over your last loan again | die 3 times |
 | top_hat | consumable, 1 | Turn your last card into an Ace | use tricks 10 times |
+| second_wind | consumable, 1 | Throw your hand away and deal two new cards | hold 600 chips |
+| sleeping_powder | consumable, 2 | The dealer stands on whatever he has | bust 4 times |
+| hourglass | consumable, 2 | +2 hands before the debt falls due, also between hands | pay 2 debts |
+| hush_envelope | consumable, 1 | Cut the debt by a quarter, also between hands | die to the collectors |
 
 Numbers live in `core/rules.gd` and in each artifact `.tres`; this table is a retelling.

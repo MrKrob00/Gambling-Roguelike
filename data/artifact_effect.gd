@@ -67,6 +67,25 @@ func affects_payment() -> bool:
 func modify_min_bet(min_bet: int) -> int:
 	return min_bet
 
+## How much of the purse goes on the table (the stake is the whole purse unless an artifact says otherwise).
+func modify_stake(purse: int) -> int:
+	return purse
+
+## Hands until a debt falls due.
+func modify_deadline(hands: int) -> int:
+	return hands
+
+## The loan and the debt the house writes when one is closed (or lent again after losing a finger).
+func modify_new_loan(loan: int) -> int:
+	return loan
+
+func modify_new_debt(debt: int) -> int:
+	return debt
+
+## True for artifacts that change the new loan or debt: they announce themselves when one is really written.
+func affects_loan() -> bool:
+	return false
+
 ## A payment could not be paid (or the player is broke). Return true to survive.
 func prevent_death(_run) -> bool:
 	return false

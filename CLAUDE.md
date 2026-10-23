@@ -119,8 +119,9 @@ integer. The 3D view renders at the window's real resolution.
 - `ArtifactData` (a `.tres`) says what it is: kind, rarity, icon, charges, unlock rule. Texts are keys built
   from the id: `ARTIFACT_<ID>_NAME / _DESC / _HINT`.
 - `effect_script` extends `ArtifactEffect` and overrides only the hooks it needs: `hand_started`,
-  `can_use` / `use` (buttons), `prevent_bust`, `modify_payout`, `modify_payment`, `modify_min_bet`,
-  `prevent_death`. The table and `RunState` call them at fixed points. **Never patch a rule from outside.**
+  `hand_dealt`, `can_use` / `use` (buttons), `prevent_bust`, `modify_payout`, `modify_payment`, `modify_stake`,
+  `modify_deadline`, `modify_new_loan`, `modify_new_debt`, `prevent_death`. The table and `RunState` call them at
+  fixed points; `docs/GAME_DESIGN.md` has the kind x system matrix of every artifact. **Never patch a rule from outside.**
 - A new artifact: write its effect script, its `.tres`, add it to `data/catalog.tres`, add three
   translation keys. Nothing else changes.
 - `payout` is the chips returned for the bet (0 on a loss). A curse may return less than 0; the purse

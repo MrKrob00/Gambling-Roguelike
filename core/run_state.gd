@@ -27,7 +27,7 @@ var hands_played: int = 0
 var payments_paid: int = 0
 ## What is owed right now (`payments_paid` counts the debts already paid).
 var debt: int = Rules.debt_for(0)
-var hands_to_payment: int = Rules.PAYMENT_EVERY
+var hands_to_payment: int = Rules.PAYMENT_EVERY  # artifacts may change it: see payment_every()
 var win_streak: int = 0
 var peak_chips: int = 0
 var alive: bool = true
@@ -68,6 +68,44 @@ func next_payment() -> int:
 	for fx in effects:
 		amount = fx.modify_payment(amount)
 	return maxi(amount, 0)
+
+## Hands between two deadlines, after artifacts.
+func payment_every() -> int:
+	var hands := Rules.PAYMENT_EVERY
+	for fx in effects:
+		hands = fx.modify_deadline(hands)
+	return maxi(hands, 1)
+
+## The loan and debt of the current level, after artifacts. What the house writes next.
+func current_loan() -> int:
+	var loan := Rules.loan_for(payments_paid)
+	for fx in effects:
+		loan = fx.modify_new_loan(loan)
+	return maxi(loan, 0)
+
+func current_debt() -> int:
+	var amount := Rules.debt_for(payments_paid)
+	for fx in effects:
+		amount = fx.modify_new_debt(amount)
+	return maxi(amount, 0)
+
+## What goes on the table out of `purse`.
+func stake_for(purse: int) -> int:
+	var stake := purse
+	for fx in effects:
+		stake = fx.modify_stake(stake)
+	return clampi(stake, 0, purse)
+
+## Pushes the deadline back by `hands`.
+func extend_deadline(hands: int) -> void:
+	hands_to_payment += hands
+	countdown_changed.emit(hands_to_payment, next_payment())
+
+## Cuts what is owed by `fraction` (0.25 = a quarter), rounded to the chip.
+func reduce_debt(fraction: float) -> void:
+	debt = maxi(int(round(debt * (1.0 - fraction) / Rules.MONEY_ROUND_TO)) * Rules.MONEY_ROUND_TO, Rules.MONEY_ROUND_TO)
+	debt_changed.emit(debt)
+	countdown_changed.emit(hands_to_payment, next_payment())
 
 func can_pay_off() -> bool:
 	return alive and chips >= next_payment()
@@ -166,7 +204,7 @@ func _collect_payment() -> void:
 		payment_made.emit(next_payment(), payments_paid + 1)
 		_pay()
 	elif _survives():
-		hands_to_payment = Rules.PAYMENT_EVERY
+		hands_to_payment = payment_every()
 		payment_waived.emit(payments_paid)
 	else:
 		_die(DEATH_DEBT)
@@ -180,10 +218,13 @@ func _pay() -> void:
 	add_chips(-amount)
 	payments_paid += 1
 	Events.stat_added.emit(Stat.PAYMENTS_PAID, 1)
-	var loan := Rules.loan_for(payments_paid)
-	debt = Rules.debt_for(payments_paid)
+	for fx in effects:
+		if fx.affects_loan():
+			fx.notify()
+	var loan := current_loan()
+	debt = current_debt()
 	add_chips(loan)
-	hands_to_payment = Rules.PAYMENT_EVERY
+	hands_to_payment = payment_every()
 	loan_closed.emit(amount, loan, debt)
 	debt_changed.emit(debt)
 	countdown_changed.emit(hands_to_payment, next_payment())
@@ -203,9 +244,9 @@ func _survives() -> bool:
 ## After losing a finger the house lends the current loan again and rewrites its debt.
 func _restart_loan() -> void:
 	chips = 0
-	add_chips(Rules.loan_for(payments_paid))
-	debt = Rules.debt_for(payments_paid)
-	hands_to_payment = Rules.PAYMENT_EVERY
+	add_chips(current_loan())
+	debt = current_debt()
+	hands_to_payment = payment_every()
 	win_streak = 0
 	debt_changed.emit(debt)
 	countdown_changed.emit(hands_to_payment, next_payment())

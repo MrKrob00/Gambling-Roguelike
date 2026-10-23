@@ -1,8 +1,7 @@
 extends "res://data/artifact_effect.gd"
-## Cursed: payments are 30% smaller, but the table asks for a higher minimum bet.
+## Cursed: the debt due is 30% smaller, but the deadline comes a hand sooner.
 
 const DISCOUNT := 0.7
-const FORCED_MIN_BET := 25
 
 func modify_payment(amount: int) -> int:
 	return int(ceil(amount * DISCOUNT))
@@ -10,5 +9,5 @@ func modify_payment(amount: int) -> int:
 func affects_payment() -> bool:
 	return true
 
-func modify_min_bet(min_bet: int) -> int:
-	return maxi(min_bet, FORCED_MIN_BET)
+func modify_deadline(hands: int) -> int:
+	return hands - 1

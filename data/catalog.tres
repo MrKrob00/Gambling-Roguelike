@@ -1,4 +1,4 @@
-[gd_resource type="Resource" load_steps=13 format=3]
+[gd_resource type="Resource" load_steps=23 format=3]
 
 [ext_resource type="Script" path="res://data/artifact_catalog.gd" id="1"]
 [ext_resource type="Resource" path="res://data/artifacts/blackjack/lucky_clover.tres" id="2"]
@@ -12,7 +12,17 @@
 [ext_resource type="Resource" path="res://data/artifacts/blackjack/collectors_ledger.tres" id="10"]
 [ext_resource type="Resource" path="res://data/artifacts/blackjack/rabbits_foot.tres" id="11"]
 [ext_resource type="Resource" path="res://data/artifacts/blackjack/top_hat.tres" id="12"]
+[ext_resource type="Resource" path="res://data/artifacts/blackjack/loose_change.tres" id="100"]
+[ext_resource type="Resource" path="res://data/artifacts/blackjack/lucky_penny.tres" id="101"]
+[ext_resource type="Resource" path="res://data/artifacts/blackjack/cracked_mirror.tres" id="102"]
+[ext_resource type="Resource" path="res://data/artifacts/blackjack/hourglass.tres" id="103"]
+[ext_resource type="Resource" path="res://data/artifacts/blackjack/hush_envelope.tres" id="104"]
+[ext_resource type="Resource" path="res://data/artifacts/blackjack/sleeping_powder.tres" id="105"]
+[ext_resource type="Resource" path="res://data/artifacts/blackjack/second_wind.tres" id="106"]
+[ext_resource type="Resource" path="res://data/artifacts/blackjack/black_cat.tres" id="107"]
+[ext_resource type="Resource" path="res://data/artifacts/blackjack/pawn_ticket.tres" id="108"]
+[ext_resource type="Resource" path="res://data/artifacts/blackjack/fat_purse.tres" id="109"]
 
 [resource]
 script = ExtResource("1")
-artifacts = Array[Resource]([ExtResource("2"), ExtResource("3"), ExtResource("4"), ExtResource("5"), ExtResource("6"), ExtResource("7"), ExtResource("8"), ExtResource("9"), ExtResource("10"), ExtResource("11"), ExtResource("12")])
+artifacts = Array[Resource]([ExtResource("2"), ExtResource("3"), ExtResource("4"), ExtResource("5"), ExtResource("6"), ExtResource("7"), ExtResource("8"), ExtResource("9"), ExtResource("10"), ExtResource("11"), ExtResource("12"), ExtResource("100"), ExtResource("101"), ExtResource("102"), ExtResource("103"), ExtResource("104"), ExtResource("105"), ExtResource("106"), ExtResource("107"), ExtResource("108"), ExtResource("109")])

@@ -320,6 +320,7 @@ func _connect_table() -> void:
 	table.card_removed.connect(func(d: bool, c) -> void: _enqueue(_do_remove.bind(d, c)))
 	table.hole_revealed.connect(func(c) -> void: _enqueue(_do_reveal.bind(c)))
 	table.hole_peeked.connect(func(c) -> void: _enqueue(_do_peek.bind(c)))
+	table.next_card_peeked.connect(func(c) -> void: _enqueue(_do_next_peek.bind(c)))
 	table.shoe_shuffled.connect(func() -> void: _enqueue(_do_shuffled))
 	table.hand_resolved.connect(func(o: int, b: int, p: int) -> void: _enqueue(_do_resolved.bind(o, b, p)))
 	table.trick_used.connect(func(fx) -> void: _enqueue(_do_trick.bind(fx)))
@@ -428,6 +429,22 @@ func _do_peek(_card) -> void:
 		await _hole_actor.flip_to(true)
 	await _pause(0.3)
 
+## The next card of the shoe floats above it for a moment, face up.
+func _do_next_peek(card) -> void:
+	var ghost := CardActor.new()
+	add_child(ghost)
+	ghost.setup(card, _faces.texture_for(card), true)
+	ghost.position = SHOE + Vector3(0.0, 0.55, 0.3)
+	ghost.rotation.x = 0.9
+	ghost.scale = Vector3.ONE * 0.01
+	var tween := create_tween()
+	tween.tween_property(ghost, "scale", Vector3.ONE * 1.1, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_interval(2.0)
+	tween.tween_property(ghost, "scale", Vector3.ONE * 0.01, 0.25)
+	tween.tween_callback(ghost.queue_free)
+	Audio.sfx(&"trick/sparkle")
+	await _pause(0.5)
+
 func _do_shuffled() -> void:
 	Audio.sfx(&"tabletop/deck_shuffle_1")
 	_subtitle.text = tr("TABLE_SHUFFLE")
@@ -496,6 +513,7 @@ func _do_chips(chips: int) -> void:
 	_update_ledger()
 
 func _do_countdown(hands_left: int, amount: int) -> void:
+	var was: int = _countdown[0]
 	_countdown = [hands_left, amount]
 	if hands_left > _candles.lit:
 		_candles.relight(hands_left)
@@ -504,7 +522,7 @@ func _do_countdown(hands_left: int, amount: int) -> void:
 		_candles.set_remaining(hands_left, amount)
 	_apply_urgency(_candles.urgency)
 	_enforcers.set_urgency(_candles.urgency)
-	if hands_left == 1:
+	if hands_left == 1 and was != 1:
 		Audio.sfx(&"game/heartbeat")
 		_say(&"deadline")
 		_subtitle.text = tr("DEBT_WARNING") % amount
