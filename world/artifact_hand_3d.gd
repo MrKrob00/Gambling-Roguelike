@@ -9,10 +9,10 @@ const GLOVE := Color(0.4, 0.27, 0.22)
 const HAND_SCALE := 3.5
 const COIN_SCALE := 0.45
 const FOCUS_SCALE := 0.6
-## Where a coin stands: in the groove between two neighbouring fingers, over the first phalanx (not over the knuckle),
+## Where a coin stands: in the groove between two neighbouring fingers, at the joint between the proximal and the middle phalanx,
 ## in the hand's own space before HAND_SCALE. Measured from the bones in the `idle` pose: the finger-pair midpoint,
 ## plus half a finger's width, plus the coin's radius, less a little because the rim is pinched into the groove.
-const GAPS: Array[Vector3] = [Vector3(0.011, 0.034, -0.0995), Vector3(-0.016, 0.032, -0.096), Vector3(-0.038, 0.026, -0.085)]
+const GAPS: Array[Vector3] = [Vector3(0.012, 0.0277, -0.1189), Vector3(-0.0195, 0.024, -0.1153), Vector3(-0.0433, 0.0191, -0.1011)]
 ## The fingers slope down toward the tips; the coins follow.
 const COIN_PITCH := 0.3
 const COIN_YAW := 0.6

@@ -15,6 +15,8 @@ var _candles: Array = []
 var _flames: Array = []
 var _flame_materials: Array = []
 var _label: Label3D
+var _due: int = 0
+var _debt: int = 0
 
 func _ready() -> void:
 	var wax_mat := StandardMaterial3D.new()
@@ -91,8 +93,20 @@ func set_remaining(hands_left: int, amount: int, animate: bool = true) -> void:
 			else:
 				flame.visible = on
 	lit = target
-	_label.text = tr("TABLE_DEADLINE_AMOUNT") % amount
+	_due = amount
+	_refresh_label()
 	_label.modulate = Color(0.85, 0.85, 0.95).lerp(URGENT, urgency)
+
+## The total debt is only written under the installment when the two differ (an artifact shrank the payment).
+func set_debt(debt: int) -> void:
+	_debt = debt
+	_refresh_label()
+
+func _refresh_label() -> void:
+	var text: String = tr("TABLE_DEADLINE_AMOUNT") % _due
+	if _debt > 0 and _debt != _due:
+		text += "\n" + tr("TABLE_DEBT") % _debt
+	_label.text = text
 
 func _snuff(index: int) -> void:
 	Audio.sfx(&"game/candle_snuff", randf_range(0.9, 1.1))

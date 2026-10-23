@@ -31,6 +31,7 @@ const ArtifactFlash := preload("res://ui/common/artifact_flash.gd")
 const UnlockToast := preload("res://ui/common/unlock_toast.gd")
 const FloatingText := preload("res://world/floating_text.gd")
 const Vignette := preload("res://ui/common/vignette.gd")
+const Ledger := preload("res://world/ledger_3d.gd")
 const ROOM: PackedScene = preload("res://world/casino_room.tscn")
 const BODY_FONT: Font = preload("res://ui/fonts/body_font.tres")
 
@@ -55,6 +56,8 @@ const ACTION_Z := 0.96
 const ENFORCERS_POS := Vector3(0.0, 0.0, -0.2)
 const HAND_POS := Vector3(0.0, TOP + 0.02, 0.3)
 const PAY_OFF_X := 0.8
+## The purse is inlaid in the felt at the right of the bet circle.
+const LEDGER_POS := Vector3(1.1, TOP + 0.006, 0.12)
 ## The left hand rests on the table at the left of the near edge, the right one (PlayerHand) at the right.
 const LEFT_HAND_POS := Vector3(-1.2, TOP + 0.11, 1.45)
 const ACTION_X: Array[float] = [-0.8, 0.0, 0.8]
@@ -79,7 +82,7 @@ var _lamp_energy: float = 4.2
 var _vignette
 var _subtitle: Label
 var _bet_stack
-var _hud: Label
+var _ledger
 var _dealer_total: Label3D
 var _player_total: Label3D
 var _rack
@@ -113,6 +116,7 @@ var _pending_pick
 var _discarding: bool = false
 var _ui_state: String = ""
 var _chips_text: int = 0
+var _ledger_started := false
 var _countdown: Array = [Rules.PAYMENT_EVERY, 0]
 
 func _ready() -> void:
@@ -174,6 +178,9 @@ func _build_world() -> void:
 	_bet_stack.position = BET_SPOT
 	add_child(_bet_stack)
 	_add_bet_ring()
+	_ledger = Ledger.new()
+	_ledger.position = LEDGER_POS
+	add_child(_ledger)
 	_add_shoe()
 	_dealer_total = _make_label(DEALER_ROW + Vector3(-1.05, 0.2, 0.0), 64, 0.0036, PALE, true)
 	_player_total = _make_label(PLAYER_ROW + Vector3(-1.05, 0.2, 0.0), 64, 0.0036, PALE, true)
@@ -306,13 +313,6 @@ func _build_overlay() -> void:
 	_subtitle.add_theme_constant_override("outline_size", 4)
 	_subtitle.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	layer.add_child(_subtitle)
-	_hud = Label.new()
-	_hud.position = Vector2(8.0, 6.0)
-	_hud.add_theme_color_override("font_color", PALE)
-	_hud.add_theme_color_override("font_outline_color", Color(0.03, 0.01, 0.05))
-	_hud.add_theme_constant_override("outline_size", 4)
-	_hud.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	layer.add_child(_hud)
 	_toast = UnlockToast.new()
 	layer.add_child(_toast)
 	_flash = ArtifactFlash.new()
@@ -832,11 +832,10 @@ func _update_totals() -> void:
 	_player_total.text = "" if _player_shown.cards.is_empty() else str(_player_shown.total()) + (" *" if _player_shown.is_soft() else "")
 
 func _update_ledger() -> void:
-	var lines := ["%s %d" % [tr("TABLE_CHIPS"), _chips_text]]
-	lines.append(tr("TABLE_DEBT") % _debt_text)
-	if run.win_streak >= 2:
-		lines.append(tr("TABLE_STREAK") % run.win_streak)
-	_hud.text = "\n".join(lines)
+	_ledger.show_chips(_chips_text, not _ledger_started)
+	_ledger_started = true
+	_ledger.show_streak(run.win_streak)
+	_candles.set_debt(_debt_text)
 
 ## While steps play, nothing on the table may be pressed.
 func _set_interactive(on: bool) -> void:
