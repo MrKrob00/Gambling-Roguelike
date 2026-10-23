@@ -8,13 +8,15 @@ const ARTIFACT_SLOTS := 3
 ## Artifacts come in offers: one free at the start, then one free for every debt paid.
 const OFFER_SIZE := 3
 
-## The debt. The house lends `loan_for(n)` chips and the debt is written at once as DEBT_MULTIPLIER times
-## that. Every stake is the whole purse (all in), so the loan is both the bankroll and the risk. The debt
-## falls due after PAYMENT_EVERY hands; paying it early is allowed. Each next loan is LOAN_GROWTH times bigger.
-const PAYMENT_EVERY := 5
-const LOAN_FIRST := 100
+## The debt. The house lends `loan_for(n)` chips and writes a much bigger debt down at once. Every stake is the whole
+## purse (all in), so a win doubles it and a loss is a death. Debt over loan is 1.7, 2.1, 2.6, 3.3, 4.1, 5.1...: the
+## number of wins in a row a debt takes (1, 2, 2, 2, 3, 3...) climbs slowly while both amounts grow exponentially. The debt falls
+## due after PAYMENT_EVERY hands; paying it early is allowed. Tuned with tools/balance.gd.
+const PAYMENT_EVERY := 4
+const LOAN_FIRST := 150
 const LOAN_GROWTH := 2.0
-const DEBT_MULTIPLIER := 5
+const DEBT_FIRST := 250
+const DEBT_GROWTH := 2.5
 const MONEY_ROUND_TO := 5
 
 const BLACKJACK_PAYOUT := 1.5
@@ -23,7 +25,10 @@ const SHOE_DECKS := 6
 const RESHUFFLE_BELOW := 0.25
 
 static func loan_for(index: int) -> int:
-	return int(round(LOAN_FIRST * pow(LOAN_GROWTH, index) / MONEY_ROUND_TO)) * MONEY_ROUND_TO
+	return _rounded(LOAN_FIRST * pow(LOAN_GROWTH, index))
 
 static func debt_for(index: int) -> int:
-	return loan_for(index) * DEBT_MULTIPLIER
+	return _rounded(DEBT_FIRST * pow(DEBT_GROWTH, index))
+
+static func _rounded(amount: float) -> int:
+	return int(round(amount / MONEY_ROUND_TO)) * MONEY_ROUND_TO

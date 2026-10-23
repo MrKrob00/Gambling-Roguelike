@@ -141,10 +141,11 @@ integer. The 3D view renders at the window's real resolution.
   off** (`RunState.pay_off`). With full slots (`Rules.ARTIFACT_SLOTS`) a pick must name an artifact to replace. Any
   artifact can also be discarded while betting. All of this is `RunState` (`offer_stage`, `choose_offer`,
   `skip_offer`, `discard`, `pay_off`), tested in `selftest.gd`; the view only shows the state.
-- **The debt** (`RunState.debt`, numbers in `Rules`): the house lends `Rules.loan_for(n)` chips (100, 200, 400...,
-  exponential) and writes the debt down at once as `DEBT_MULTIPLIER` times the loan (500, 1000, 2000...). **The stake
-  is always the whole purse** (`BlackjackTable.deal_all_in`, the one door the view uses; there are no bet buttons). The
-  debt falls due after `PAYMENT_EVERY` hands and is taken from the purse (`next_payment()`, artifacts may shrink it);
+- **The debt** (`RunState.debt`, numbers in `Rules`): the house lends `Rules.loan_for(n)` chips (150, 300, 600...,
+  exponential) and writes a bigger debt down at once, `Rules.debt_for(n)` (250, 625, 1565..., growing faster than the
+  loans, so the wins in a row a debt takes climb slowly: 1, 2, 2, 2, 3, 3...). **The stake is always the whole purse**
+  (`BlackjackTable.deal_all_in`, the one door the view uses; there are no bet buttons). The debt falls due after
+  `PAYMENT_EVERY` hands and is taken from the purse (`next_payment()`, artifacts may shrink it);
   `pay_off()` pays it early. A paid debt hands out the next loan's chips, writes the next debt and opens a free
   artifact offer (`loan_closed` signal). Not enough chips at the deadline, or an empty purse, is a death unless
   `prevent_death` saves it. **A death costs a life** (`RunState.lives`, `life_lost` signal): the house lends the current
@@ -211,6 +212,9 @@ $G --headless --path /tmp/run --script res://tools/selftest.gd
 
 - `tools/selftest.gd`: loads every script, scene and resource, checks translations, plays scripted hands
   against the real rules, then fuzzes random runs with random artifacts.
+- `tools/balance.gd`: plays thousands of runs with a basic-strategy bot and prints debts closed per run, hands per run
+  and how often the first debt is closed on the first life. **Run it after touching `core/rules.gd`**; the all-in economy
+  is sensitive (a hand is a death about half the time, so a run is about ten hands).
 - `tools/playtest.gd`: plays a whole run through the real 3D table by activating the real objects on it.
 - `tools/shot.gd`: renders a screen to a PNG (`SHOT=menu|lobby|result|table3d|table3d_play LOCALE=en|ru OUT=...`);
   needs a real driver: `xvfb-run -a -s "-screen 0 1280x720x24" $G --path /tmp/run --rendering-driver opengl3

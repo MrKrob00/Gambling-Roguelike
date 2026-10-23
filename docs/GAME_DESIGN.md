@@ -11,7 +11,7 @@ the player does (die, land a blackjack, cheat, go all-in...).
 | Platform | PC and phone at once, landscape. 2D UI base 640x360 (`canvas_items` + `expand`); the 3D view renders at the real resolution |
 | First slice | Blackjack only. The code is built so that every game is a module with its own artifact pool |
 | Run | Endless until death, goal is a record (payments survived, then peak chips) |
-| Debt | The house lends 100 chips and writes a debt of 500 at once (x5). The stake is always all in. Due after 5 hands, payable early. Paying brings the next loan (x2: 200, 400...) and debt (1000, 2000...), and a free artifact offer. Cannot pay or empty purse = death |
+| Debt | The house lends 150 chips and writes a debt of 250 at once. The stake is always all in: a win doubles the purse, a loss is a death. Due after 4 hands, payable early. Paying brings the next loan (x2: 300, 600...) and a debt that grows faster (x2.5: 625, 1565...), so the wins in a row it takes climb from 1 to 3 and beyond; a free artifact offer opens. Measured with `tools/balance.gd`: about 2.6 debts and 10 hands per run for a bot without artifacts. Cannot pay = a death |
 | Death | A death costs a finger of the right hand (5 lives): the house lends the current loan again. The fifth ends the run; meta progress (unlocks, stats) stays |
 | Artifacts | 3 slots. A run starts empty: a free offer of 3 random unlocked artifacts, pick one. Another free offer only when a loan is paid off. Replace or discard when full. Four kinds, each its own colour: active blue, passive green, consumable amber, cursed crimson |
 | Deadline | Five candles on the far rail, one snuffed per hand; the installment due floats beside them. Redder light and two enforcers leaning in as it nears; on the last hand a hand raps three times on the felt; three knocks when it falls |
@@ -28,10 +28,10 @@ the player does (die, land a blackjack, cheat, go all-in...).
 
 ## Run loop
 
-1. Menu: take a seat. The house lends 100 chips and writes a debt of 500.
+1. Menu: take a seat. The house lends 150 chips and writes a debt of 250.
 2. At the table the free offer opens: pick 1 of up to 3 random unlocked artifacts (or skip).
 3. Hands: deal (always all in), play, resolve. Artifacts hook in at fixed points (see ARCHITECTURE in `CLAUDE.md`).
-4. Reach the debt in chips and pay it, early with the button or on the deadline (`PAYMENT_EVERY` hands).
+4. Reach the debt in chips and pay it, early with the button or on the deadline (`PAYMENT_EVERY` = 4 hands).
 5. A paid debt: the next loan (double) arrives, a bigger debt is written (x5 of the loan), a free artifact offer opens.
 6. Cannot pay the debt or out of chips: death. The result screen shows the record and every new unlock. The menu's Collection shows every artifact and how to unlock the closed ones.
 

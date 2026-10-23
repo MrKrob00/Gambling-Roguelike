@@ -280,9 +280,9 @@ func _artifacts() -> void:
 	# Collector's ledger raises the minimum bet and lowers payments.
 	run = _run([&"collectors_ledger"])
 	check(run.min_bet() == 25, "ledger raises the minimum bet")
-	check(run.next_payment() == 350, "ledger cuts the debt due to 350, got %d" % run.next_payment())
+	check(run.next_payment() == 175, "ledger cuts the debt due to 175, got %d" % run.next_payment())
 	run = _run([&"silver_chip"])
-	check(run.next_payment() == 450, "silver chip cuts the debt due to 450, got %d" % run.next_payment())
+	check(run.next_payment() == 225, "silver chip cuts the debt due to 225, got %d" % run.next_payment())
 
 # ---------------------------------------------------------------- payments and death
 
@@ -298,17 +298,17 @@ func _push_hands(table, count: int, bet: int) -> void:
 
 func _payments_and_death() -> void:
 	var fresh = RunState.new(&"blackjack", [])
-	check(fresh.chips == 100 and fresh.debt == 500, "the house lends 100 and writes 500, got %d / %d" % [fresh.chips, fresh.debt])
-	check([Rules.loan_for(1), Rules.loan_for(2), Rules.loan_for(3)] == [200, 400, 800], "loans grow exponentially")
-	check([Rules.debt_for(1), Rules.debt_for(2)] == [1000, 2000], "each debt is five times its loan")
+	check(fresh.chips == 150 and fresh.debt == 250, "the house lends 150 and writes 250, got %d / %d" % [fresh.chips, fresh.debt])
+	check([Rules.loan_for(1), Rules.loan_for(2), Rules.loan_for(3)] == [300, 600, 1200], "loans grow exponentially")
+	check([Rules.debt_for(1), Rules.debt_for(2)] == [625, 1565], "debts grow exponentially, faster than the loans")
 	var run = _run()
 	var table = Table.new(run, 1)
 	var paid := []
 	run.payment_made.connect(func(amount: int, index: int) -> void: paid.append([amount, index]))
-	_push_hands(table, 5, 10)
-	check(paid == [[500, 1]], "the debt of 500 is taken after 5 hands, got %s" % str(paid))
-	check(run.chips == 200 and run.hands_to_payment == 5, "paid, the new loan of 200 arrives, chips %d" % run.chips)
-	check(run.debt == 1000 and run.payments_paid == 1, "the next debt is 1000, got %d" % run.debt)
+	_push_hands(table, Rules.PAYMENT_EVERY, 10)
+	check(paid == [[250, 1]], "the debt of 250 is taken after 4 hands, got %s" % str(paid))
+	check(run.chips == 550 and run.hands_to_payment == Rules.PAYMENT_EVERY, "paid, the new loan of 300 arrives, chips %d" % run.chips)
+	check(run.debt == 625 and run.payments_paid == 1, "the next debt is 625, got %d" % run.debt)
 	check(run.offer_stage == RunState.Offer.CHOOSING, "a paid debt opens the free offer")
 
 	# All in is the only stake.
@@ -324,9 +324,9 @@ func _payments_and_death() -> void:
 	run.chips = 60
 	var reason := []
 	run.life_lost.connect(func(_left: int, r: StringName) -> void: reason.append(r))
-	_push_hands(table, 5, 10)
+	_push_hands(table, Rules.PAYMENT_EVERY, 10)
 	check(reason == [&"debt"] and run.alive and run.lives == 4, "an unpaid debt costs a finger, got %s" % str(reason))
-	check(run.chips == 100 and run.debt == 500 and run.hands_to_payment == 5, "the house lends the loan again, chips %d" % run.chips)
+	check(run.chips == 150 and run.debt == 250 and run.hands_to_payment == Rules.PAYMENT_EVERY, "the house lends the loan again, chips %d" % run.chips)
 	for i in 4:
 		run.chips = 0
 		run._die(&"debt")
@@ -348,8 +348,8 @@ func _payments_and_death() -> void:
 	run = _run([&"candle_of_mercy"])
 	table = Table.new(run, 1)
 	run.chips = 60
-	_push_hands(table, 5, 10)
-	check(run.alive and run.chips == 160 and run.payments_paid == 0 and run.debt == 500, "candle forgives the payment and hands over the last loan again, chips %d" % run.chips)
+	_push_hands(table, Rules.PAYMENT_EVERY, 10)
+	check(run.alive and run.chips == 210 and run.payments_paid == 0 and run.debt == 250, "candle forgives the payment and hands over the last loan again, chips %d" % run.chips)
 	check(_fx(run, &"candle_of_mercy") == null, "the spent candle is gone")
 
 # ---------------------------------------------------------------- offers
@@ -401,8 +401,8 @@ func _offers() -> void:
 	var closed := []
 	run.loan_closed.connect(func(p: int, n: int, d: int) -> void: closed.append([p, n, d]))
 	table.pay_off()
-	check(closed == [[500, 200, 1000]], "paying off closes the debt and writes a bigger one: %s" % str(closed))
-	check(run.chips == 700 and run.debt == 1000 and run.payments_paid == 1, "the new loan comes with its chips, chips %d" % run.chips)
+	check(closed == [[250, 300, 625]], "paying off closes the debt and writes a bigger one: %s" % str(closed))
+	check(run.chips == 1050 and run.debt == 625 and run.payments_paid == 1, "the new loan comes with its chips, chips %d" % run.chips)
 	check(run.offer_stage == Offer.CHOOSING, "a paid debt opens the free offer")
 	run.skip_offer()
 	check(run.offer_stage == Offer.NONE, "skipping closes the offer")
