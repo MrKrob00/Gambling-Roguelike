@@ -79,9 +79,18 @@ func _initialize() -> void:
 		scene._player_hand.set_lives(int(OS.get_environment("LIVES")))
 		scene._player_hand.global_position = scene._player_hand.PRESENT_POS
 		await create_timer(0.5).timeout
+	if shot == "table3d" and OS.has_environment("CAM"):
+		var v := OS.get_environment("CAM").split(",")
+		scene._rig.set_process(false)
+		scene._rig.camera.fov = float(v[6]) if v.size() > 6 else 58.0
+		scene._rig.camera.global_position = Vector3(float(v[0]), float(v[1]), float(v[2]))
+		scene._rig.camera.look_at(Vector3(float(v[3]), float(v[4]), float(v[5])))
 	if shot == "table3d" and OS.has_environment("CUT"):
 		scene._lose_finger(int(OS.get_environment("LIVES")) if OS.has_environment("LIVES") else 4, &"debt", int(OS.get_environment("CUT")))
-		await scene._finger_cut.impact
+		if OS.has_environment("BEFORE"):
+			await create_timer(float(OS.get_environment("BEFORE"))).timeout
+		else:
+			await scene._finger_cut.impact
 		await create_timer(float(OS.get_environment("AFTER")) if OS.has_environment("AFTER") else 0.05).timeout
 		Engine.time_scale = 0.02
 		await process_frame

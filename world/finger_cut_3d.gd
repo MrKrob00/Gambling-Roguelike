@@ -18,13 +18,28 @@ const CLEAVER: PackedScene = preload("res://assets/models/weapons/cleaver.glb")
 const CLEAVER_TEXTURE: Texture2D = preload("res://assets/models/weapons/W003_texture.png")
 ## The blade and handle together, in metres in the oversized room.
 const CLEAVER_LENGTH := 0.8
+## The gun is held at this point of its own frame; the muzzle is this far ahead of the middle and `GUN_GAP` short of the finger.
+const GUN_GRIP := Vector3(0.2, -0.17, 0.0)
+const GUN_MUZZLE := 0.47
+const GUN_GAP := 0.7
 const TABLE_TOP := 1.03
+## The felt, in the table's own x and z.
+const FELT_X := 1.45
+const FELT_Z_MIN := -0.85
+const FELT_Z_MAX := 1.0
+const MAX_STAINS := 40
+const SPLAT_VARIANTS := 4
 const BLOOD := Color(0.55, 0.02, 0.04)
 const STEEL := Color(0.72, 0.74, 0.8)
 
 ## The dealer, who leans over the table to bite.
 var dealer: Node3D
+## The collectors; one fires the gun.
+var enforcers: Node3D
 ## Scales the finger that is about to be lost (1.0 = normal); set by the view for each scene.
+var _stains: Array = []
+var _splats: Array = []
+
 var swell: Callable = func(_amount: float) -> void: pass
 
 func play(kind: int, tip: Vector3, on_hit: Callable) -> void:
@@ -132,11 +147,12 @@ func _burst_finger(tip: Vector3, on_hit: Callable) -> void:
 	_hit(tip, on_hit, &"game/explosion", 0.0)
 	await _wait(1.0)
 
-## A revolver comes in from the side, the hammer clicks, and the finger is shot off.
+## A collector steps up beside the player, raises his arm with a revolver, the hammer clicks and the finger is shot off.
 func _pistol(tip: Vector3, on_hit: Callable) -> void:
 	var gun := Node3D.new()
 	add_child(gun)
-	# The revolver model (CC0) points its barrel along -z and its grip down; turn it to point along -x, at the finger.
+	# The revolver model (CC0) points its barrel along -z and its grip down; turn it to point along -x, the barrel
+	# axis the collector's arm lines up with.
 	var model := MeshInstance3D.new()
 	model.mesh = REVOLVER
 	model.material_override = _revolver_material()
@@ -144,14 +160,13 @@ func _pistol(tip: Vector3, on_hit: Callable) -> void:
 	model.rotation_degrees.y = 90.0
 	model.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	gun.add_child(model)
-	_box(gun, Vector3(0.16, 0.16, 0.16), Vector3(0.2, -0.17, 0.0), _material(Color(0.04, 0.04, 0.05), 0.5))
-	_box(gun, Vector3(1.2, 0.22, 0.22), Vector3(0.9, -0.2, 0.0), _material(Color(0.04, 0.04, 0.06), 0.8))
-	var muzzle := Vector3(-0.47, 0.03, 0.0)
-	var aim := tip + Vector3(0.6, 0.0, 0.0)
-	gun.position = aim + Vector3(1.4, 0.2, 0.0)
-	var slide := create_tween()
-	slide.tween_property(gun, "position", aim, 0.45).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	await _wait(0.5)
+	if not is_instance_valid(enforcers):
+		gun.queue_free()
+		on_hit.call()
+		return
+	var muzzle := Vector3(-GUN_MUZZLE, 0.03, 0.0)
+	enforcers.begin_gun(tip, gun, GUN_GRIP, GUN_MUZZLE + GUN_GRIP.x, GUN_GAP)
+	await _wait(1.0)
 	Audio.sfx(&"game/hammer_click")
 	await _wait(0.75)
 	var flash := OmniLight3D.new()
@@ -162,17 +177,15 @@ func _pistol(tip: Vector3, on_hit: Callable) -> void:
 	gun.add_child(flash)
 	var glare := _sphere(gun, 0.1, muzzle + Vector3(-0.06, 0.0, 0.0), _material(Color(1.0, 0.9, 0.6), 1.0, 0.0, Color(1.0, 0.85, 0.5), 6.0))
 	var recoil := create_tween()
-	recoil.tween_property(gun, "rotation:z", 0.3, 0.05)
-	recoil.tween_property(gun, "rotation:z", 0.0, 0.3).set_trans(Tween.TRANS_SINE)
-	_smoke(gun.global_position + muzzle)
+	recoil.tween_property(enforcers, "kick", 0.35, 0.05)
+	recoil.tween_property(enforcers, "kick", 0.0, 0.3).set_trans(Tween.TRANS_SINE)
+	_smoke(gun.global_transform * muzzle)
 	_hit(tip, on_hit, &"game/gunshot", 0.1)
 	await _wait(0.08)
 	glare.visible = false
 	flash.queue_free()
 	await _wait(0.8)
-	var out := create_tween()
-	out.tween_property(gun, "position", aim + Vector3(1.6, 0.4, 0.0), 0.4)
-	await _wait(0.4)
+	await enforcers.end_gun()
 	gun.queue_free()
 
 func _revolver_material() -> StandardMaterial3D:
@@ -215,25 +228,89 @@ func _boom(at: Vector3) -> void:
 
 func _blood(at: Vector3) -> void:
 	_burst(at, BLOOD, 34, 0.013, 2.4, Vector3(0.0, -7.0, 0.0), 0.9)
-	# A puddle on the felt under the hand.
-	var puddle := MeshInstance3D.new()
-	var disc := CylinderMesh.new()
-	disc.top_radius = 0.16
-	disc.bottom_radius = 0.16
-	disc.height = 0.003
-	disc.radial_segments = 14
-	puddle.mesh = disc
-	puddle.material_override = _material(BLOOD, 0.4)
-	puddle.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	puddle.position = Vector3(at.x, TABLE_TOP + 0.003, at.z)
-	puddle.scale = Vector3.ONE * 0.01
-	add_child(puddle)
+	# One big splat under the hand, and drops thrown over the felt: they stay until the run ends.
+	_stain(Vector2(at.x, at.z), randf_range(0.32, 0.45), 0.5)
+	for i in randi_range(7, 11):
+		var spot := Vector2(at.x, at.z) + Vector2.from_angle(randf() * TAU) * randf_range(0.15, 1.3)
+		spot = Vector2(clampf(spot.x, -FELT_X, FELT_X), clampf(spot.y, FELT_Z_MIN, FELT_Z_MAX))
+		_stain(spot, randf_range(0.06, 0.24), 0.55 + randf() * 0.4)
+
+## A splat lying on the felt. Old ones are dropped past `MAX_STAINS`, a draw call each.
+func _stain(spot: Vector2, size: float, delay: float) -> void:
+	var stain := MeshInstance3D.new()
+	var quad := QuadMesh.new()
+	quad.size = Vector2.ONE * size
+	stain.mesh = quad
+	stain.material_override = _splat_material(randi() % SPLAT_VARIANTS)
+	stain.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	stain.position = Vector3(spot.x, TABLE_TOP + 0.004 + _stains.size() * 0.0002, spot.y)
+	stain.rotation = Vector3(-PI / 2.0, 0.0, randf() * TAU)
+	stain.scale = Vector3.ONE * 0.05
+	add_child(stain)
+	_stains.append(stain)
+	if _stains.size() > MAX_STAINS:
+		_stains.pop_front().queue_free()
 	var grow := create_tween()
-	grow.tween_interval(0.5)
-	grow.tween_property(puddle, "scale", Vector3.ONE, 0.4).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	grow.tween_interval(2.5)
-	grow.tween_property(puddle, "scale", Vector3.ONE * 0.01, 0.4)
-	grow.tween_callback(puddle.queue_free)
+	grow.tween_interval(delay)
+	grow.tween_property(stain, "scale", Vector3.ONE, 0.25).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+
+func _splat_material(variant: int) -> StandardMaterial3D:
+	if _splats.is_empty():
+		for i in SPLAT_VARIANTS:
+			var mat := StandardMaterial3D.new()
+			mat.albedo_texture = _splat_texture(i)
+			mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+			mat.roughness = 0.25
+			mat.specular_mode = BaseMaterial3D.SPECULAR_SCHLICK_GGX
+			_splats.append(mat)
+	return _splats[variant]
+
+## A blot with a ragged edge, streaks running out of it and a scatter of droplets, drawn pixel by pixel.
+func _splat_texture(seed_value: int) -> ImageTexture:
+	var size := 128
+	var image := Image.create(size, size, false, Image.FORMAT_RGBA8)
+	var noise := FastNoiseLite.new()
+	noise.seed = seed_value * 977 + 13
+	noise.frequency = 0.045
+	var rng := RandomNumberGenerator.new()
+	rng.seed = seed_value + 5
+	var drops: Array = []
+	for i in rng.randi_range(14, 24):
+		var angle := rng.randf() * TAU
+		var dist := rng.randf_range(0.42, 0.92)
+		drops.append([Vector2.from_angle(angle) * dist * size * 0.5, rng.randf_range(1.2, 4.2), angle, rng.randf_range(0.0, 1.0)])
+	var streaks: Array = []
+	for i in rng.randi_range(4, 8):
+		streaks.append([rng.randf() * TAU, rng.randf_range(0.5, 0.85), rng.randf_range(0.03, 0.07)])
+	var half := size * 0.5
+	for y in size:
+		for x in size:
+			var p := Vector2(x - half + 0.5, y - half + 0.5)
+			var r := p.length() / half
+			var angle := p.angle()
+			var edge := 0.3 + 0.12 * noise.get_noise_2d(cos(angle) * 60.0, sin(angle) * 60.0) * 3.0
+			var cover := clampf((edge - r) / 0.05 + 0.5, 0.0, 1.0)
+			for s in streaks:
+				var d := absf(angle_difference(angle, s[0])) * r
+				if r < s[1] and d < s[2] * (1.0 - r / s[1]) + 0.004:
+					cover = maxf(cover, 1.0)
+			for dr in drops:
+				var offset: Vector2 = p - dr[0]
+				# Droplets are stretched along the way they flew.
+				var along := offset.dot(Vector2.from_angle(dr[2]))
+				var across := offset.dot(Vector2.from_angle(dr[2] + PI / 2.0))
+				var d := Vector2(along / 1.7, across).length()
+				if d < dr[1]:
+					cover = maxf(cover, clampf((dr[1] - d) / 1.2, 0.0, 1.0))
+			if cover <= 0.0:
+				continue
+			var shade := clampf(r / 0.5, 0.0, 1.0)
+			var color := Color(0.30, 0.0, 0.02).lerp(Color(0.62, 0.03, 0.05), shade * 0.6 + noise.get_noise_2d(x * 2.0, y * 2.0) * 0.15)
+			color.a = cover * 0.94
+			image.set_pixel(x, y, color)
+	image.generate_mipmaps()
+	return ImageTexture.create_from_image(image)
 
 func _smoke(at: Vector3) -> void:
 	_burst(at, Color(0.55, 0.55, 0.58), 14, 0.04, 0.6, Vector3(0.0, 0.5, 0.0), 1.1)
