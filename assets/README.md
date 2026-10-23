@@ -43,7 +43,7 @@ Status: **READY** = imported, style-matched, usable as is. **CHECK** = usable, n
 
 | Path | Content | Status |
 |---|---|---|
-| `fonts/` | Pirata One (titles), Metamorphous (text), SIL OFL | READY |
+| `fonts/` | Pirata One (titles), Metamorphous (text), Cormorant Unicase Bold and Kurale (Cyrillic fallbacks for them), SIL OFL | READY |
 | `shaders/` | card holo / shimmer / parallax shaders (`spatial`, 3D) | CHECK, port to `canvas_item` for 2D UI |
 
 ## Still missing

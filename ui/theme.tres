@@ -2,8 +2,8 @@
 
 [ext_resource type="Texture2D" path="res://assets/ui/dark_dwellers/20251029darkDwellersButtonC1-Sheet.png" id="1_6lx7k"]
 [ext_resource type="Texture2D" path="res://assets/ui/dark_dwellers/20251029darkDwellers9SlicesE.png" id="2_iqtc0"]
-[ext_resource type="FontFile" path="res://assets/fonts/metamorphous/Metamorphous-Regular.ttf" id="3_7any1"]
 [ext_resource type="Texture2D" path="res://assets/ui/dark_dwellers/20251124emptyFrameA1-Sheet.png" id="3_iqtc0"]
+[ext_resource type="FontVariation" path="res://ui/fonts/body_font.tres" id="4_iqtc0"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_7any1"]
 atlas = ExtResource("1_6lx7k")
@@ -160,7 +160,7 @@ texture_margin_right = 6.0
 texture_margin_bottom = 6.0
 
 [resource]
-default_font = ExtResource("3_7any1")
+default_font = ExtResource("4_iqtc0")
 default_font_size = 12
 Button/colors/font_color = Color(0.8509804, 0.83137256, 0.9411765, 1)
 Button/colors/font_disabled_color = Color(0.41960785, 0.4117647, 0.60784316, 1)

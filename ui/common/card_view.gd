@@ -6,7 +6,7 @@ const Card := preload("res://core/card.gd")
 
 const FACE: Texture2D = preload("res://assets/art/cards/card_front_common.png")
 const BACK: Texture2D = preload("res://assets/art/cards/card_back_purple.png")
-const TITLE_FONT: Font = preload("res://assets/fonts/pirata_one/PirataOne-Regular.ttf")
+const TITLE_FONT: Font = preload("res://ui/fonts/title_font.tres")
 const CARD_SIZE := Vector2(64, 96)
 const COLOR_RED := Color("e8467c")
 const COLOR_DARK := Color("d9d4f0")

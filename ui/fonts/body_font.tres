@@ -1,0 +1,8 @@
+[gd_resource type="FontVariation" format=3]
+
+[ext_resource type="FontFile" path="res://assets/fonts/metamorphous/Metamorphous-Regular.ttf" id="1_ldxdo"]
+[ext_resource type="FontFile" path="res://assets/fonts/kurale/Kurale-Regular.ttf" id="2_euvx3"]
+
+[resource]
+fallbacks = Array[Font]([ExtResource("2_euvx3")])
+base_font = ExtResource("1_ldxdo")

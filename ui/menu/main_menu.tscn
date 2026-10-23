@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://ui/menu/main_menu.gd" id="1"]
 [ext_resource type="Texture2D" path="res://assets/art/casino/backgrounds/Underground_Casino_2048_1152.jpg" id="2"]
-[ext_resource type="FontFile" path="res://assets/fonts/pirata_one/PirataOne-Regular.ttf" id="3"]
+[ext_resource type="FontVariation" path="res://ui/fonts/title_font.tres" id="3"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -34,9 +34,9 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -90.0
+offset_left = -150.0
 offset_top = -110.0
-offset_right = 90.0
+offset_right = 150.0
 offset_bottom = 110.0
 grow_horizontal = 2
 grow_vertical = 2

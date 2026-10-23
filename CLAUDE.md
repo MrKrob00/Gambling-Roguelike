@@ -25,7 +25,11 @@ Design decisions and numbers: `docs/GAME_DESIGN.md`. Asset register: `assets/REA
    patched from a scene.
 10. UI strings are translation **keys** (`TABLE_DEAL`), never literals. Controls translate `text` on
     their own; strings built in code go through `tr()`. Add both `en` and `ru` to `i18n/strings.json`.
-11. Pixel art is shown with Nearest filtering (project default). Icons that are SVG are shown with
+11. **Pirata One and Metamorphous have no Cyrillic.** Text always uses `ui/fonts/title_font.tres` and
+    `body_font.tres` (`FontVariation`: the Latin gothic face first, Kurale / Cormorant Unicase as the
+    fallback for Russian). Never reference the raw `.ttf` from a scene; a missing glyph silently falls
+    back to a system font. Rebuilt by `tools/build_theme.gd`.
+12. Pixel art is shown with Nearest filtering (project default). Icons that are SVG are shown with
     `LINEAR_WITH_MIPMAPS`.
 
 ## 1. Project skeleton
@@ -118,9 +122,18 @@ $G --headless --path /tmp/run --import
 $G --headless --path /tmp/run --script res://tools/selftest.gd
 ```
 
-`tools/selftest.gd` loads every script and scene and plays scripted blackjack hands against the real rules.
-A shader or a drawn frame needs a real driver: `xvfb-run -a $G --path /tmp/run --rendering-driver opengl3`.
-Headless never compiles a shader.
+- `tools/selftest.gd`: loads every script, scene and resource, checks translations, plays scripted hands
+  against the real rules, then fuzzes random runs with random artifacts.
+- `tools/playtest.gd`: plays a whole run through the real screens by pressing the real buttons.
+- `tools/shot.gd`: renders a screen to a PNG (`SHOT=menu|lobby|bet|play|result LOCALE=en|ru OUT=...`);
+  needs a real driver: `xvfb-run -a -s "-screen 0 1280x720x24" $G --path /tmp/run --rendering-driver opengl3
+  --resolution 1280x720 --script res://tools/shot.gd`. Headless never compiles a shader or draws a frame.
+- In a `--script` harness autoloads are ready only after `await process_frame`, and a harness that names
+  an autoload by identifier does not compile: use `root.get_node("Name")`.
+- Generated files (`.import`, `.uid`, `ui/theme.tres`, `ui/fonts/*.tres`) are made on the run copy and
+  copied back into the repo. Do not sync the repo over a copy that holds newer `.import` files.
+- SVG icons are imported with `svg/scale=0.25` and mipmaps (set in their `.import`); a Button cannot give its
+  icon a different filter than its frame, so tiles draw the icon in a child `TextureRect`.
 
 ## 4. Working with the code
 

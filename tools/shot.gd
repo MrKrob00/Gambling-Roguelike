@@ -1,6 +1,6 @@
 extends SceneTree
 ## Renders a screen with a real GL driver and saves a PNG. Headless never draws.
-## SHOT=menu|lobby|bet|play|result  OUT=/tmp/shot.png
+## SHOT=menu|lobby|bet|play|result  OUT=/tmp/shot.png  LOCALE=en|ru
 ## xvfb-run -a -s "-screen 0 1280x720x24" godot --path <copy> --rendering-driver opengl3 \
 ##   --resolution 1280x720 --script res://tools/shot.gd
 
@@ -8,6 +8,8 @@ func _initialize() -> void:
 	await process_frame
 	var shot := OS.get_environment("SHOT")
 	var out := OS.get_environment("OUT") if OS.has_environment("OUT") else "/tmp/shot.png"
+	if OS.has_environment("LOCALE"):
+		TranslationServer.set_locale(OS.get_environment("LOCALE"))
 	var game = root.get_node("Game")
 	var catalog = root.get_node("Catalog")
 	var scene: Node

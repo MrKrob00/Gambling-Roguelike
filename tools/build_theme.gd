@@ -4,6 +4,9 @@ extends SceneTree
 
 const DD := "res://assets/ui/dark_dwellers/"
 const BODY_FONT := "res://assets/fonts/metamorphous/Metamorphous-Regular.ttf"
+const BODY_FALLBACK := "res://assets/fonts/kurale/Kurale-Regular.ttf"
+const TITLE_FONT := "res://assets/fonts/pirata_one/PirataOne-Regular.ttf"
+const TITLE_FALLBACK := "res://assets/fonts/cormorant_unicase/CormorantUnicase-Bold.ttf"
 
 const TEXT := Color("d9d4f0")
 const TEXT_HOVER := Color("f4a13a")
@@ -25,9 +28,20 @@ func _frame(sheet: Texture2D, region: Rect2, margin: Vector4, content: Vector4) 
 	box.content_margin_bottom = content.w
 	return box
 
+## The Latin font leads; the fallback covers Cyrillic, which neither gothic face has.
+func _font(base_path: String, fallback_path: String) -> FontVariation:
+	var v := FontVariation.new()
+	v.base_font = load(base_path)
+	v.fallbacks = [load(fallback_path)]
+	return v
+
 func _init() -> void:
 	var theme := Theme.new()
-	theme.default_font = load(BODY_FONT)
+	var title := _font(TITLE_FONT, TITLE_FALLBACK)
+	print("title font saved: ", error_string(ResourceSaver.save(title, "res://ui/fonts/title_font.tres")))
+	var body := _font(BODY_FONT, BODY_FALLBACK)
+	print("body font saved: ", error_string(ResourceSaver.save(body, "res://ui/fonts/body_font.tres")))
+	theme.default_font = load("res://ui/fonts/body_font.tres")
 	theme.default_font_size = 12
 
 	var buttons: Texture2D = load(DD + "20251029darkDwellersButtonC1-Sheet.png")
