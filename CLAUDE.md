@@ -71,6 +71,13 @@ integer. The 3D view renders at the window's real resolution.
 
 ### The 3D table
 
+- **Performance is a feature, measure it.** `SHOT=table3d_play INFO=1 tools/shot.gd` prints objects, draw
+  calls and lights in the frame. Build only what the player can see: every extra mesh is a draw call and every
+  extra light multiplies shading on a phone. A column of chips is one striped cylinder (`ChipVisual.make_column`),
+  not one mesh per chip; small things cast no shadow; only the table lamp casts one. Current frame: ~180
+  objects, ~116 draw calls, 3 lights. All sounds are loaded at startup (`Audio._preload_dir`): a lazy load made
+  the first click lag behind the tap.
+
 - Everything is built in code from `blackjack_view_3d.gd`'s layout constants (metres, `TOP` is the felt):
   the table runs **across** the view with the dealer opposite. Artifact tokens on a tray at the left, the chip
   piles in a 2x2 grid on a plate at the right, the bet circle in the middle, and the action buttons in one row
@@ -117,9 +124,24 @@ integer. The 3D view renders at the window's real resolution.
   screen. An artifact with an empty `unlock_stat` is open from the start.
 - Adding an unlock rule is data only. Adding a new counter is one constant in `Stat` and one emit.
 
-### The run
+### The run and the artifact offers
 
-- `RunState` owns chips, the payment clock and the equipped effects. A payment is due every
+- A run starts with **no artifacts**. `Game.start_run(game)` opens a free offer: up to `Rules.OFFER_SIZE` random
+  unlocked artifacts the player does not hold, pick one. After every payment (paid or forgiven) the house
+  proposes a **paid** offer for `Rules.OFFER_COST_PERCENT` of the next payment (at least `OFFER_MIN_COST`);
+  buy it or skip. With full slots (`Rules.ARTIFACT_SLOTS`) a pick must name an artifact to replace. Any
+  artifact can also be discarded while betting. All of this is `RunState` (`offer_stage`, `choose_offer`,
+  `buy_offer`, `skip_offer`, `discard`), tested in `selftest.gd`; the view only shows the state.
+- The deadline is physical: `world/deadline_candles_3d.gd` burns one candle per hand toward the payment, the
+  dealer's rim light reddens and the vignette darkens as it nears, the last hand has a heartbeat, and the
+  payment is three knocks.
+- Artifacts are coloured by kind everywhere (`core/kind_style.gd`): active blue, passive green, consumable
+  amber, cursed crimson. Effect text uses `+` lines (benefit, green) and `-` lines (cost, red); the info
+  panel (`ui/common/artifact_info_panel.gd`, a 2D corner overlay) renders them. Keep descriptions to short lines.
+- On touch the first tap on an artifact only shows its panel, the second acts (there is no hover); with a
+  mouse the hover shows it and one click acts.
+
+- A payment is due every
   `Rules.PAYMENT_EVERY` hands and each one is bigger. Failing to pay, or running out of chips, kills the
   run unless an effect's `prevent_death` saves it. Death does not touch the meta progress.
 

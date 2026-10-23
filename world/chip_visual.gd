@@ -21,6 +21,8 @@ static var _cylinder: CylinderMesh
 static var _disc: PlaneMesh
 static var _side_materials: Dictionary = {}
 static var _top_materials: Dictionary = {}
+static var _column_materials: Dictionary = {}
+static var _stripes: Dictionary = {}
 
 static func make(denomination: int) -> Node3D:
 	if _cylinder == null:
@@ -68,3 +70,48 @@ static func split(amount: int) -> Dictionary:
 			out[d] = n
 			rest -= n * d
 	return out
+
+## A whole column of `count` chips as two meshes (a striped cylinder and the printed top) instead of two
+## meshes per chip: far fewer objects and shadow casters for the same picture.
+static func make_column(denomination: int, count: int) -> Node3D:
+	make(denomination).queue_free()  # fills the shared caches
+	var key := Vector2i(denomination, count)
+	if not _column_materials.has(key):
+		var mat := StandardMaterial3D.new()
+		mat.albedo_texture = _stripe_texture(denomination)
+		mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
+		mat.texture_repeat = true
+		mat.uv1_scale = Vector3(1.0, float(count), 1.0)
+		mat.roughness = 0.7
+		_column_materials[key] = mat
+	var root := Node3D.new()
+	var body := MeshInstance3D.new()
+	var cylinder := CylinderMesh.new()
+	cylinder.top_radius = RADIUS
+	cylinder.bottom_radius = RADIUS
+	cylinder.height = HEIGHT * count
+	cylinder.radial_segments = 20
+	cylinder.rings = 1
+	body.mesh = cylinder
+	body.material_override = _column_materials[key]
+	body.position.y = HEIGHT * count / 2.0
+	body.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	root.add_child(body)
+	var face := MeshInstance3D.new()
+	face.mesh = _disc
+	face.material_override = _top_materials[denomination]
+	face.position.y = HEIGHT * count + 0.0006
+	face.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	root.add_child(face)
+	return root
+
+## One light and one dark row; repeated `count` times along the cylinder it reads as a stack of chips.
+static func _stripe_texture(denomination: int) -> Texture2D:
+	if _stripes.has(denomination):
+		return _stripes[denomination]
+	var base: Color = SIDE_COLORS[denomination]
+	var image := Image.create(1, 2, false, Image.FORMAT_RGBA8)
+	image.set_pixel(0, 0, base.lightened(0.35))
+	image.set_pixel(0, 1, base.darkened(0.15))
+	_stripes[denomination] = ImageTexture.create_from_image(image)
+	return _stripes[denomination]

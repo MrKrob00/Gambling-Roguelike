@@ -27,7 +27,7 @@ func add_box_shape(size: Vector3, offset: Vector3 = Vector3.ZERO) -> void:
 	add_child(shape)
 
 ## A thin gold ring on the table under the object; shown while the pointer is on it.
-func make_ring(radius: float, height: float = 0.012) -> void:
+func make_ring(radius: float, height: float = 0.012, color: Color = RING_COLOR) -> void:
 	_ring = MeshInstance3D.new()
 	var torus := TorusMesh.new()
 	torus.inner_radius = radius
@@ -37,7 +37,7 @@ func make_ring(radius: float, height: float = 0.012) -> void:
 	_ring.mesh = torus
 	var mat := StandardMaterial3D.new()
 	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	mat.albedo_color = RING_COLOR
+	mat.albedo_color = color
 	_ring.material_override = mat
 	_ring.scale = Vector3(1.0, 0.2, 1.0)
 	_ring.position = Vector3(0.0, height, 0.0)
@@ -55,6 +55,12 @@ func new_tween() -> Tween:
 func set_enabled(value: bool) -> void:
 	enabled = value
 	_refresh_visual()
+
+## Used by the modes that pick a token (replace, discard): a red ring means "this one will go".
+func show_ring(on: bool, color: Color = RING_COLOR) -> void:
+	if _ring != null:
+		(_ring.material_override as StandardMaterial3D).albedo_color = color
+		_ring.visible = on or hovered
 
 func set_hovered(value: bool) -> void:
 	if hovered == value:

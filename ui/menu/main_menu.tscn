@@ -60,6 +60,11 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "MENU_PLAY"
 
+[node name="CollectionButton" type="Button" parent="Center"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "MENU_ARTIFACTS"
+
 [node name="LanguageButton" type="Button" parent="Center"]
 unique_name_in_owner = true
 layout_mode = 2

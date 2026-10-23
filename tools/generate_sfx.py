@@ -347,9 +347,27 @@ def swap():
     return mix(whoosh() * 0.7, pad(bell(700, 0.25), 0.12), pad(bell(1050, 0.3), 0.2))
 
 
+def knock():
+    out = np.zeros(int(SR * 1.6))
+    for t_s in (0.0, 0.42, 0.84):
+        s0 = int(SR * t_s)
+        n = int(SR * 0.3)
+        hit = sine(np.linspace(180, 70, n), 0.3) * env(n, 0.001, 0.06, 6) + lowpass(noise(0.3), 900) * env(n, 0.0005, 0.03, 8) * 0.6
+        out[s0 : s0 + n] += hit
+    return reverb(out, 0.7, 0.3)
+
+
+def candle_snuff():
+    dur = 0.45
+    n = int(SR * dur)
+    puff = highpass(lowpass(noise(dur), 3500), 500) * env(n, 0.004, 0.18, 4) * 0.7
+    tick = sine(np.linspace(900, 300, n), dur) * env(n, 0.001, 0.05, 6) * 0.3
+    return puff + tick
+
+
 JOBS = {
     "ui": [ui_click, ui_hover, ui_confirm, ui_cancel, ui_error],
-    "game": [coin_ding, win_small, win_jackpot, lose_sting, reel_stop, reel_spin, lever_pull,
+    "game": [knock, candle_snuff, coin_ding, win_small, win_jackpot, lose_sting, reel_stop, reel_spin, lever_pull,
              curse_hit, heartbeat, tension_drone, card_reveal, item_use],
     "trick": [poof, whoosh, card_flick, sparkle, drumroll, ta_da, reveal_sting, caught,
               lockpick_click, safe_open, glass_shatter, swap],

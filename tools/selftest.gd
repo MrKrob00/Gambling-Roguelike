@@ -34,6 +34,7 @@ func _initialize() -> void:
 	_scripted_hands()
 	_artifacts()
 	_payments_and_death()
+	_offers()
 	_fuzz()
 	_unlocks()
 	DirAccess.remove_absolute(ProjectSettings.globalize_path("user://selftest_profile.json"))
@@ -321,6 +322,66 @@ func _payments_and_death() -> void:
 	_push_hands(table, 5, 10)
 	check(run.alive and run.chips == 60 and run.payments_paid == 1, "candle forgives the payment, chips %d" % run.chips)
 	check(_fx(run, &"candle_of_mercy").charges_left == 0, "candle is spent")
+
+# ---------------------------------------------------------------- offers
+
+func _offers() -> void:
+	var profile = root.get_node("Profile")
+	profile.reset()
+	var Offer = RunState.Offer
+	# At the start only the two open artifacts can be offered.
+	var run = RunState.new(&"blackjack", [])
+	run.start_free_offer()
+	check(run.offer_stage == Offer.CHOOSING and run.offer.size() == 2, "free offer shows the 2 open artifacts, got %d" % run.offer.size())
+	check(run.offer_cost == 0, "the first offer is free")
+	var first = run.offer[0]
+	check(run.choose_offer(first) and run.effects.size() == 1, "taking an offer equips it")
+	check(run.offer_stage == Offer.NONE and run.offer.is_empty(), "the offer closes after a pick")
+	check(not run.choose_offer(first), "cannot take a closed offer")
+	# Unlock everything: offers hold three distinct artifacts the player does not own.
+	for a in root.get_node("Catalog").all():
+		profile.unlocked.append(String(a.id))
+	run = RunState.new(&"blackjack", [_artifact(&"lucky_clover")])
+	run.start_free_offer()
+	check(run.offer.size() == 3, "an offer holds three artifacts")
+	var ids: Array = run.offer.map(func(a): return a.id)
+	check(not (&"lucky_clover" in ids), "an owned artifact is never offered")
+	var seen := {}
+	for id in ids:
+		seen[id] = true
+	check(seen.size() == ids.size(), "offered artifacts are distinct")
+	# Full slots: a replacement is required.
+	run = RunState.new(&"blackjack", [_artifact(&"lucky_clover"), _artifact(&"marked_deck"), _artifact(&"silver_chip")])
+	run.start_free_offer()
+	check(run.slots_full(), "three artifacts fill the slots")
+	var wanted = run.offer[0]
+	check(not run.choose_offer(wanted), "full slots refuse a pick without a replacement")
+	var out = run.effects[1]
+	check(run.choose_offer(wanted, out), "a pick with a replacement works")
+	check(run.effects.size() == 3 and not (out in run.effects), "the replaced artifact is gone")
+	check(run.effects.any(func(fx): return fx.data == wanted), "the new artifact is held")
+	# Discard.
+	var dropped = run.effects[0]
+	run.discard(dropped)
+	check(run.effects.size() == 2 and not (dropped in run.effects), "discard removes an artifact")
+	# A paid offer follows every payment and costs a share of the next one.
+	run = RunState.new(&"blackjack", [])
+	var table = Table.new(run, 1)
+	_push_hands(table, 5, 10)
+	check(run.offer_stage == Offer.PROPOSED, "a payment proposes a paid offer")
+	var expected_cost := maxi(Rules.OFFER_MIN_COST, int(run.next_payment() * Rules.OFFER_COST_PERCENT))
+	check(run.offer_cost == expected_cost, "the offer costs %d%% of the next payment: %d, got %d" % [int(Rules.OFFER_COST_PERCENT * 100), expected_cost, run.offer_cost])
+	var chips_before: int = run.chips
+	run.buy_offer()
+	check(run.chips == chips_before - expected_cost and run.offer_stage == Offer.CHOOSING, "buying takes the chips and opens the choice")
+	run.skip_offer()
+	check(run.offer_stage == Offer.NONE, "skipping closes the offer")
+	run = RunState.new(&"blackjack", [])
+	run.chips = 15
+	run.offer_stage = Offer.PROPOSED
+	run.offer_cost = 45
+	check(not run.can_buy_offer(), "a poor player cannot buy an offer")
+	profile.reset()
 
 # ---------------------------------------------------------------- unlocks
 

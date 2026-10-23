@@ -1,9 +1,10 @@
 extends Button
-## One artifact in the lobby grid: toggles on pick, dark when still locked.
+## One artifact in the collection grid, tinted by its kind, dark when still locked.
 ## The icon is a child TextureRect: a Button would share its pixel-art filter with the icon.
 
 signal inspected(tile)
 
+const KindStyle := preload("res://core/kind_style.gd")
 const SIZE := Vector2(44, 44)
 const ICON_MARGIN := 7.0
 
@@ -14,7 +15,6 @@ var _icon: TextureRect
 func _init() -> void:
 	custom_minimum_size = SIZE
 	theme_type_variation = &"TileButton"
-	toggle_mode = true
 	focus_mode = Control.FOCUS_NONE
 
 func _ready() -> void:
@@ -37,4 +37,4 @@ func bind(artifact, is_locked: bool) -> void:
 	locked = is_locked
 	if _icon != null:
 		_icon.texture = artifact.icon
-	modulate = Color(0.25, 0.25, 0.3, 1) if is_locked else Color.WHITE
+	modulate = Color(0.3, 0.3, 0.36, 1) if is_locked else KindStyle.color_of(artifact.kind).lerp(Color.WHITE, 0.45)

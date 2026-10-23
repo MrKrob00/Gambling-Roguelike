@@ -18,6 +18,10 @@ const ChipStack := preload("res://world/chip_stack_3d.gd")
 const ChipPile := preload("res://world/chip_pile_3d.gd")
 const Plaque := preload("res://world/plaque_3d.gd")
 const Token := preload("res://world/artifact_token_3d.gd")
+const OfferCard := preload("res://world/offer_card_3d.gd")
+const Candles := preload("res://world/deadline_candles_3d.gd")
+const InfoPanel := preload("res://ui/common/artifact_info_panel.gd")
+const KindStyle := preload("res://core/kind_style.gd")
 const FloatingText := preload("res://world/floating_text.gd")
 const Vignette := preload("res://ui/common/vignette.gd")
 const ROOM: PackedScene = preload("res://world/casino_room.tscn")
@@ -40,6 +44,11 @@ const CHIP_PLATE_X := 1.45
 const PILE_POS: Array[Vector2] = [Vector2(1.2, -0.15), Vector2(1.7, -0.15), Vector2(1.2, 0.45), Vector2(1.7, 0.45)]
 const ACTION_Z := 1.08
 const ACTION_X: Array[float] = [-0.8, 0.0, 0.8]
+const DISCARD_X := -1.5
+const OFFER_Z := 0.2
+const OFFER_SPACING := 0.9
+## The deadline candles stand on the far rail, in front of the dealer.
+const CANDLES_POS := Vector3(0.0, TOP + 0.045, -1.27)
 const AMBIENCE := "res://assets/audio/ambience/dark_cavern_ambient_001.ogg"
 const GOLD := Color(0.96, 0.63, 0.23)
 const RED := Color(0.95, 0.3, 0.25)
@@ -68,6 +77,14 @@ var _dealer_shown: Hand = Hand.new()
 var _player_shown: Hand = Hand.new()
 var _hole_actor
 var _hovered
+var _pinned
+var _candles
+var _rim: OmniLight3D
+var _info
+var _offer_cards: Array = []
+var _pending_pick
+var _discarding: bool = false
+var _ui_state: String = ""
 var _chips_text: int = 0
 var _countdown: Array = [Rules.PAYMENT_EVERY, 0]
 
@@ -96,6 +113,10 @@ func _build_world() -> void:
 	_lamp = room.get_node_or_null("TableLamp")
 	if _lamp != null:
 		_lamp_energy = _lamp.light_energy
+	_rim = room.get_node_or_null("DealerRim")
+	_candles = Candles.new()
+	_candles.position = CANDLES_POS
+	add_child(_candles)
 	_dealer = Dealer3D.new()
 	_dealer.position = DEALER_SPOT
 	add_child(_dealer)
@@ -133,7 +154,8 @@ func _add_bet_ring() -> void:
 	disc.top_radius = 0.27
 	disc.bottom_radius = 0.27
 	disc.height = 0.004
-	disc.radial_segments = 32
+	disc.radial_segments = 24
+	disc.rings = 1
 	fill.mesh = disc
 	var fill_mat := StandardMaterial3D.new()
 	fill_mat.albedo_color = Color(0.02, 0.05, 0.04)
@@ -220,16 +242,28 @@ func _build_controls() -> void:
 		&"clear": ["TABLE_CLEAR", 0], &"deal": ["TABLE_DEAL", 1], &"all_in": ["TABLE_ALL_IN", 2],
 		&"hit": ["TABLE_HIT", 0], &"stand": ["TABLE_STAND", 1], &"double": ["TABLE_DOUBLE", 2],
 		&"next": ["TABLE_NEXT", 1],
+		&"buy": ["OFFER_BUY", 0], &"skip": ["OFFER_SKIP", 2], &"cancel": ["OFFER_CANCEL", 1],
+		&"discard": ["DISCARD", -1],
 	}
 	for id in defs:
 		var plaque := Plaque.new()
 		add_child(plaque)
 		plaque.setup(defs[id][0])
-		plaque.position = Vector3(ACTION_X[defs[id][1]], TOP + 0.02, ACTION_Z)
+		var slot: int = defs[id][1]
+		plaque.position = Vector3(ACTION_X[slot] if slot >= 0 else DISCARD_X, TOP + 0.02, ACTION_Z)
 		plaque.activated.connect(_on_plaque.bind(id))
 		plaque.show_plaque(false)
 		plaque.scale = Vector3.ONE * 0.001
 		_plaques[id] = plaque
+	_rebuild_tokens()
+
+## One token per held artifact, rebuilt whenever the set changes.
+func _rebuild_tokens() -> void:
+	for t in _tokens:
+		if is_instance_valid(t):
+			t.queue_free()
+	_tokens.clear()
+	_pinned = null
 	for i in run.effects.size():
 		var token := Token.new()
 		add_child(token)
@@ -237,6 +271,9 @@ func _build_controls() -> void:
 		token.position = Vector3(TRAY_X, TOP + 0.014, TRAY_Z[i])
 		token.activated.connect(_on_token.bind(token))
 		_tokens.append(token)
+		token.scale = Vector3.ONE * 0.01
+		var pop := create_tween()
+		pop.tween_property(token, "scale", Vector3.ONE, 0.25).set_delay(i * 0.06).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 func _build_overlay() -> void:
 	var layer := CanvasLayer.new()
@@ -262,6 +299,12 @@ func _build_overlay() -> void:
 	_hud.add_theme_constant_override("outline_size", 4)
 	_hud.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	layer.add_child(_hud)
+	_info = InfoPanel.new()
+	layer.add_child(_info)
+	_info.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
+	_info.offset_left = -190.0
+	_info.offset_top = 34.0
+	_info.offset_right = -8.0
 
 # ---------------------------------------------------------------- wiring
 
@@ -282,6 +325,7 @@ func _connect_run() -> void:
 	run.payment_made.connect(func(a: int, i: int) -> void: _enqueue(_do_payment.bind(a, i)))
 	run.payment_waived.connect(func(i: int) -> void: _enqueue(_do_waived.bind(i)))
 	run.died.connect(func(r: StringName) -> void: _enqueue(_do_death.bind(r)))
+	run.artifacts_changed.connect(func() -> void: _enqueue(_do_artifacts))
 
 func _enqueue(step: Callable) -> void:
 	_set_interactive(false)
@@ -422,6 +466,11 @@ func _do_resolved(outcome: int, bet: int, payout: int) -> void:
 	_bet_stack.set_amount(0, false)
 	_bet_stack.position = BET_SPOT
 
+func _do_artifacts() -> void:
+	_rebuild_tokens()
+	_info.clear()
+	await _pause(0.3)
+
 func _do_trick(fx) -> void:
 	if fx.data.id != &"marked_deck":
 		Audio.sfx(&"trick/poof")
@@ -436,16 +485,37 @@ func _do_chips(chips: int) -> void:
 
 func _do_countdown(hands_left: int, amount: int) -> void:
 	_countdown = [hands_left, amount]
+	if hands_left > _candles.lit:
+		_candles.relight(hands_left)
+		_candles.set_remaining(hands_left, amount, false)
+	else:
+		_candles.set_remaining(hands_left, amount)
+	_apply_urgency(_candles.urgency)
+	if hands_left == 1:
+		Audio.sfx(&"game/heartbeat")
+		_say(&"deadline")
 	_update_ledger()
 
+## The closer the deadline, the redder the dealer's rim light and the darker the screen edges.
+func _apply_urgency(urgency: float) -> void:
+	if _rim != null:
+		_rim.light_color = Color(1.0, 0.08, 0.14).lerp(Color(1.0, 0.0, 0.03), urgency)
+		var tween := create_tween()
+		tween.tween_property(_rim, "light_energy", 2.4 + 3.2 * urgency, 0.5)
+	_vignette.set_darkness(0.55 + 0.25 * urgency)
+
 func _do_payment(amount: int, _index: int) -> void:
+	Audio.sfx(&"game/knock")
+	_say(&"knock")
+	_dealer.react(&"payment")
+	_pulse_lamp(0.1, 0.9)
+	_vignette.flash_color(RED, 0.8, 0.9)
+	_rig.shake(0.05, 0.5)
+	await _pause(1.1)
 	_add_text_node(BET_SPOT + Vector3(0.0, 0.35, 0.0), "-%d" % amount, RED)
 	_subtitle.text = tr("PAYMENT_PAID") % amount
 	Audio.sfx(&"game/coin_ding")
-	_say(&"payment")
-	_dealer.react(&"payment")
-	_rig.shake(0.04, 0.3)
-	await _pause(1.0)
+	await _pause(0.9)
 
 func _do_waived(_index: int) -> void:
 	_subtitle.text = tr("PAYMENT_WAIVED")
@@ -469,9 +539,30 @@ func _unhandled_input(event: InputEvent) -> void:
 		_set_hover(_pick(event.position))
 	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		var hit = _pick(event.position)
+		var from_touch: bool = event.device == InputEvent.DEVICE_ID_EMULATION
 		_set_hover(hit)
-		if hit != null:
-			hit.activate()  # a pickable that cannot act right now answers with a shake, so a tap is never silent
+		if hit == null:
+			_pinned = null
+			_info.clear()
+			return
+		## A touch screen has no hover, so the first tap on an artifact only shows what it is; the second
+		## tap acts. With a mouse the hover already showed it, so one click acts.
+		if from_touch and _is_artifact(hit) and _pinned != hit:
+			_pinned = hit
+			_show_info(hit)
+			Audio.sfx(&"ui/ui_hover")
+			return
+		_pinned = null
+		hit.activate()  # a pickable that cannot act right now answers with a shake, so a tap is never silent
+
+func _is_artifact(obj) -> bool:
+	return obj.get("fx") != null or obj.get("data") != null
+
+func _show_info(obj) -> void:
+	if obj.get("fx") != null:
+		_info.show_artifact(obj.fx.data, obj.fx)
+	elif obj.get("data") != null:
+		_info.show_artifact(obj.data, null, tr("INFO_TAKE") if obj in _offer_cards else "")
 
 func _pick(screen_pos: Vector2):
 	var camera: Camera3D = _rig.camera
@@ -490,18 +581,37 @@ func _set_hover(target) -> void:
 	if is_instance_valid(_hovered):
 		_hovered.set_hovered(true)
 		Input.set_default_cursor_shape(Input.CURSOR_POINTING_HAND)
+		if _is_artifact(_hovered):
+			_show_info(_hovered)
 	else:
 		Input.set_default_cursor_shape(Input.CURSOR_ARROW)
+	if _pinned == null and not _is_artifact_valid(_hovered):
+		_info.clear()
+
+func _is_artifact_valid(obj) -> bool:
+	return is_instance_valid(obj) and _is_artifact(obj)
 
 func _on_pile(pile) -> void:
 	table.add_bet(pile.denomination)
 	_refresh()
 
 func _on_token(token) -> void:
-	if token.fx.data.button:
+	if _discarding:
+		_subtitle.text = tr("DISCARDED") % token.fx.data.title()
+		_discarding = false
+		run.discard(token.fx)
+	elif _pending_pick != null:
+		run.choose_offer(_pending_pick, token.fx)
+		_pending_pick = null
+	elif token.fx.data.button:
 		table.use_artifact(token.fx)
+	_refresh()
+
+func _on_offer_card(card) -> void:
+	if run.slots_full():
+		_pending_pick = card.data
 	else:
-		_subtitle.text = "%s: %s" % [token.fx.data.title(), token.fx.data.description()]
+		run.choose_offer(card.data)
 	_refresh()
 
 func _on_plaque(id: StringName) -> void:
@@ -516,6 +626,12 @@ func _on_plaque(id: StringName) -> void:
 		&"stand": table.stand()
 		&"double": table.double_down()
 		&"next": table.next_hand()
+		&"buy": run.buy_offer()
+		&"skip": run.skip_offer()
+		&"cancel":
+			_discarding = false
+			_pending_pick = null
+		&"discard": _discarding = true
 	_refresh()
 
 # ---------------------------------------------------------------- view state
@@ -555,10 +671,6 @@ func _update_totals() -> void:
 
 func _update_ledger() -> void:
 	var lines := ["%s %d" % [tr("TABLE_CHIPS"), _chips_text]]
-	if _countdown[0] <= 1:
-		lines.append(tr("TABLE_PAYMENT_NOW") % _countdown[1])
-	else:
-		lines.append(tr("TABLE_PAYMENT") % [_countdown[1], _countdown[0]])
 	if run.win_streak >= 2:
 		lines.append(tr("TABLE_STREAK") % run.win_streak)
 	_hud.text = "\n".join(lines)
@@ -572,7 +684,11 @@ func _set_interactive(on: bool) -> void:
 	for id in _plaques:
 		_plaques[id].set_enabled(false)
 	for t in _tokens:
-		t.set_enabled(false)
+		if is_instance_valid(t):
+			t.set_enabled(false)
+	for c in _offer_cards:
+		if is_instance_valid(c):
+			c.set_enabled(false)
 
 func _refresh() -> void:
 	if _queue.busy:
@@ -581,13 +697,28 @@ func _refresh() -> void:
 	var alive: bool = run.alive
 	var betting := phase == Table.Phase.BETTING and alive
 	var playing := phase == Table.Phase.PLAYER_TURN
-	_plaques[&"deal"].show_plaque(betting)
-	_plaques[&"clear"].show_plaque(betting)
-	_plaques[&"all_in"].show_plaque(betting)
-	_plaques[&"hit"].show_plaque(playing)
-	_plaques[&"stand"].show_plaque(playing)
-	_plaques[&"double"].show_plaque(playing)
-	_plaques[&"next"].show_plaque(phase == Table.Phase.RESOLVED and alive)
+	var stage: int = run.offer_stage if betting else RunState.Offer.NONE
+	var picking := stage == RunState.Offer.CHOOSING
+	var proposed := stage == RunState.Offer.PROPOSED
+	var replacing := picking and _pending_pick != null
+	var normal := betting and not picking and not proposed and not _discarding
+	var show: Array = []
+	if normal:
+		show = [&"deal", &"clear", &"all_in"]
+		if not run.effects.is_empty():
+			show.append(&"discard")
+	elif _discarding or replacing:
+		show = [&"cancel"]
+	elif proposed:
+		show = [&"buy", &"skip"]
+	elif picking:
+		show = [&"skip"]
+	elif playing:
+		show = [&"hit", &"stand", &"double"]
+	elif phase == Table.Phase.RESOLVED and alive:
+		show = [&"next"]
+	for id in _plaques:
+		_plaques[id].show_plaque(id in show)
 	_plaques[&"deal"].set_enabled(table.can_deal())
 	_plaques[&"clear"].set_enabled(table.bet > 0)
 	_plaques[&"all_in"].set_enabled(run.chips > 0)
@@ -595,8 +726,56 @@ func _refresh() -> void:
 	_plaques[&"stand"].set_enabled(playing)
 	_plaques[&"double"].set_enabled(table.can_double())
 	_plaques[&"next"].set_enabled(true)
+	_plaques[&"discard"].set_enabled(true)
+	_plaques[&"cancel"].set_enabled(true)
+	_plaques[&"skip"].set_enabled(true)
+	_plaques[&"buy"].label.text = tr("OFFER_BUY") % run.offer_cost
+	_plaques[&"buy"].set_enabled(run.can_buy_offer())
 	for p in _piles:
-		p.set_enabled(betting and table.can_add_bet(p.denomination))
+		p.set_enabled(normal and table.can_add_bet(p.denomination))
+	var selecting := _discarding or replacing
 	for t in _tokens:
-		t.refresh(table)
+		if is_instance_valid(t):
+			t.refresh(table)
+			if selecting:
+				t.set_enabled(true)
+			t.show_ring(selecting, RED if selecting else KindStyle.NEUTRAL)
+	_sync_offer_cards(picking)
+	for c in _offer_cards:
+		c.set_enabled(not replacing)
+	_update_prompt(stage, replacing)
 	_update_ledger()
+
+## Cards on offer stand in the middle of the table while the player is choosing.
+func _sync_offer_cards(show: bool) -> void:
+	var want: Array = run.offer if show else []
+	var have: Array = _offer_cards.map(func(c): return c.data)
+	if have == want:
+		return
+	for c in _offer_cards:
+		c.queue_free()
+	_offer_cards.clear()
+	for i in want.size():
+		var card := OfferCard.new()
+		add_child(card)
+		card.bind(want[i])
+		card.position = Vector3((i - (want.size() - 1) / 2.0) * OFFER_SPACING, TOP + 0.014, OFFER_Z)
+		card.appear(i * 0.1)
+		card.activated.connect(_on_offer_card.bind(card))
+		_offer_cards.append(card)
+
+func _update_prompt(stage: int, replacing: bool) -> void:
+	var key := "%d|%s|%s" % [stage, replacing, _discarding]
+	if key == _ui_state:
+		return
+	_ui_state = key
+	if replacing:
+		_subtitle.text = tr("OFFER_REPLACE")
+	elif _discarding:
+		_subtitle.text = tr("DISCARD_PICK")
+	elif stage == RunState.Offer.PROPOSED:
+		_subtitle.text = tr("OFFER_PROPOSAL")
+		Audio.sfx(&"trick/sparkle")
+		_dealer.react(&"deal")
+	elif stage == RunState.Offer.CHOOSING:
+		_subtitle.text = tr("OFFER_FREE") if run.offer_cost == 0 else tr("OFFER_PICK")

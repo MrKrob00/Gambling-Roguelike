@@ -8,13 +8,8 @@ var _chips: Node3D
 
 func setup(value: int) -> void:
 	denomination = value
-	_chips = Node3D.new()
+	_chips = ChipVisual.make_column(value, 5)
 	add_child(_chips)
-	for k in 5:
-		var chip := ChipVisual.make(value)
-		chip.position.y = k * ChipVisual.HEIGHT
-		chip.rotation.y = randf() * TAU
-		_chips.add_child(chip)
 	add_box_shape(Vector3(0.36, 0.3, 0.36), Vector3(0, 0.1, 0))
 	make_ring(0.125)
 
@@ -23,6 +18,4 @@ func _refresh_visual() -> void:
 		return
 	var tween := new_tween()
 	tween.tween_property(_chips, "position:y", 0.04 if (hovered and enabled) else 0.0, 0.08)
-	_chips.visible = true
-	for chip in _chips.get_children():
-		chip.scale = Vector3.ONE if enabled else Vector3(0.9, 0.7, 0.9)
+	_chips.scale = Vector3.ONE if enabled else Vector3(0.92, 0.8, 0.92)

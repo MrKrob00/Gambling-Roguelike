@@ -38,6 +38,6 @@ func _ready() -> void:
 		var caption := Label.new()
 		caption.text = a.title()
 		unlocks_box.add_child(caption)
-	again_button.pressed.connect(func() -> void: Game.goto(Game.SCENE_LOBBY))
+	again_button.pressed.connect(func() -> void: Game.start_run(&"blackjack"))
 	menu_button.pressed.connect(func() -> void: Game.goto(Game.SCENE_MENU))
 	Audio.sfx(&"game/lose_sting")

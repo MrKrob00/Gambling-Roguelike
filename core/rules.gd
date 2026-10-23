@@ -5,6 +5,10 @@ const START_CHIPS := 500
 const MIN_BET := 10
 const BET_STEPS: Array[int] = [10, 25, 100, 500]
 const ARTIFACT_SLOTS := 3
+## Artifacts come in offers: one free at the start, then one for sale after every payment.
+const OFFER_SIZE := 3
+const OFFER_COST_PERCENT := 0.3
+const OFFER_MIN_COST := 20
 
 ## A payment is taken after every PAYMENT_EVERY resolved hands.
 const PAYMENT_EVERY := 5

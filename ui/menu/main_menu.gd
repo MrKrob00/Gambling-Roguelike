@@ -4,12 +4,14 @@ const Stat := preload("res://core/stat.gd")
 const AMBIENCE := "res://assets/audio/ambience/dark_cavern_ambient_001.ogg"
 
 @onready var play_button: Button = %PlayButton
+@onready var collection_button: Button = %CollectionButton
 @onready var language_button: Button = %LanguageButton
 @onready var quit_button: Button = %QuitButton
 @onready var record_label: Label = %RecordLabel
 
 func _ready() -> void:
 	play_button.pressed.connect(_on_play)
+	collection_button.pressed.connect(_on_collection)
 	language_button.pressed.connect(_on_language)
 	quit_button.pressed.connect(get_tree().quit)
 	quit_button.visible = not OS.has_feature("web")
@@ -24,6 +26,10 @@ func _refresh() -> void:
 
 func _on_play() -> void:
 	Audio.sfx(&"ui/ui_confirm")
+	Game.start_run(&"blackjack")
+
+func _on_collection() -> void:
+	Audio.sfx(&"ui/ui_click")
 	Game.goto(Game.SCENE_LOBBY)
 
 func _on_language() -> void:

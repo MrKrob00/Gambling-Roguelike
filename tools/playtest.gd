@@ -17,8 +17,7 @@ func _initialize() -> void:
 	profile.reset()
 	var game = root.get_node("Game")
 	var catalog = root.get_node("Catalog")
-	var loadout := [catalog.by_id(&"lucky_clover"), catalog.by_id(&"marked_deck")]
-	game.start_run(&"blackjack", loadout)
+	game.start_run(&"blackjack")  # no loadout: the run opens with the free offer, like a real one
 	var started := Time.get_ticks_msec()
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 7
@@ -55,6 +54,21 @@ func _act(scene: Node, rng: RandomNumberGenerator) -> void:
 	steps += 1
 	match table.phase:
 		0:  # BETTING
+			var stage: int = scene.run.offer_stage
+			if stage == 2:  # CHOOSING: take the first card; with full slots replace the first token
+				if scene._pending_pick != null:
+					scene._tokens[0].activate()
+				elif not scene._offer_cards.is_empty() and rng.randf() < 0.85:
+					scene._offer_cards[0].activate()
+				else:
+					_press(scene._plaques[&"skip"])
+				return
+			if stage == 1:  # PROPOSED: buy now and then
+				if rng.randf() < 0.5 and scene.run.can_buy_offer():
+					_press(scene._plaques[&"buy"])
+				else:
+					_press(scene._plaques[&"skip"])
+				return
 			if table.bet == 0:
 				var pile = scene._piles[rng.randi() % 3]  # never the 500 pile: the run should reach payments
 				if pile.enabled:

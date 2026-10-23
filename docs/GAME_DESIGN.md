@@ -13,7 +13,8 @@ the player does (die, land a blackjack, cheat, go all-in...).
 | Run | Endless until death, goal is a record (payments survived, then peak chips) |
 | Debt | A payment is taken every 5 hands and each one is bigger. Not enough chips = death |
 | Death | All chips are lost, the run ends, meta progress (unlocks, stats) stays |
-| Artifacts | 3 slots, picked in the lobby from the unlocked ones. Four kinds: active, passive, consumable, cursed |
+| Artifacts | 3 slots. A run starts empty: a free offer of 3 random unlocked artifacts, pick one. After every payment a paid offer for 30% of the next payment. Replace or discard when full. Four kinds, each its own colour: active blue, passive green, consumable amber, cursed crimson |
+| Deadline | Five candles on the far rail, one snuffed per hand; the amount due floats beside them. Redder light, heartbeat on the last hand, three knocks when it falls |
 | Unlocks | Deaths (first, third, by debt), risky acts (double down win, all-in), doubtful acts (using tricks), wealth and streaks, a natural blackjack |
 | Dealer | Faceless croupier with short ominous lines |
 | Rules | Hit, Stand, Double. Blackjack pays 3:2, dealer stands on 17. No split or insurance in the slice |
@@ -26,11 +27,12 @@ the player does (die, land a blackjack, cheat, go all-in...).
 
 ## Run loop
 
-1. Lobby: pick a game, pick up to 3 unlocked artifacts, press Borrow.
-2. The collectors lend `START_CHIPS` and the first payment is announced.
+1. Menu: take a seat. The collectors lend `START_CHIPS` and the first payment is announced.
+2. At the table the free offer opens: pick 1 of up to 3 random unlocked artifacts (or skip).
 3. Hands: bet, deal, play, resolve. Artifacts hook in at fixed points (see ARCHITECTURE in `CLAUDE.md`).
 4. Every `PAYMENT_EVERY` hands the payment is due. Paid from chips; `PAYMENT_GROWTH` makes the next bigger.
-5. Cannot pay or out of chips: death. The result screen shows the record and every new unlock.
+5. After each payment the house sells a new choice of artifacts for a share of the next payment.
+6. Cannot pay or out of chips: death. The result screen shows the record and every new unlock. The menu's Collection shows every artifact and how to unlock the closed ones.
 
 ## Artifact kinds
 

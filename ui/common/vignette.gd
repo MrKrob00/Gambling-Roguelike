@@ -12,6 +12,9 @@ func _ready() -> void:
 	_material.shader = SHADER
 	material = _material
 
+func set_darkness(value: float) -> void:
+	_material.set_shader_parameter("darkness", value)
+
 func flash_color(color: Color, strength: float = 1.0, duration: float = 0.5) -> void:
 	_material.set_shader_parameter("flash_color", color)
 	var tween := create_tween()

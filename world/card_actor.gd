@@ -23,6 +23,7 @@ func _init() -> void:
 	_front_material.emission_enabled = true
 	_front_material.emission_energy_multiplier = 0.3
 	_front.material_override = _front_material
+	_front.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(_front)
 	if _back_material == null:
 		_back_material = StandardMaterial3D.new()
@@ -39,6 +40,7 @@ func _init() -> void:
 	back.mesh = back_plane
 	back.material_override = _back_material
 	back.position.y = -0.002
+	back.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(back)
 
 func setup(c, face_texture: Texture2D, up: bool) -> void:

@@ -15,8 +15,10 @@ var run
 var last_run
 var last_reason: StringName = &""
 
-func start_run(game_id: StringName, loadout: Array) -> void:
+func start_run(game_id: StringName, loadout: Array = []) -> void:
 	run = RunState.new(game_id, loadout)
+	if loadout.is_empty():
+		run.start_free_offer()
 	last_run = null
 	Events.run_started.emit(run)
 	goto(TABLES[game_id])
