@@ -110,6 +110,8 @@ func deal() -> void:
 	_draw(false, true)
 	_draw(true, false)
 	_set_phase(Phase.PLAYER_TURN)
+	for fx in run.effects:
+		fx.hand_dealt(self)
 	if player.is_blackjack() or dealer.is_blackjack():
 		_reveal_hole()
 		_settle()
@@ -156,6 +158,7 @@ func use_artifact(fx) -> void:
 	fx.use(self)
 	fx.spend()
 	fx.notify()
+	run.retire_spent()
 	Events.stat_added.emit(Stat.TRICKS_USED, 1)
 	trick_used.emit(fx)
 
@@ -165,13 +168,18 @@ func peek_hole() -> void:
 	hole_known = true
 	hole_peeked.emit(dealer.cards[1])
 
-func discard_last_player_card() -> void:
+## The card goes back into the shoe: on top (an undone draw, the next draw is the same card) or at the bottom.
+func discard_last_player_card(back_on_top: bool = true) -> void:
 	var card = player.pop_last()
+	if back_on_top:
+		shoe.cards.append(card)
+	else:
+		shoe.cards.insert(0, card)
 	card_removed.emit(false, card)
 
 ## Swaps the last card for a fresh one. Settles the hand if that makes 21 or a bust.
 func replace_last_player_card() -> void:
-	discard_last_player_card()
+	discard_last_player_card(false)
 	_draw(false, true)
 	_after_player_card()
 
@@ -216,6 +224,7 @@ func _after_player_card() -> bool:
 	if player.is_bust():
 		for fx in run.effects:
 			if fx.prevent_bust(self):
+				run.retire_spent()
 				return true
 		_settle()
 		return false

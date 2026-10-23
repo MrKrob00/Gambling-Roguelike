@@ -437,22 +437,14 @@ func _do_reveal(card) -> void:
 	_update_totals()
 	await _pause(0.25)
 
-func _do_peek(card) -> void:
-	var ghost := CardActor.new()
-	add_child(ghost)
-	ghost.setup(card, _faces.texture_for(card), true)
-	ghost.position = DEALER_ROW + Vector3(0.0, 0.5, 0.35)
-	ghost.rotation.x = 1.0
-	ghost.scale = Vector3.ONE * 0.01
-	var tween := create_tween()
-	tween.tween_property(ghost, "scale", Vector3.ONE * 1.1, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	tween.tween_interval(2.2)
-	tween.tween_property(ghost, "scale", Vector3.ONE * 0.01, 0.25)
-	tween.tween_callback(ghost.queue_free)
+## The hidden card on the table turns into the real one: it is shown face up, the total still waits for the reveal.
+func _do_peek(_card) -> void:
 	Audio.sfx(&"trick/sparkle")
 	_dealer.react(&"peek")
 	_say(&"peek")
-	await _pause(0.5)
+	if _hole_actor != null:
+		await _hole_actor.flip_to(true)
+	await _pause(0.3)
 
 func _do_shuffled() -> void:
 	Audio.sfx(&"tabletop/deck_shuffle_1")

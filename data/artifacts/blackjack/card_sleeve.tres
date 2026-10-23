@@ -14,6 +14,7 @@ icon = ExtResource("3")
 effect_script = ExtResource("2")
 button = true
 uses_per_hand = 1
+cooldown_hands = 3
 charges = 0
 unlock_stat = &"hands_won"
 unlock_value = 5

@@ -128,6 +128,15 @@ func choose_offer(data, replace = null) -> bool:
 	offer_changed.emit()
 	return true
 
+## Takes every spent consumable out of the slots. Called after anything that can spend a charge.
+func retire_spent() -> void:
+	var gone := effects.filter(func(fx): return fx.is_spent())
+	if gone.is_empty():
+		return
+	for fx in gone:
+		effects.erase(fx)
+	artifacts_changed.emit()
+
 func discard(effect) -> void:
 	if effect in effects:
 		effects.erase(effect)
@@ -184,6 +193,7 @@ func _try_die(reason: StringName) -> void:
 func _survives() -> bool:
 	for fx in effects:
 		if fx.prevent_death(self):
+			retire_spent()
 			return true
 	return false
 

@@ -74,7 +74,9 @@ func show_artifact(data, effect = null, footer: String = "") -> void:
 	_title.text = data.title()
 	_title.add_theme_color_override("font_color", color)
 	var tag := tr(KindStyle.KIND_KEYS[data.kind])
-	if data.button and data.uses_per_hand > 0:
+	if data.button and data.cooldown_hands > 0:
+		tag += "  ·  " + tr("COOLDOWN") % data.cooldown_hands
+	elif data.button and data.uses_per_hand > 0:
 		tag += "  ·  " + tr("USES_PER_HAND")
 	elif data.charges > 0:
 		var left: int = effect.charges_left if effect != null else data.charges

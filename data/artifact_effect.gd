@@ -10,6 +10,7 @@ signal triggered
 var data: Resource
 var uses_left: int = 0
 var charges_left: int = 0
+var cooldown_left: int = 0
 
 func bind(artifact: Resource) -> void:
 	data = artifact
@@ -17,6 +18,11 @@ func bind(artifact: Resource) -> void:
 
 func hand_started(_table) -> void:
 	uses_left = data.uses_per_hand
+	cooldown_left = maxi(cooldown_left - 1, 0)
+
+## Called once the opening cards are on the table (the hole card exists).
+func hand_dealt(_table) -> void:
+	pass
 
 ## Buttons only. Default: needs a charge or a use, and the player's turn.
 func can_use(table) -> bool:
@@ -26,7 +32,7 @@ func can_use(table) -> bool:
 		return false
 	if data.charges > 0 and charges_left <= 0:
 		return false
-	return true
+	return cooldown_left <= 0
 
 func use(_table) -> void:
 	pass
@@ -36,6 +42,11 @@ func spend() -> void:
 		uses_left -= 1
 	if data.charges > 0:
 		charges_left -= 1
+	cooldown_left = data.cooldown_hands
+
+## Consumables vanish once every charge is spent.
+func is_spent() -> bool:
+	return data.kind == ArtifactData.Kind.CONSUMABLE and data.charges > 0 and charges_left <= 0
 
 ## The player just went over 21. Return true after fixing the hand yourself.
 func prevent_bust(_table) -> bool:
@@ -64,4 +75,6 @@ func notify() -> void:
 	triggered.emit()
 
 func charges_text() -> String:
+	if cooldown_left > 0:
+		return "(%d)" % cooldown_left
 	return "%d" % charges_left if data.charges > 0 else ""

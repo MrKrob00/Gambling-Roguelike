@@ -14,6 +14,8 @@ enum Rarity { COMMON, UNCOMMON, RARE, LEGENDARY, CURSED }
 ## True when the player triggers it with a button; false when it reacts on its own.
 @export var button: bool = false
 @export var uses_per_hand: int = 0
+## Buttons: hands to wait after a use (2 to 4 for most).
+@export var cooldown_hands: int = 0
 ## Consumables: charges per run, gone for good once spent.
 @export var charges: int = 0
 ## Empty stat means open from the first launch.

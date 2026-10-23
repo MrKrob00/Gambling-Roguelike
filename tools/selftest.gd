@@ -192,16 +192,22 @@ func _artifacts() -> void:
 	check(table.phase == Table.Phase.PLAYER_TURN and table.player.total() == 16, "clover undoes the bust")
 	check(_fx(run, &"lucky_clover").charges_left == 2, "clover spends a charge")
 
-	# Marked deck peeks once per hand.
+	# Marked deck is passive: the hole card is known from the deal.
 	run = _run([&"marked_deck"])
 	table = Table.new(run, 1)
 	_stack(table, [[10], [10], [6], [7]])
 	table.add_bet(100)
 	table.deal()
-	var deck = _fx(run, &"marked_deck")
-	check(deck.can_use(table), "marked deck usable in the player's turn")
-	table.use_artifact(deck)
-	check(table.hole_known and not deck.can_use(table), "marked deck peeks once")
+	check(table.hole_known, "marked deck shows the hole card at the deal")
+
+	# An undone card goes back on top of the shoe, so the next draw is the same card.
+	run = _run([&"lucky_clover"])
+	table = Table.new(run, 1)
+	_stack(table, [[10], [10], [6], [7], [9], [4]])
+	table.add_bet(100)
+	table.deal()
+	table.hit()
+	check(table.shoe.cards.back().rank == 9, "the undone card is on top of the shoe again")
 
 	# Card up the sleeve swaps the last card and costs hush money.
 	run = _run([&"card_sleeve"])
@@ -213,6 +219,8 @@ func _artifacts() -> void:
 	table.use_artifact(_fx(run, &"card_sleeve"))
 	check(table.player.total() == 12, "sleeve swapped 6 for 2, total %d" % table.player.total())
 	check(run.chips == before - 25, "sleeve costs 25%% of the bet, chips %d" % run.chips)
+	check(not _fx(run, &"card_sleeve").can_use(table) or table.phase != Table.Phase.PLAYER_TURN, "sleeve recharges: not usable right after use")
+	check(_fx(run, &"card_sleeve").cooldown_left == 3, "sleeve waits 3 hands")
 
 	# Top hat turns the last card into an ace.
 	run = _run([&"top_hat"])
@@ -222,7 +230,7 @@ func _artifacts() -> void:
 	table.deal()
 	table.use_artifact(_fx(run, &"top_hat"))
 	check(table.player.total() == 21 or table.phase == Table.Phase.RESOLVED, "top hat made an ace: 10+A")
-	check(_fx(run, &"top_hat").charges_left == 0, "top hat is spent")
+	check(_fx(run, &"top_hat") == null, "a spent consumable leaves the slots")
 
 	# Cursed doll swings both ways.
 	run = _run([&"cursed_doll"])
@@ -336,8 +344,8 @@ func _payments_and_death() -> void:
 	table = Table.new(run, 1)
 	run.chips = 60
 	_push_hands(table, 5, 10)
-	check(run.alive and run.chips == 60 and run.payments_paid == 0 and run.debt == 500, "candle forgives the payment, the debt stays, chips %d" % run.chips)
-	check(_fx(run, &"candle_of_mercy").charges_left == 0, "candle is spent")
+	check(run.alive and run.chips == 160 and run.payments_paid == 0 and run.debt == 500, "candle forgives the payment and hands over the last loan again, chips %d" % run.chips)
+	check(_fx(run, &"candle_of_mercy") == null, "the spent candle is gone")
 
 # ---------------------------------------------------------------- offers
 

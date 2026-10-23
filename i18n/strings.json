@@ -1,7 +1,7 @@
 {
  "GAME_TITLE": {
   "en": "Borrowed Luck",
-  "ru": "Одолженная удача"
+  "ru": "Borrowed Luck"
  },
  "MENU_PLAY": {
   "en": "Take a seat",
@@ -364,8 +364,8 @@
   "ru": "Меченая колода"
  },
  "ARTIFACT_MARKED_DECK_DESC": {
-  "en": "+ Shows the dealer's hidden card",
-  "ru": "+ Показывает закрытую карту крупье"
+  "en": "+ Every hand starts with the dealer's hidden card shown",
+  "ru": "+ Каждая раздача начинается с показа закрытой карты крупье"
  },
  "ARTIFACT_MARKED_DECK_HINT": {
   "en": "Open from the start",
@@ -424,8 +424,8 @@
   "ru": "Свеча милосердия"
  },
  "ARTIFACT_CANDLE_OF_MERCY_DESC": {
-  "en": "+ Forgives one failed payment\n+ You keep 50 chips",
-  "ru": "+ Прощает одну невыплату\n+ Остаётся 50 фишек"
+  "en": "+ Forgives one failed payment\n+ The house hands over your last loan again",
+  "ru": "+ Прощает одну невыплату\n+ Дом снова выдаёт последний заём"
  },
  "ARTIFACT_CANDLE_OF_MERCY_HINT": {
   "en": "Go broke 3 times",
@@ -622,5 +622,9 @@
  "DEBT_CLOSED": {
   "en": "Debt paid: %d.\nThe house lends %d chips and writes down %d.",
   "ru": "Долг выплачен: %d.\nДом ссужает %d фишек и записывает %d."
+ },
+ "COOLDOWN": {
+  "en": "recharge: %d hands",
+  "ru": "перезарядка: %d раздачи"
  }
 }

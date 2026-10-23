@@ -8,12 +8,12 @@
 script = ExtResource("1")
 id = &"marked_deck"
 game_id = &"blackjack"
-kind = 0
+kind = 1
 rarity = 0
 icon = ExtResource("3")
 effect_script = ExtResource("2")
-button = true
-uses_per_hand = 1
+button = false
+uses_per_hand = 0
 charges = 0
 unlock_stat = &""
 unlock_value = 0
