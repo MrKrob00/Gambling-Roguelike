@@ -517,7 +517,7 @@
  },
  "TABLE_DEADLINE_AMOUNT": {
   "en": "%d due",
-  "ru": "К уплате %d"
+  "ru": "Долг %d"
  },
  "USES_PER_HAND": {
   "en": "Once per hand",
