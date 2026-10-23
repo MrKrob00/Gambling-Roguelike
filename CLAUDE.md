@@ -1,7 +1,7 @@
 # Borrowed Luck: CLAUDE.md
 
-Gambling roguelike for a game jam (theme TRICK). Godot 4.7, GDScript, 2D, GL Compatibility renderer,
-PC and phone. This file is the map of the project: read it before claiming how anything works.
+Gambling roguelike for a game jam (theme TRICK). Godot 4.7, GDScript, GL Compatibility renderer, PC and
+phone. The menus are 2D pixel UI; the table is a 3D room seen from the player's seat. This file is the map of the project: read it before claiming how anything works.
 Design decisions and numbers: `docs/GAME_DESIGN.md`. Asset register: `assets/README.md`.
 
 ## 0. Critical rules
@@ -40,18 +40,21 @@ autoload/   Events (signal bus), Loc (translations), Catalog (artifacts), Profil
 core/       pure logic, no nodes: Rules (all numbers), Stat (counter names), Card, Shoe, RunState, Dealer
 data/       ArtifactData (resource), ArtifactEffect (behaviour base), catalog.tres,
             artifacts/<game>/*.tres and artifacts/<game>/effects/*.gd
-games/<game>/  one folder per casino game: table (rules) + scene (view)
-ui/         menu, lobby, result, common components (CardView, HandView, ArtifactSlot, ArtifactTile),
+games/<game>/  one folder per casino game: table (rules) + 3D view + the dealer
+world/      3D building blocks: casino_room.tscn (generated), CameraRig, CardActor, CardFaces, ChipStack,
+            ChipPile, Plaque, ArtifactToken, FloatingText, Pickable base
+ui/         menu, lobby, result, common components (CardView, ArtifactTile, vignette),
             theme.tres (built by tools/build_theme.gd)
 i18n/       strings.json  {KEY: {en, ru}}
 assets/     art, ui, audio, fonts, shaders (see assets/README.md)
-tools/      generators: generate_sfx.py, generate_cards.py, build_theme.gd
+tools/      generators and harnesses: generate_sfx.py, generate_cards.py, build_theme.gd, build_room.gd,
+            selftest.gd, playtest.gd, shot.gd, shot3d.gd
 docs/       design and per-system notes
 ```
 
-Screen flow: `main_menu` -> `lobby` (pick 3 artifacts) -> table scene -> `result` -> lobby or menu.
-Base resolution is 640x360 with `canvas_items` stretch and `expand` aspect: pixel art is drawn at 1:1
-and scaled by an integer on any screen.
+Screen flow: `main_menu` -> `lobby` (pick 3 artifacts) -> 3D table -> `result` -> lobby or menu.
+The 2D UI base resolution is 640x360 (`canvas_items`, `expand`): pixel art is drawn at 1:1 and scaled by an
+integer. The 3D view renders at the window's real resolution.
 
 ## 2. Architecture invariants
 
@@ -59,12 +62,31 @@ and scaled by an integer on any screen.
 
 - `games/blackjack/blackjack_table.gd` is a `RefCounted`. It owns the shoe, both hands, the bet, the
   phase, and **every rule decision**. It talks to the screen through its own signals.
-- `blackjack_scene.gd` turns each signal into a **queued animation step** (`_enqueue`, `_pump`). The rules
-  resolve instantly; the screen lags a beat behind so nothing is spoiled (a payout never shows before the
-  dealer's last card lands). Input is ignored while the queue runs. Every UI change goes through the queue,
-  including labels, or they would run ahead of the cards.
+- `blackjack_view_3d.gd` turns each signal into a **queued animation step** (`core/step_queue.gd`). The
+  rules resolve instantly; the screen lags a beat behind so nothing is spoiled (a payout never shows before
+  the dealer's last card lands). Input is ignored while the queue runs. Every visible change goes through
+  the queue, including numbers, or they would run ahead of the cards.
 - A new game is a new `games/<name>/` folder with the same shape, a row in `Game.TABLES`, its own artifacts
   in `data/artifacts/<name>/`, and a way to pick it in the lobby.
+
+### The 3D table
+
+- Everything is built in code from `blackjack_view_3d.gd`'s layout constants (metres, `TOP` is the felt):
+  the table runs **across** the view with the dealer opposite. Three zones, each on its own plate: artifact
+  tokens on a tray at the left, the bet circle and the four chip piles in the middle, the action plaques in
+  a column at the right. Change a position there, not in a scene.
+- **Every control is an object on the table** (`world/pickable_3d.gd`, physics layer 2): chip piles, plaques,
+  artifact tokens. The view casts a ray from the pointer or a tap and calls `activate()` on what it hits. A
+  touch arrives as an emulated mouse event, so one code path serves both.
+- **One tween per pickable** (`Pickable.new_tween()` kills the previous one): an older hide callback must never
+  undo a newer show.
+- Card faces are the 2D `CardView` rendered once into a tiny `SubViewport` (`world/card_faces.gd`), so the
+  3D cards show the same pixel art. Face-up is `rotation.x = 0`, face-down is `PI`.
+- The numbers (chips, payment clock) and the dealer's subtitle are a 2D overlay on purpose: readable on a
+  phone. Everything the player presses is 3D.
+- The room (`world/casino_room.tscn`) is **generated** by `tools/build_room.gd` from primitives: black floor,
+  one lamp, ghost tables, neon, dust. Re-running the tool overwrites hand edits; change the layout there.
+- The dealer is a KayKit skeleton (`assets/models/dealer`, CC0) driven by `games/blackjack/dealer_3d.gd`.
 
 ### Artifacts are data plus a hook script
 
@@ -124,14 +146,16 @@ $G --headless --path /tmp/run --script res://tools/selftest.gd
 
 - `tools/selftest.gd`: loads every script, scene and resource, checks translations, plays scripted hands
   against the real rules, then fuzzes random runs with random artifacts.
-- `tools/playtest.gd`: plays a whole run through the real screens by pressing the real buttons.
-- `tools/shot.gd`: renders a screen to a PNG (`SHOT=menu|lobby|bet|play|result LOCALE=en|ru OUT=...`);
+- `tools/playtest.gd`: plays a whole run through the real 3D table by activating the real objects on it.
+- `tools/shot.gd`: renders a screen to a PNG (`SHOT=menu|lobby|result|table3d|table3d_play LOCALE=en|ru OUT=...`);
   needs a real driver: `xvfb-run -a -s "-screen 0 1280x720x24" $G --path /tmp/run --rendering-driver opengl3
-  --resolution 1280x720 --script res://tools/shot.gd`. Headless never compiles a shader or draws a frame.
+  --resolution 960x540 --script res://tools/shot.gd`. Headless never compiles a shader or draws a frame.
+  Keep 3D shots at 960x540: llvmpipe is slow, and a script error in a harness can hang it, so always wrap it in
+  `timeout`.
 - In a `--script` harness autoloads are ready only after `await process_frame`, and a harness that names
   an autoload by identifier does not compile: use `root.get_node("Name")`.
-- Generated files (`.import`, `.uid`, `ui/theme.tres`, `ui/fonts/*.tres`) are made on the run copy and
-  copied back into the repo. Do not sync the repo over a copy that holds newer `.import` files.
+- Generated files (`.import`, `.uid`, `ui/theme.tres`, `ui/fonts/*.tres`, `world/casino_room.tscn`) are made
+  on the run copy and copied back into the repo **before** the next sync (a sync deletes what the repo lacks). Do not sync the repo over a copy that holds newer `.import` files.
 - SVG icons are imported with `svg/scale=0.25` and mipmaps (set in their `.import`); a Button cannot give its
   icon a different filter than its frame, so tiles draw the icon in a child `TextureRect`.
 

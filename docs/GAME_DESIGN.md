@@ -8,7 +8,7 @@ the player does (die, land a blackjack, cheat, go all-in...).
 
 | Topic | Decision |
 |---|---|
-| Platform | PC and phone at once. Landscape, base 640x360 with `canvas_items` + `expand`: pixel art is drawn at 1:1 and scaled by an integer on any screen |
+| Platform | PC and phone at once, landscape. 2D UI base 640x360 (`canvas_items` + `expand`); the 3D view renders at the real resolution |
 | First slice | Blackjack only. The code is built so that every game is a module with its own artifact pool |
 | Run | Endless until death, goal is a record (payments survived, then peak chips) |
 | Debt | A payment is taken every 5 hands and each one is bigger. Not enough chips = death |
@@ -18,7 +18,10 @@ the player does (die, land a blackjack, cheat, go all-in...).
 | Dealer | Faceless croupier with short ominous lines |
 | Rules | Hit, Stand, Double. Blackjack pays 3:2, dealer stands on 17. No split or insurance in the slice |
 | Language | English and Russian from the start (`tr()` with `i18n/strings.json`) |
-| Tone | Dark, gothic, occult casino (see `assets/README.md`) |
+| Tone | Dark, oppressive, modern: an abandoned underground casino, not a medieval dungeon (see `assets/README.md`) |
+| View | 3D, first person at the table, stylized low-poly with soft light. Menus stay 2D pixel UI |
+| Controls | Everything pressable is an object on the table: chip piles, plaques, artifact tokens. Numbers and subtitles are a 2D overlay |
+| Table layout | Table across the view, dealer opposite. Three zones: artifacts left, bet and chips middle, actions right |
 
 ## Run loop
 

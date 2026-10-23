@@ -8,7 +8,7 @@ const SCENE_MENU := "res://ui/menu/main_menu.tscn"
 const SCENE_LOBBY := "res://ui/lobby/lobby.tscn"
 const SCENE_RESULT := "res://ui/result/result.tscn"
 const TABLES := {
-	&"blackjack": "res://games/blackjack/blackjack_scene.tscn",
+	&"blackjack": "res://games/blackjack/blackjack_scene_3d.tscn",
 }
 
 var run

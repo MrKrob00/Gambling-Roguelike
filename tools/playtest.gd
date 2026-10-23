@@ -1,9 +1,10 @@
 extends SceneTree
-## Plays a whole run through the real screens by pressing the real buttons: bet, deal, hit/stand/double,
-## next hand, until the collectors win and the result screen shows. Time is sped up.
+## Plays a whole run through the real 3D table by activating the real objects on it: chip piles, plaques,
+## tokens. Time is sped up. Ends when the collectors win and the result screen shows.
 ## Run: godot --headless --path <copy> --script res://tools/playtest.gd
+## (headless is enough: the picking is done by calling `activate()` on the same objects a click would hit)
 
-const MAX_REAL_SECONDS := 120.0
+const MAX_REAL_SECONDS := 150.0
 
 var scene_log: Array = []
 var steps := 0
@@ -30,7 +31,7 @@ func _initialize() -> void:
 			scene_log.append(scene.name)
 		if scene.name == "Result":
 			break
-		if scene.name == "BlackjackScene":
+		if scene.name == "BlackjackView3D":
 			_act(scene, rng)
 	print("scenes visited: ", scene_log)
 	print("steps: ", steps, " stats: ", profile.stats)
@@ -43,32 +44,34 @@ func _initialize() -> void:
 	DirAccess.remove_absolute(ProjectSettings.globalize_path("user://playtest_profile.json"))
 	quit(0 if ok else 1)
 
+func _press(plaque) -> void:
+	if plaque.enabled:
+		plaque.activate()
+
 func _act(scene: Node, rng: RandomNumberGenerator) -> void:
-	if scene._pumping or scene.table == null or not scene.run.alive:
+	if scene._queue.busy or not scene.run.alive:
 		return
 	var table = scene.table
 	steps += 1
 	match table.phase:
 		0:  # BETTING
 			if table.bet == 0:
-				var chips: Node = scene.get_node("%ChipButtons")
-				var pick := rng.randi() % 3  # never the 500 chip: the run should last through payments
-				var btn: BaseButton = chips.get_child(pick)
-				if btn.disabled:
-					btn = chips.get_child(0)
-				btn.pressed.emit()
-			elif not scene.deal_button.disabled:
-				scene.deal_button.pressed.emit()
-		1:  # PLAYER_TURN
-			for s in scene._slots:
-				if not s.disabled and s.fx.data.button and rng.randf() < 0.3:
-					s.pressed.emit()
-					return
-			if table.player.total() < 15 or (table.player.total() < 17 and rng.randf() < 0.3):
-				scene.hit_button.pressed.emit()
-			elif table.can_double() and rng.randf() < 0.2:
-				scene.double_button.pressed.emit()
+				var pile = scene._piles[rng.randi() % 3]  # never the 500 pile: the run should reach payments
+				if pile.enabled:
+					pile.activate()
 			else:
-				scene.stand_button.pressed.emit()
+				_press(scene._plaques[&"deal"])
+		1:  # PLAYER_TURN
+			for t in scene._tokens:
+				if t.enabled and t.fx.data.button and rng.randf() < 0.3:
+					t.activate()
+					return
+			var total: int = table.player.total()
+			if total < 15 or (total < 17 and rng.randf() < 0.3):
+				_press(scene._plaques[&"hit"])
+			elif table.can_double() and rng.randf() < 0.2:
+				_press(scene._plaques[&"double"])
+			else:
+				_press(scene._plaques[&"stand"])
 		3:  # RESOLVED
-			scene.next_button.pressed.emit()
+			_press(scene._plaques[&"next"])
