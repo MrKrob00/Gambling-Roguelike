@@ -240,10 +240,119 @@ def item_use():
     return reverb(chirp + sparkle, 0.7, 0.3)
 
 
+# ---------------------------------------------------------------- trick
+def poof():
+    dur = 0.7
+    n = int(SR * dur)
+    puff = lowpass(noise(dur), 1800) * env(n, 0.004, 0.25, 4)
+    thump = sine(np.linspace(180, 70, n), dur) * env(n, 0.002, 0.1, 5) * 0.6
+    sparkle = highpass(noise(dur), 6000) * env(n, 0.03, 0.35, 4) * 0.12
+    return reverb(puff + thump + sparkle, 0.5, 0.2)
+
+
+def whoosh():
+    dur = 0.4
+    n = int(SR * dur)
+    sweep = lowpass(noise(dur), 3500)
+    sweep = highpass(sweep, 300) * np.sin(np.linspace(0, np.pi, n)) ** 2
+    return sweep
+
+
+def card_flick():
+    n = int(SR * 0.09)
+    flap = highpass(noise(0.09), 2500) * env(n, 0.0008, 0.03, 6)
+    snap = sine(900, 0.09) * env(n, 0.0005, 0.012, 6) * 0.25
+    return flap + snap
+
+
+def sparkle():
+    dur = 1.0
+    out = np.zeros(int(SR * dur))
+    for i, f in enumerate(rng.permutation([2093.0, 2637.0, 3136.0, 3520.0, 4186.0, 2349.0, 3951.0, 2794.0])):
+        s = int(SR * 0.07 * i)
+        b = bell(f, 0.35, ((1, 1.0), (2.01, 0.3))) * 0.5
+        out[s : s + len(b)] += b[: len(out) - s]
+    return reverb(out, 0.6, 0.3)
+
+
+def drumroll():
+    dur = 1.6
+    n = int(SR * dur)
+    hits = np.zeros(n)
+    t = 0.0
+    gap = 0.07
+    while t < dur - 0.08:
+        s = int(SR * t)
+        hit = lowpass(noise(0.06), 1800) * env(int(SR * 0.06), 0.0008, 0.025, 5)
+        hits[s : s + len(hit)] += hit
+        t += gap * (0.75 + 0.25 * (1 - t / dur))
+    return hits * (0.3 + 0.7 * np.linspace(0, 1, n) ** 1.5)
+
+
+def ta_da():
+    chord = [392.0, 493.9, 587.3, 784.0]
+    first = mix(*[bell(f, 0.5) for f in chord[:2]])
+    second = pad(mix(*[bell(f * 1.5, 1.2) for f in chord]), 0.18)
+    return reverb(mix(first * 0.8, second), 0.9, 0.3)
+
+
+def reveal_sting():
+    n = int(SR * 0.9)
+    riser = saw(np.linspace(110, 440, n), 0.9) * np.linspace(0, 1, n) ** 2
+    riser = lowpass(riser, 1400) * 0.5
+    hit = pad(bell(220, 0.9, ((1, 1.0), (1.5, 0.4), (2.0, 0.3))), 0.85)
+    return reverb(mix(riser, hit), 0.8, 0.3)
+
+
+def caught():
+    dur = 1.0
+    n = int(SR * dur)
+    f = 440 + 180 * np.sign(np.sin(2 * np.pi * 4 * t_(dur)))
+    alarm = lowpass(saw(f, dur), 2000) * env(n, 0.005, 0.8, 2.5) * 0.5
+    thud = sine(np.linspace(90, 40, n), dur) * env(n, 0.002, 0.2, 5)
+    return reverb(alarm + thud, 0.5, 0.2)
+
+
+def lockpick_click():
+    out = np.zeros(int(SR * 0.8))
+    for t_s, amp in ((0.0, 0.7), (0.17, 0.5), (0.36, 0.6), (0.55, 0.9)):
+        s = int(SR * t_s)
+        n = int(SR * 0.04)
+        c = highpass(noise(0.04), 2500) * env(n, 0.0004, 0.01, 6) + sine(3200, 0.04) * env(n, 0.0004, 0.008, 6) * 0.4
+        out[s : s + n] += c * amp
+    return out
+
+
+def safe_open():
+    dur = 1.2
+    n = int(SR * dur)
+    clunk = sine(np.linspace(130, 55, int(SR * 0.3)), 0.3) * env(int(SR * 0.3), 0.001, 0.1, 5)
+    creak = lowpass(saw(np.linspace(220, 340, n), dur), 900) * np.sin(np.linspace(0, np.pi, n)) * 0.18
+    return reverb(mix(clunk, pad(creak, 0.2)), 0.5, 0.2)
+
+
+def glass_shatter():
+    dur = 0.9
+    n = int(SR * dur)
+    crash = highpass(noise(dur), 2500) * env(n, 0.0005, 0.12, 5)
+    out = crash * 0.6
+    for _ in range(18):
+        s = int(SR * rng.uniform(0.02, 0.6))
+        b = bell(rng.uniform(2500, 7000), 0.2, ((1, 1.0), (2.3, 0.4))) * rng.uniform(0.1, 0.35)
+        out[s : s + len(b)] += b[: n - s]
+    return out
+
+
+def swap():
+    return mix(whoosh() * 0.7, pad(bell(700, 0.25), 0.12), pad(bell(1050, 0.3), 0.2))
+
+
 JOBS = {
     "ui": [ui_click, ui_hover, ui_confirm, ui_cancel, ui_error],
     "game": [coin_ding, win_small, win_jackpot, lose_sting, reel_stop, reel_spin, lever_pull,
              curse_hit, heartbeat, tension_drone, card_reveal, item_use],
+    "trick": [poof, whoosh, card_flick, sparkle, drumroll, ta_da, reveal_sting, caught,
+              lockpick_click, safe_open, glass_shatter, swap],
 }
 LOOPS = {"tension_drone"}
 
