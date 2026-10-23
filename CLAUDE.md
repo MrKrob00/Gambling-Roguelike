@@ -94,10 +94,10 @@ integer. The 3D view renders at the window's real resolution.
   **overwrites those edits**. The scripts only call `play(name)`. The right hand (`world/player_hand_3d.gd`) does
   every press: `BlackjackView3D._act_on` carries it over the felt to the object, taps it and activates the object at
   contact, input is ignored while it reaches. Each death takes a finger of this hand (`set_lives`, `Rules.LIVES` = 5), in one of four scenes
-  (`world/finger_cut_3d.gd`, primitives and particles, no assets): the skeleton bites, an enforcer chops it with a cleaver, a bomb
-  blows it up, a revolver (a CC0 model) shoots it off. Only the bite raises the hand to the camera; for the other three the hand lies flat on
+  (`world/finger_cut_3d.gd`, particles plus two CC0 models): the skeleton bites, an enforcer's arm chops it with a cleaver (a CC0 model), the
+  finger swells, flushes red and bursts by itself (no prop), a revolver (a CC0 model) shoots it off. Only the bite raises the hand to the camera; for the other three the hand lies flat on
   the table and waits. The collectors' deaths (debt) get the cleaver or the gun, the dealer's (broke) the teeth or
-  the bomb. The scene calls back at the instant of impact and talks to the view only through signals.
+  the burst. The scene calls back at the instant of impact and talks to the view only through signals.
 - **A collider that sits in front of another pickable eats its taps**; `pickcheck` catches an overlap.
 - **Every control is an object on the table** (`world/pickable_3d.gd`, physics layer 2): plaques,
   artifact tokens. The view casts a ray from the pointer or a tap and calls `activate()` on what it hits. A
@@ -159,7 +159,7 @@ integer. The 3D view renders at the window's real resolution.
   `prevent_death` saves it. **A death costs a life** (`RunState.lives`, `life_lost` signal): the house lends the current
   loan again and the run goes on; the fifth death ends it (`died`).
 - The purse is shown as chip columns standing on a rack at the near rim, one per denomination (`world/chip_rack_3d.gd`), display only.
-- The debt is physical too: two enforcers (KayKit Barbarian and hooded Rogue, weapons hidden) stand at the player's shoulders and lean in as the
+- The debt is physical too: two identical enforcers (a faceless black-suited CC0 base mesh, arms lowered, breathing) stand at the player's shoulders and lean in as the
   deadline nears (`world/enforcers_3d.gd`); on the last hand a gloved hand (the same rigged hand scene) raps three times on the felt (`world/warning_hand_3d.gd`).
 - The deadline is physical: `world/deadline_candles_3d.gd` burns one candle per hand toward the payment, the
   dealer's rim light reddens and the vignette darkens as it nears, the last hand has a heartbeat, and the

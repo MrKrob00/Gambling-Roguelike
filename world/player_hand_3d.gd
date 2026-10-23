@@ -10,7 +10,7 @@ const HAND_SCALE := 3.5
 ## The felt is at y 1.03; the hand rests a little above it, at the right of the near edge.
 const REST_POS := Vector3(1.2, 1.14, 1.45)
 const PRESENT_POS := Vector3(0.5, 1.7, 1.3)
-## For the scenes that come to the hand (cleaver, bomb, gun) it lies flat on the table, in the open, and waits.
+## For the scenes that come to the hand (cleaver, burst, gun) it lies flat on the table, in the open, and waits.
 const LAY_POS := Vector3(0.3, 1.14, 0.95)
 const HOVER := 0.3
 const REACH_TIME := 0.2
@@ -23,6 +23,7 @@ var _anim: AnimationPlayer
 var _tween: Tween
 var _skeleton: Skeleton3D
 var _gen: int = 0
+var _glove: StandardMaterial3D
 
 func _ready() -> void:
 	position = REST_POS
@@ -35,6 +36,7 @@ func _ready() -> void:
 	_skeleton = model.find_children("*", "Skeleton3D", true, false)[0]
 	_anim.play("idle")
 	var glove := StandardMaterial3D.new()
+	_glove = glove
 	glove.albedo_color = GLOVE
 	glove.roughness = 0.55
 	glove.emission_enabled = true
@@ -113,6 +115,14 @@ func lay_for_cut() -> void:
 	await get_tree().create_timer(0.6).timeout
 	if gen != _gen:
 		return
+
+## Swells the finger the next loss takes (1.0 = normal) and flushes the hand red with it.
+func swell_finger(lives_after: int, amount: float) -> void:
+	var finger: String = CUT_ORDER[clampi(Rules.LIVES - lives_after - 1, 0, CUT_ORDER.size() - 1)]
+	var bone := _skeleton.find_bone("%s_Proximal_R" % finger)
+	if bone >= 0:
+		_skeleton.set_bone_pose_scale(bone, Vector3.ONE * amount)
+	_glove.emission = GLOVE.lerp(Color(0.9, 0.05, 0.05), clampf((amount - 1.0) / 0.9, 0.0, 1.0))
 
 ## Where the finger that the next loss takes is, in the world.
 func finger_tip(lives_after: int) -> Vector3:

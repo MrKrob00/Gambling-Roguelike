@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://bt37nbyvyewxn"
-path="res://.godot/imported/Rogue_Hooded.glb-e3df2c8334a9b5cad75b9496f65eddef.scn"
+uid="uid://dfojsm7qqnu7m"
+path="res://.godot/imported/cleaver.glb-5915094c0da2ed6d7670c8e33fb47adc.scn"
 
 [deps]
 
-source_file="res://assets/models/enforcers/Rogue_Hooded.glb"
-dest_files=["res://.godot/imported/Rogue_Hooded.glb-e3df2c8334a9b5cad75b9496f65eddef.scn"]
+source_file="res://assets/models/weapons/cleaver.glb"
+dest_files=["res://.godot/imported/cleaver.glb-5915094c0da2ed6d7670c8e33fb47adc.scn"]
 
 [params]
 

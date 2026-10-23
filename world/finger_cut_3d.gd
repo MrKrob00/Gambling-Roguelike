@@ -8,24 +8,30 @@ signal camera_shake(strength: float, duration: float)
 signal screen_flash(color: Color, strength: float, time: float)
 signal impact
 
-enum Kind { BITE, CLEAVER, BOMB, PISTOL }
+enum Kind { BITE, CLEAVER, BURST, PISTOL }
 
 const REVOLVER: Mesh = preload("res://assets/models/revolver/revolver.obj")
 const REVOLVER_TEXTURE: Texture2D = preload("res://assets/models/revolver/revolver_diffuse.png")
 ## The model is 9 units long; this makes it about 80 cm in the oversized room.
 const REVOLVER_SCALE := 0.09
+const CLEAVER: PackedScene = preload("res://assets/models/weapons/cleaver.glb")
+const CLEAVER_TEXTURE: Texture2D = preload("res://assets/models/weapons/W003_texture.png")
+## The blade and handle together, in metres in the oversized room.
+const CLEAVER_LENGTH := 0.8
 const TABLE_TOP := 1.03
 const BLOOD := Color(0.55, 0.02, 0.04)
 const STEEL := Color(0.72, 0.74, 0.8)
 
 ## The dealer, who leans over the table to bite.
 var dealer: Node3D
+## Scales the finger that is about to be lost (1.0 = normal); set by the view for each scene.
+var swell: Callable = func(_amount: float) -> void: pass
 
 func play(kind: int, tip: Vector3, on_hit: Callable) -> void:
 	match kind:
 		Kind.BITE: await _bite(tip, on_hit)
 		Kind.CLEAVER: await _cleaver(tip, on_hit)
-		Kind.BOMB: await _bomb(tip, on_hit)
+		Kind.BURST: await _burst_finger(tip, on_hit)
 		Kind.PISTOL: await _pistol(tip, on_hit)
 
 # ---------------------------------------------------------------- the four scenes
@@ -55,48 +61,73 @@ func _bite(tip: Vector3, on_hit: Callable) -> void:
 func _cleaver(tip: Vector3, on_hit: Callable) -> void:
 	var arm := Node3D.new()
 	add_child(arm)
-	# The pivot is the fist; the blade hangs 0.7 below it, so at rotation 0 its edge is exactly on the finger.
-	var steel := _material(STEEL, 0.35, 0.3, STEEL, 0.35)
-	_box(arm, Vector3(0.5, 0.34, 0.03), Vector3(0.0, -0.52, 0.0), steel)
-	_box(arm, Vector3(0.07, 0.3, 0.05), Vector3(0.0, -0.15, 0.0), _material(Color(0.25, 0.14, 0.08), 0.9))
-	_box(arm, Vector3(0.12, 0.12, 0.12), Vector3(0.0, 0.0, 0.0), _material(Color(0.04, 0.04, 0.05), 0.5))
-	_box(arm, Vector3(0.2, 1.2, 0.2), Vector3(0.0, 0.7, 0.0), _material(Color(0.04, 0.04, 0.06), 0.8))
-	arm.position = tip + Vector3(0.9, 1.3, 0.0)
-	arm.rotation.z = -1.5
+	# The pivot is the fist at the end of the handle. The cleaver model (CC0) has its handle end low on +y and its cutting
+	# edge on -x: it is centred and scaled by its measured bounds, then turned a quarter so the blade lies along -x with
+	# the edge down.
+	var blade := Node3D.new()
+	arm.add_child(blade)
+	var model: Node3D = CLEAVER.instantiate()
+	blade.add_child(model)
+	for m in model.find_children("*", "MeshInstance3D", true, false):
+		m.material_override = _cleaver_material()
+		m.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var bounds := _bounds(model, blade)
+	model.position = -Vector3(bounds.get_center().x, bounds.position.y, bounds.get_center().z)
+	var s := CLEAVER_LENGTH / bounds.size.y
+	blade.scale = Vector3.ONE * s
+	blade.rotation_degrees.z = 90.0
+	var edge := bounds.size.x * 0.5 * s
+	_box(arm, Vector3(0.12, 0.12, 0.12), Vector3.ZERO, _material(Color(0.04, 0.04, 0.05), 0.5))
+	_box(arm, Vector3(1.4, 0.2, 0.2), Vector3(0.75, 0.0, 0.0), _material(Color(0.04, 0.04, 0.06), 0.8))
+	var chop_at := tip + Vector3(CLEAVER_LENGTH * 0.5, edge, 0.0)
+	arm.position = chop_at + Vector3(0.8, 1.0, 0.0)
+	arm.rotation.z = -1.3
 	var rise := create_tween()
-	rise.tween_property(arm, "position", tip + Vector3(0.0, 0.7, 0.0) + Vector3(0.45, 0.35, 0.0), 0.5).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	rise.tween_property(arm, "position", chop_at + Vector3(0.15, 0.55, 0.0), 0.5).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	rise.parallel().tween_property(arm, "rotation:z", -0.6, 0.5)
 	await _wait(0.9)
 	Audio.sfx(&"trick/whoosh", 1.3)
 	var swing := create_tween()
-	swing.tween_property(arm, "position", tip + Vector3(0.0, 0.7, 0.0), 0.1).set_ease(Tween.EASE_IN)
+	swing.tween_property(arm, "position", chop_at, 0.1).set_ease(Tween.EASE_IN)
 	swing.parallel().tween_property(arm, "rotation:z", 0.0, 0.1).set_ease(Tween.EASE_IN)
 	await _wait(0.1)
 	_hit(tip, on_hit, &"game/cleaver_chop", 0.09)
 	await _wait(0.8)
 	var out := create_tween()
-	out.tween_property(arm, "position", tip + Vector3(0.9, 1.5, 0.0), 0.4)
+	out.tween_property(arm, "position", chop_at + Vector3(0.9, 1.2, 0.0), 0.4)
 	await _wait(0.4)
 	arm.queue_free()
 
-## A bomb sits on the fingertip, its fuse burns down, and it goes off.
-func _bomb(tip: Vector3, on_hit: Callable) -> void:
-	var bomb := Node3D.new()
-	add_child(bomb)
-	bomb.position = tip + Vector3(0.0, 0.1, 0.0)
-	_sphere(bomb, 0.1, Vector3.ZERO, _material(Color(0.03, 0.03, 0.04), 0.3, 0.6))
-	_box(bomb, Vector3(0.02, 0.14, 0.02), Vector3(0.0, 0.14, 0.0), _material(Color(0.5, 0.4, 0.25), 0.9))
-	var spark := _sphere(bomb, 0.03, Vector3(0.0, 0.22, 0.0), _material(Color(1.0, 0.6, 0.1), 0.5, 0.0, Color(1.0, 0.5, 0.05), 4.0))
-	bomb.scale = Vector3.ONE * 0.01
-	var pop := create_tween()
-	pop.tween_property(bomb, "scale", Vector3.ONE, 0.2).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	Audio.sfx(&"game/fuse_hiss")
-	await _wait(0.25)
-	for i in 6:
-		spark.visible = i % 2 == 0
-		await _wait(0.2 - i * 0.025)
-	spark.visible = true
-	bomb.queue_free()
+## The bounds of every mesh under `node`, in the space of `frame`.
+func _bounds(node: Node3D, frame: Node3D) -> AABB:
+	var box := AABB()
+	var first := true
+	for m in node.find_children("*", "MeshInstance3D", true, false):
+		var b: AABB = frame.global_transform.affine_inverse() * (m.global_transform * m.get_aabb())
+		box = b if first else box.merge(b)
+		first = false
+	return box
+
+func _cleaver_material() -> StandardMaterial3D:
+	var mat := StandardMaterial3D.new()
+	mat.albedo_texture = CLEAVER_TEXTURE
+	mat.roughness = 0.5
+	mat.metallic = 0.3
+	mat.emission_enabled = true
+	mat.emission_texture = CLEAVER_TEXTURE
+	mat.emission_energy_multiplier = 0.35
+	return mat
+
+## The finger itself swells, throbbing, until it bursts. No props: the hand does it (`swell` scales the finger).
+func _burst_finger(tip: Vector3, on_hit: Callable) -> void:
+	for i in 16:
+		var amount := 1.0 + i * 0.07
+		swell.call(amount)
+		if i % 4 == 0:
+			Audio.sfx(&"game/heartbeat", 1.0 + i * 0.04, -6.0)
+		camera_shake.emit(0.004 * i, 0.12)
+		await _wait(0.07)
+	swell.call(1.0)
 	_boom(tip)
 	_hit(tip, on_hit, &"game/explosion", 0.0)
 	await _wait(1.0)
@@ -168,18 +199,19 @@ func _hit(tip: Vector3, on_hit: Callable, sound: StringName, shake: float) -> vo
 
 func _boom(at: Vector3) -> void:
 	var light := OmniLight3D.new()
-	light.light_color = Color(1.0, 0.6, 0.25)
-	light.light_energy = 10.0
-	light.omni_range = 4.0
+	light.light_color = Color(1.0, 0.2, 0.15)
+	light.light_energy = 6.0
+	light.omni_range = 3.0
 	light.position = at
 	add_child(light)
 	var fade := create_tween()
-	fade.tween_property(light, "light_energy", 0.0, 0.35)
+	fade.tween_property(light, "light_energy", 0.0, 0.3)
 	fade.tween_callback(light.queue_free)
-	_burst(at, Color(1.0, 0.55, 0.12), 46, 0.016, 3.2, Vector3(0.0, -4.0, 0.0), 0.6)
-	_burst(at, Color(0.2, 0.2, 0.22), 18, 0.05, 1.0, Vector3(0.0, 0.6, 0.0), 1.2)
-	screen_flash.emit(Color(1.0, 0.9, 0.7), 1.0, 0.5)
-	camera_shake.emit(0.16, 0.7)
+	_burst(at, BLOOD, 70, 0.02, 3.4, Vector3(0.0, -7.0, 0.0), 0.9)
+	_burst(at, Color(0.9, 0.85, 0.75), 18, 0.022, 3.0, Vector3(0.0, -8.0, 0.0), 0.8)
+	_burst(at, Color(0.7, 0.1, 0.12), 24, 0.045, 1.6, Vector3(0.0, -3.0, 0.0), 0.7)
+	screen_flash.emit(Color(1.0, 0.25, 0.2), 1.0, 0.5)
+	camera_shake.emit(0.14, 0.6)
 
 func _blood(at: Vector3) -> void:
 	_burst(at, BLOOD, 34, 0.013, 2.4, Vector3(0.0, -7.0, 0.0), 0.9)

@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://d0uytynqr4qtg"
-path="res://.godot/imported/Barbarian.glb-5dc1a2163ea42211254adc24b9ad48a9.scn"
+uid="uid://4fgrwforg0yu"
+path="res://.godot/imported/male_base_mesh.glb-3c73ef5951b6b48451c3292ec8887c4c.scn"
 
 [deps]
 
-source_file="res://assets/models/enforcers/Barbarian.glb"
-dest_files=["res://.godot/imported/Barbarian.glb-5dc1a2163ea42211254adc24b9ad48a9.scn"]
+source_file="res://assets/models/enforcers/male_base_mesh.glb"
+dest_files=["res://.godot/imported/male_base_mesh.glb-3c73ef5951b6b48451c3292ec8887c4c.scn"]
 
 [params]
 

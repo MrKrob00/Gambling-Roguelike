@@ -616,10 +616,10 @@ func _do_life_lost(left: int, reason: StringName) -> void:
 	await _lose_finger(left, reason)
 	await _pause(0.3)
 
-## The hand is raised and one of four scenes takes the finger: the skeleton bites, an enforcer chops it off, a bomb
-## blows it up, or it is shot off. The collectors prefer the cleaver and the gun, the dealer his teeth and bombs.
+## The hand is raised and one of four scenes takes the finger: the skeleton bites, an enforcer chops it off, the finger
+## bursts, or it is shot off. The collectors prefer the cleaver and the gun, the dealer his teeth and finger bursts.
 func _lose_finger(left: int, reason: StringName, forced_kind: int = -1) -> void:
-	var options: Array = [FingerCut.Kind.CLEAVER, FingerCut.Kind.PISTOL] if reason == run.DEATH_DEBT else [FingerCut.Kind.BITE, FingerCut.Kind.BOMB]
+	var options: Array = [FingerCut.Kind.CLEAVER, FingerCut.Kind.PISTOL] if reason == run.DEATH_DEBT else [FingerCut.Kind.BITE, FingerCut.Kind.BURST]
 	options = options.filter(func(k: int) -> bool: return k != _last_cut)
 	var kind: int = forced_kind if forced_kind >= 0 else options[randi() % options.size()]
 	_last_cut = kind
@@ -629,6 +629,7 @@ func _lose_finger(left: int, reason: StringName, forced_kind: int = -1) -> void:
 	else:
 		await _player_hand.lay_for_cut()
 	var tip: Vector3 = _player_hand.finger_tip(left)
+	_finger_cut.swell = _player_hand.swell_finger.bind(left)
 	await _finger_cut.play(kind, tip, _player_hand.cut_finger.bind(left))
 	await _player_hand.lower_after_cut(left)
 
