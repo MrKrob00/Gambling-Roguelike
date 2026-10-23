@@ -15,6 +15,7 @@ the player does (die, land a blackjack, cheat, go all-in...).
 | Death | All chips are lost, the run ends, meta progress (unlocks, stats) stays |
 | Artifacts | 3 slots. A run starts empty: a free offer of 3 random unlocked artifacts, pick one. After every payment a paid offer for 30% of the next payment. Replace or discard when full. Four kinds, each its own colour: active blue, passive green, consumable amber, cursed crimson |
 | Deadline | Five candles on the far rail, one snuffed per hand; the amount due floats beside them. Redder light, heartbeat on the last hand, three knocks when it falls |
+| Feedback | A triggered artifact pops into the middle of the screen, shaking, and leaves the same way. A newly opened one slides in at the bottom-right with its icon and the reason it opened |
 | Unlocks | Deaths (first, third, by debt), risky acts (double down win, all-in), doubtful acts (using tricks), wealth and streaks, a natural blackjack |
 | Dealer | Faceless croupier with short ominous lines |
 | Rules | Hit, Stand, Double. Blackjack pays 3:2, dealer stands on 17. No split or insurance in the slice |

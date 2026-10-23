@@ -23,6 +23,7 @@ const Candles := preload("res://world/deadline_candles_3d.gd")
 const InfoPanel := preload("res://ui/common/artifact_info_panel.gd")
 const KindStyle := preload("res://core/kind_style.gd")
 const ArtifactFlash := preload("res://ui/common/artifact_flash.gd")
+const UnlockToast := preload("res://ui/common/unlock_toast.gd")
 const FloatingText := preload("res://world/floating_text.gd")
 const Vignette := preload("res://ui/common/vignette.gd")
 const ROOM: PackedScene = preload("res://world/casino_room.tscn")
@@ -83,6 +84,7 @@ var _candles
 var _rim: OmniLight3D
 var _info
 var _flash
+var _toast
 var _offer_cards: Array = []
 var _pending_pick
 var _discarding: bool = false
@@ -102,6 +104,7 @@ func _ready() -> void:
 	_connect_table()
 	_connect_run()
 	_queue.drained.connect(_refresh)
+	Events.artifact_unlocked.connect(func(a) -> void: _enqueue(_do_unlocked.bind(a)))
 	Audio.music(AMBIENCE)
 	run.announce()
 	_say(&"welcome")
@@ -301,6 +304,8 @@ func _build_overlay() -> void:
 	_hud.add_theme_constant_override("outline_size", 4)
 	_hud.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	layer.add_child(_hud)
+	_toast = UnlockToast.new()
+	layer.add_child(_toast)
 	_flash = ArtifactFlash.new()
 	layer.add_child(_flash)
 	_info = InfoPanel.new()
@@ -475,6 +480,11 @@ func _do_artifacts() -> void:
 	_rebuild_tokens()
 	_info.clear()
 	await _pause(0.3)
+
+## A new artifact opened: the pop-up slides in at the corner while play carries on.
+func _do_unlocked(data) -> void:
+	_toast.show_unlock(data)
+	await _pause(0.15)
 
 ## The artifact did something: its icon pops into the middle of the screen, shaking, and leaves.
 func _do_triggered(fx) -> void:

@@ -590,5 +590,41 @@
  "DEALER_DEADLINE_3": {
   "en": "Your time is thin.",
   "ru": "Твоё время на исходе."
+ },
+ "UNLOCK_TITLE": {
+  "en": "Artifact unlocked",
+  "ru": "Артефакт открыт"
+ },
+ "REASON_HANDS_WON": {
+  "en": "Won %d hands",
+  "ru": "Выиграно раздач: %d"
+ },
+ "REASON_DEATHS": {
+  "en": "Went broke %d time(s)",
+  "ru": "Разорений: %d"
+ },
+ "REASON_CHIPS_PEAK": {
+  "en": "Held %d chips at once",
+  "ru": "Накоплено фишек: %d"
+ },
+ "REASON_BLACKJACKS": {
+  "en": "Landed a natural blackjack",
+  "ru": "Собран натуральный блэкджек"
+ },
+ "REASON_DOUBLES_WON": {
+  "en": "Won a hand after doubling down",
+  "ru": "Победа после удвоения"
+ },
+ "REASON_DEBT_DEATHS": {
+  "en": "Killed by the collectors",
+  "ru": "Убит коллекторами"
+ },
+ "REASON_WIN_STREAK": {
+  "en": "Won %d hands in a row",
+  "ru": "Побед подряд: %d"
+ },
+ "REASON_TRICKS_USED": {
+  "en": "Used tricks %d times",
+  "ru": "Трюков использовано: %d"
  }
 }

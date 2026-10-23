@@ -399,6 +399,7 @@ func _unlocks() -> void:
 	check(profile.fresh_unlocks.size() == 1, "one fresh unlock is waiting")
 	events.stat_peaked.emit(Stat.CHIPS_PEAK, 1200)
 	check(profile.is_unlocked(_artifact(&"silver_chip")), "1000 chips unlock the silver chip")
+	check(_artifact(&"card_sleeve").unlock_reason() == "Won 5 hands", "unlock reason reads naturally: %s" % _artifact(&"card_sleeve").unlock_reason())
 	events.stat_peaked.emit(Stat.CHIPS_PEAK, 300)
 	check(profile.stat(Stat.CHIPS_PEAK) == 1200, "a peak never goes down")
 	profile.reset()

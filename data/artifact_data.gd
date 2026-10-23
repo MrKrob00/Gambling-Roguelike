@@ -32,5 +32,10 @@ func description() -> String:
 func unlock_hint() -> String:
 	return tr(key("HINT"))
 
+## Why it opened, in the player's terms: "Won 5 hands". The key is built from the unlock counter.
+func unlock_reason() -> String:
+	var text := tr("REASON_%s" % String(unlock_stat).to_upper())
+	return text % unlock_value if "%d" in text else text
+
 func is_open_from_start() -> bool:
 	return unlock_stat == &""

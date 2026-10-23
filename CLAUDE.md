@@ -143,6 +143,11 @@ integer. The 3D view renders at the window's real resolution.
   leaving the same way. Call `notify()` only where the effect really changes something (`modify_payout`,
   `prevent_*`), never in a hook that is also asked just to display a number (`modify_payment` is: such
   artifacts return true from `affects_payment()` and `RunState` notifies when a payment is really taken).
+- When an artifact opens, `ui/common/unlock_toast.gd` slides a pop-up in at the bottom-right: icon, name in the
+  kind colour and the reason (`ArtifactData.unlock_reason()`, built from the unlock counter via `REASON_<STAT>`
+  keys, so a new counter needs one `REASON_` key). It is queued with the table's steps so it never beats the
+  animation that earned it. **A wrapping `Label` needs a known width and a frame to settle**: measure a panel
+  built from such labels only after two frames, or it keeps an oversized height.
 - On touch the first tap on an artifact only shows its panel, the second acts (there is no hover); with a
   mouse the hover shows it and one click acts.
 
