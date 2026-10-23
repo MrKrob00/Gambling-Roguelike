@@ -10,4 +10,5 @@ func modify_payout(table, payout: int, _outcome: int) -> int:
 	var steps := mini(table.run.win_streak, MAX_STEPS)
 	if steps < 2:
 		return payout
+	notify()
 	return payout + int(table.bet * PER_STEP * steps)

@@ -183,7 +183,10 @@ func _artifacts() -> void:
 	_stack(table, [[10], [10], [6], [7], [10]])
 	table.add_bet(100)
 	table.deal()
+	var fired := []
+	run.artifact_triggered.connect(func(fx) -> void: fired.append(fx.data.id))
 	table.hit()
+	check(fired == [&"lucky_clover"], "clover announces that it triggered, got %s" % str(fired))
 	check(table.phase == Table.Phase.PLAYER_TURN and table.player.total() == 16, "clover undoes the bust")
 	check(_fx(run, &"lucky_clover").charges_left == 2, "clover spends a charge")
 

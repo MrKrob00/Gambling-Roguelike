@@ -10,6 +10,7 @@ signal payment_made(amount: int, index: int)
 signal payment_waived(index: int)
 signal died(reason: StringName)
 signal artifacts_changed
+signal artifact_triggered(effect)
 signal offer_changed
 
 const DEATH_BROKE := &"broke"
@@ -45,6 +46,7 @@ func _init(game: StringName, loadout: Array) -> void:
 func _equip(data) -> void:
 	var fx = data.effect_script.new()
 	fx.bind(data)
+	fx.triggered.connect(artifact_triggered.emit.bind(fx))
 	effects.append(fx)
 
 func min_bet() -> int:
@@ -152,6 +154,9 @@ func hand_finished(bet_on_table: int) -> void:
 func _collect_payment() -> void:
 	var amount := next_payment()
 	if chips >= amount:
+		for fx in effects:
+			if fx.affects_payment():
+				fx.notify()
 		add_chips(-amount)
 		payments_paid += 1
 		hands_to_payment = Rules.PAYMENT_EVERY

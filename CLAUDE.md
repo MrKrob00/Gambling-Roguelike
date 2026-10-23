@@ -138,6 +138,11 @@ integer. The 3D view renders at the window's real resolution.
 - Artifacts are coloured by kind everywhere (`core/kind_style.gd`): active blue, passive green, consumable
   amber, cursed crimson. Effect text uses `+` lines (benefit, green) and `-` lines (cost, red); the info
   panel (`ui/common/artifact_info_panel.gd`, a 2D corner overlay) renders them. Keep descriptions to short lines.
+- **An artifact announces itself when it acts** (`ArtifactEffect.notify()` -> `RunState.artifact_triggered`): the
+  view plays `ui/common/artifact_flash.gd`, the icon popping into the middle of the screen with a shake and
+  leaving the same way. Call `notify()` only where the effect really changes something (`modify_payout`,
+  `prevent_*`), never in a hook that is also asked just to display a number (`modify_payment` is: such
+  artifacts return true from `affects_payment()` and `RunState` notifies when a payment is really taken).
 - On touch the first tap on an artifact only shows its panel, the second acts (there is no hover); with a
   mouse the hover shows it and one click acts.
 

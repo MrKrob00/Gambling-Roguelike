@@ -4,6 +4,9 @@ extends RefCounted
 
 const ArtifactData := preload("res://data/artifact_data.gd")
 
+## Emitted whenever the artifact actually does something, so the screen can show it.
+signal triggered
+
 var data: Resource
 var uses_left: int = 0
 var charges_left: int = 0
@@ -45,12 +48,20 @@ func modify_payout(_table, payout: int, _outcome: int) -> int:
 func modify_payment(amount: int) -> int:
 	return amount
 
+## True for artifacts that change payments: they announce themselves when a payment is really taken
+## (modify_payment is also asked just to display the amount, so it must not notify).
+func affects_payment() -> bool:
+	return false
+
 func modify_min_bet(min_bet: int) -> int:
 	return min_bet
 
 ## A payment could not be paid (or the player is broke). Return true to survive.
 func prevent_death(_run) -> bool:
 	return false
+
+func notify() -> void:
+	triggered.emit()
 
 func charges_text() -> String:
 	return "%d" % charges_left if data.charges > 0 else ""

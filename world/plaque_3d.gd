@@ -57,6 +57,7 @@ func setup(text_key: String) -> void:
 	label.position.z = DEPTH / 2.0 + 0.003
 	label.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	_holder.add_child(label)
+	_fit()
 	## The hit box is bigger than the button: a thumb should not have to be exact.
 	add_box_shape(Vector3(SIZE.x + 0.14, SIZE.y + 0.14, 0.4), Vector3(0, LIFT, 0))
 
@@ -65,6 +66,18 @@ func _process(_delta: float) -> void:
 	if camera == null or not visible:
 		return
 	global_transform.basis = camera.global_transform.basis.orthonormalized() * Basis.from_scale(scale)
+
+## Longer words (Russian especially) shrink to fit the button instead of spilling over its edge.
+func _fit() -> void:
+	var size := 96
+	var text := tr(label.text)
+	while size > 28 and label.font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x * label.pixel_size > SIZE.x - 0.1:
+		size -= 4
+	label.font_size = size
+
+func set_caption(text: String) -> void:
+	label.text = text
+	_fit()
 
 func show_plaque(on: bool) -> void:
 	if on == _shown:

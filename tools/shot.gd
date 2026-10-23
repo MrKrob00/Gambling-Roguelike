@@ -67,6 +67,10 @@ func _initialize() -> void:
 					failures += 1
 					print("PICK MISS ", phase_name, " ", p.name, " at ", screen, " hit ", hit)
 		print("pickcheck: ", checked, " objects, ", failures, " misses")
+	if shot == "table3d" and OS.has_environment("FLASH"):
+		await create_timer(1.0).timeout
+		scene._flash.play(catalog.by_id(&"cursed_doll"))
+		await create_timer(float(OS.get_environment("FLASH")) if OS.get_environment("FLASH").is_valid_float() else 0.3).timeout
 	if shot == "table3d_offer":
 		await create_timer(1.0).timeout
 		if OS.has_environment("PICK"):

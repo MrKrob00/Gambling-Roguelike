@@ -138,6 +138,7 @@ func use_artifact(fx) -> void:
 		return
 	fx.use(self)
 	fx.spend()
+	fx.notify()
 	Events.stat_added.emit(Stat.TRICKS_USED, 1)
 	trick_used.emit(fx)
 

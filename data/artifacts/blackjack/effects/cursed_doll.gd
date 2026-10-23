@@ -6,7 +6,9 @@ const SWING := 0.25
 func modify_payout(table, payout: int, outcome: int) -> int:
 	var extra := int(table.bet * SWING)
 	if payout > table.bet:
+		notify()
 		return payout + extra
 	if payout < table.bet:
+		notify()
 		return payout - extra
 	return payout

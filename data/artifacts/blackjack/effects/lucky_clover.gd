@@ -6,4 +6,5 @@ func prevent_bust(table) -> bool:
 		return false
 	table.discard_last_player_card()
 	spend()
+	notify()
 	return true

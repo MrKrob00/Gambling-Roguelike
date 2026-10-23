@@ -22,6 +22,7 @@ const OfferCard := preload("res://world/offer_card_3d.gd")
 const Candles := preload("res://world/deadline_candles_3d.gd")
 const InfoPanel := preload("res://ui/common/artifact_info_panel.gd")
 const KindStyle := preload("res://core/kind_style.gd")
+const ArtifactFlash := preload("res://ui/common/artifact_flash.gd")
 const FloatingText := preload("res://world/floating_text.gd")
 const Vignette := preload("res://ui/common/vignette.gd")
 const ROOM: PackedScene = preload("res://world/casino_room.tscn")
@@ -81,6 +82,7 @@ var _pinned
 var _candles
 var _rim: OmniLight3D
 var _info
+var _flash
 var _offer_cards: Array = []
 var _pending_pick
 var _discarding: bool = false
@@ -299,6 +301,8 @@ func _build_overlay() -> void:
 	_hud.add_theme_constant_override("outline_size", 4)
 	_hud.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	layer.add_child(_hud)
+	_flash = ArtifactFlash.new()
+	layer.add_child(_flash)
 	_info = InfoPanel.new()
 	layer.add_child(_info)
 	_info.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
@@ -326,6 +330,7 @@ func _connect_run() -> void:
 	run.payment_waived.connect(func(i: int) -> void: _enqueue(_do_waived.bind(i)))
 	run.died.connect(func(r: StringName) -> void: _enqueue(_do_death.bind(r)))
 	run.artifacts_changed.connect(func() -> void: _enqueue(_do_artifacts))
+	run.artifact_triggered.connect(func(fx) -> void: _enqueue(_do_triggered.bind(fx)))
 
 func _enqueue(step: Callable) -> void:
 	_set_interactive(false)
@@ -471,13 +476,18 @@ func _do_artifacts() -> void:
 	_info.clear()
 	await _pause(0.3)
 
+## The artifact did something: its icon pops into the middle of the screen, shaking, and leaves.
+func _do_triggered(fx) -> void:
+	Audio.sfx(&"game/item_use")
+	_rig.shake(0.03, 0.25)
+	await _flash.play(fx.data)
+
 func _do_trick(fx) -> void:
 	if fx.data.id != &"marked_deck":
 		Audio.sfx(&"trick/poof")
 		_say(&"trick")
 		_dealer.react(&"trick")
-	_subtitle.text = fx.data.title()
-	await _pause(0.3)
+	await _pause(0.1)
 
 func _do_chips(chips: int) -> void:
 	_chips_text = chips
@@ -729,7 +739,7 @@ func _refresh() -> void:
 	_plaques[&"discard"].set_enabled(true)
 	_plaques[&"cancel"].set_enabled(true)
 	_plaques[&"skip"].set_enabled(true)
-	_plaques[&"buy"].label.text = tr("OFFER_BUY") % run.offer_cost
+	_plaques[&"buy"].set_caption(tr("OFFER_BUY") % run.offer_cost)
 	_plaques[&"buy"].set_enabled(run.can_buy_offer())
 	for p in _piles:
 		p.set_enabled(normal and table.can_add_bet(p.denomination))

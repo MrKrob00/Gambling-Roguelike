@@ -3,5 +3,6 @@ extends "res://data/artifact_effect.gd"
 
 func modify_payout(table, payout: int, outcome: int) -> int:
 	if outcome == table.Outcome.BLACKJACK:
+		notify()
 		return table.bet * 3
 	return payout
