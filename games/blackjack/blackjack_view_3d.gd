@@ -20,6 +20,7 @@ const Plaque := preload("res://world/plaque_3d.gd")
 const Token := preload("res://world/artifact_token_3d.gd")
 const OfferCard := preload("res://world/offer_card_3d.gd")
 const Candles := preload("res://world/deadline_candles_3d.gd")
+const PlayerHand := preload("res://world/player_hand_3d.gd")
 const ArtifactHand := preload("res://world/artifact_hand_3d.gd")
 const Enforcers := preload("res://world/enforcers_3d.gd")
 const WarningHand := preload("res://world/warning_hand_3d.gd")
@@ -88,6 +89,8 @@ var _pinned
 var _candles
 var _enforcers
 var _hand_rig
+var _player_hand
+var _reaching: bool = false
 var _warning_hand
 var _debt_text: int = 0
 var _rim: OmniLight3D
@@ -144,6 +147,8 @@ func _build_world() -> void:
 	add_child(_rig)
 	_hand_rig = ArtifactHand.new()
 	_rig.camera.add_child(_hand_rig)
+	_player_hand = PlayerHand.new()
+	_rig.camera.add_child(_player_hand)
 	_faces = CardFaces.new()
 	add_child(_faces)
 	_bet_stack = ChipStack.new()
@@ -587,6 +592,8 @@ func _do_death(reason: StringName) -> void:
 # ---------------------------------------------------------------- input
 
 func _unhandled_input(event: InputEvent) -> void:
+	if _reaching:
+		return
 	if event is InputEventMouseMotion:
 		_set_hover(_pick(event.position))
 	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
@@ -608,7 +615,18 @@ func _unhandled_input(event: InputEvent) -> void:
 			return
 		_pinned = null
 		_sync_focus()
-		hit.activate()  # a pickable that cannot act right now answers with a shake, so a tap is never silent
+		_act_on(hit)
+
+## The right hand does every press: it reaches the object and taps it. A pickable that cannot act right now
+## answers with a shake, so a tap is never silent.
+func _act_on(target) -> void:
+	_reaching = true
+	await _player_hand.reach(_rig.camera, target.global_position, _activate_if_alive.bind(target))
+	_reaching = false
+
+func _activate_if_alive(target) -> void:
+	if is_instance_valid(target):
+		target.activate()
 
 func _is_artifact(obj) -> bool:
 	return obj.get("fx") != null or obj.get("data") != null

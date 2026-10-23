@@ -81,10 +81,16 @@ integer. The 3D view renders at the window's real resolution.
 - Everything is built in code from `blackjack_view_3d.gd`'s layout constants (metres, `TOP` is the felt):
   the table runs **across** the view with the dealer opposite. The chip rack lies along the
   near rim (display only), the action buttons in a row above it, the bet circle in the middle. The artifacts are not on the table:
-  they are in the player's left hand (`world/artifact_hand_3d.gd`: a rigged glove, `assets/models/hand`, its finger bones are bent in code), a child of the camera, so they stay at a fixed
+  they are in the player's left hand (`world/artifact_hand_3d.gd`), a child of the camera, so they stay at a fixed
   size in the lower-left corner (anything on the table shrinks with distance). They are fanned half edge-on; the
   hovered or pinned one lifts and spins like a coin to show its emblem (`focus()`), the info panel stays a 2D
   overlay. Change a position in the view's constants, not in a scene.
+- **The hands are editable scenes**, not code: `world/hands/hand_l.tscn` and `hand_r.tscn` hold the unpacked glove (a
+  Skeleton3D with 26 finger bones) and an AnimationPlayer with the poses `idle`, `open`, `fist`, `point` and `tap`.
+  Open them in the editor to pose and animate; `tools/build_hands.gd` regenerates them from `assets/models/hand` and
+  **overwrites those edits**. The scripts only call `play(name)`. The right hand (`world/player_hand_3d.gd`) does
+  every press: `BlackjackView3D._act_on` slides it over the screen to the object, taps it and activates the object at
+  contact, input is ignored while it reaches.
 - **A collider that sits in front of another pickable eats its taps**; `pickcheck` catches an overlap.
 - **Every control is an object on the table** (`world/pickable_3d.gd`, physics layer 2): plaques,
   artifact tokens. The view casts a ray from the pointer or a tap and calls `activate()` on what it hits. A
