@@ -54,7 +54,7 @@ removed (they stay in git history if torches and barrels are ever wanted).
 
 | Path | Content | Status |
 |---|---|---|
-| `fonts/` | Pirata One (titles), Metamorphous (text), Cormorant Unicase Bold and Kurale (Cyrillic fallbacks for them), SIL OFL | READY |
+| `fonts/` | Pirata One (titles), Metamorphous (text), Ruslan Display and Philosopher Bold (Cyrillic fallbacks for them), SIL OFL | READY |
 | `shaders/` | card holo / shimmer / parallax shaders (`spatial`, 3D) | CHECK, port to `canvas_item` for 2D UI |
 
 ## Still missing

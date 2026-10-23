@@ -4,9 +4,9 @@ extends SceneTree
 
 const DD := "res://assets/ui/dark_dwellers/"
 const BODY_FONT := "res://assets/fonts/metamorphous/Metamorphous-Regular.ttf"
-const BODY_FALLBACK := "res://assets/fonts/kurale/Kurale-Regular.ttf"
+const BODY_FALLBACK := "res://assets/fonts/philosopher/Philosopher-Bold.ttf"
 const TITLE_FONT := "res://assets/fonts/pirata_one/PirataOne-Regular.ttf"
-const TITLE_FALLBACK := "res://assets/fonts/cormorant_unicase/CormorantUnicase-Bold.ttf"
+const TITLE_FALLBACK := "res://assets/fonts/ruslan_display/RuslanDisplay-Regular.ttf"
 
 const TEXT := Color("d9d4f0")
 const TEXT_HOVER := Color("f4a13a")
