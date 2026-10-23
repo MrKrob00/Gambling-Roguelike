@@ -81,7 +81,7 @@ integer. The 3D view renders at the window's real resolution.
 - Everything is built in code from `blackjack_view_3d.gd`'s layout constants (metres, `TOP` is the felt):
   the table runs **across** the view with the dealer opposite. The chip piles stand in one row on a rack along the
   near rim, the action buttons in a row above it, the bet circle in the middle. The artifacts are not on the table:
-  they are in the player's left hand (`world/artifact_hand_3d.gd`), a child of the camera, so they stay at a fixed
+  they are in the player's left hand (`world/artifact_hand_3d.gd`: a rigged glove, `assets/models/hand`, its finger bones are bent in code), a child of the camera, so they stay at a fixed
   size in the lower-left corner (anything on the table shrinks with distance). They are fanned half edge-on; the
   hovered or pinned one lifts and spins like a coin to show its emblem (`focus()`), the info panel stays a 2D
   overlay. Change a position in the view's constants, not in a scene.
