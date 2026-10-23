@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://bgae4so2b0ame"
+path="res://.godot/imported/JDSherbert - Tabletop Games SFX Pack - Dice Roll - 1.ogg-424aa1e3283f175053260f8dd547398b.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/audio/sfx/tabletop/dice_roll_1.ogg"
+dest_files=["res://.godot/imported/JDSherbert - Tabletop Games SFX Pack - Dice Roll - 1.ogg-424aa1e3283f175053260f8dd547398b.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
