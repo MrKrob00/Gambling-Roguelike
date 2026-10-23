@@ -57,38 +57,75 @@ func _own(node: Node, owner_node: Node) -> void:
 func _curl_of(pose: Dictionary, finger: String) -> float:
 	return pose.get(finger, pose["all"])
 
-## One rotation track per finger joint, keyed with the bone's rest rotation bent by the curl.
+## The local rotations of one finger's joints for `curl` radians per joint. Every joint bends about the same axis of
+## the hand (model-space Y, across the palm), so splayed fingers such as the little one still close toward the palm;
+## bending about each bone's own X, which carries the rest roll, twisted them. The thumb has no such axis and bends
+## about its bone's X. Positive curl closes.
+func _chain(skeleton: Skeleton3D, side: String, finger: String, curl: float) -> Array:
+	var out: Array = []
+	var meta := skeleton.find_bone("%s_Metacarpal_%s" % [finger, side])
+	var parent_rotation := Quaternion.IDENTITY
+	if meta >= 0:
+		parent_rotation = skeleton.get_bone_global_rest(meta).basis.get_rotation_quaternion()
+	var axis_in_skeleton: Vector3 = _model_transform(skeleton).basis.inverse() * Vector3.UP
+	for joint in JOINTS:
+		var index := skeleton.find_bone("%s_%s_%s" % [finger, joint, side])
+		if index < 0:
+			out.append(null)
+			continue
+		var rest := skeleton.get_bone_rest(index).basis.get_rotation_quaternion()
+		var local: Quaternion
+		if finger == "Thumb":
+			local = rest * Quaternion(Vector3.RIGHT, -curl)
+		else:
+			var axis := parent_rotation.inverse() * axis_in_skeleton
+			# The right hand is the mirror image, so its palm is on the other side of the axis.
+			local = Quaternion(axis.normalized(), (-curl if side == "L" else curl)) * rest
+		out.append(local)
+		parent_rotation = parent_rotation * local
+	return out
+
+## The skeleton's transform inside the model (the scene is not in a tree while it is built).
+func _model_transform(skeleton: Skeleton3D) -> Transform3D:
+	var t := skeleton.transform
+	var node := skeleton.get_parent()
+	while node != null and node.name != "Model":
+		t = (node as Node3D).transform * t
+		node = node.get_parent()
+	return t
+
+## One rotation track per finger joint.
 func _pose_animation(root: Node, skeleton: Skeleton3D, side: String, pose: Dictionary, breathe: bool) -> Animation:
 	var anim := Animation.new()
 	anim.length = 1.2 if breathe else 0.3
 	anim.loop_mode = Animation.LOOP_LINEAR if breathe else Animation.LOOP_NONE
 	for finger in FINGERS + ["Thumb"]:
-		for joint in JOINTS:
-			var bone := "%s_%s_%s" % [finger, joint, side]
-			var index := skeleton.find_bone(bone)
-			if index < 0:
+		var curl := _curl_of(pose, finger)
+		var keys: Array = [[0.0, _chain(skeleton, side, finger, curl)]]
+		if breathe:
+			keys = [[0.0, _chain(skeleton, side, finger, curl - 0.05)], [0.6, _chain(skeleton, side, finger, curl + 0.05)], [1.2, _chain(skeleton, side, finger, curl - 0.05)]]
+		for j in JOINTS.size():
+			var bone := "%s_%s_%s" % [finger, JOINTS[j], side]
+			if skeleton.find_bone(bone) < 0:
 				continue
 			var track := anim.add_track(Animation.TYPE_ROTATION_3D)
 			anim.track_set_path(track, NodePath("%s:%s" % [root.get_path_to(skeleton), bone]))
-			var rest := skeleton.get_bone_rest(index).basis.get_rotation_quaternion()
-			var curl := _curl_of(pose, finger)
-			if breathe:
-				anim.rotation_track_insert_key(track, 0.0, rest * Quaternion(Vector3.RIGHT, -curl - 0.05))
-				anim.rotation_track_insert_key(track, 0.6, rest * Quaternion(Vector3.RIGHT, -curl + 0.05))
-				anim.rotation_track_insert_key(track, 1.2, rest * Quaternion(Vector3.RIGHT, -curl - 0.05))
-			else:
-				anim.rotation_track_insert_key(track, 0.0, rest * Quaternion(Vector3.RIGHT, -curl))
+			for key in keys:
+				anim.rotation_track_insert_key(track, key[0], key[1][j])
 	return anim
 
 ## The index finger pointing, then pressing down and back up: a tap.
 func _tap_animation(root: Node, skeleton: Skeleton3D, side: String) -> Animation:
 	var anim := _pose_animation(root, skeleton, side, POSES["point"], false)
 	anim.length = 0.3
-	for joint in JOINTS:
-		var bone := "Index_%s_%s" % [joint, side]
+	var straight := _chain(skeleton, side, "Index", 0.0)
+	var pressed := _chain(skeleton, side, "Index", 0.5)
+	for j in JOINTS.size():
+		var bone := "Index_%s_%s" % [JOINTS[j], side]
 		var track := anim.find_track(NodePath("%s:%s" % [root.get_path_to(skeleton), bone]), Animation.TYPE_ROTATION_3D)
-		var rest := skeleton.get_bone_rest(skeleton.find_bone(bone)).basis.get_rotation_quaternion()
-		anim.rotation_track_insert_key(track, 0.0, rest)
-		anim.rotation_track_insert_key(track, 0.12, rest * Quaternion(Vector3.RIGHT, -0.5))
-		anim.rotation_track_insert_key(track, 0.3, rest)
+		for k in range(anim.track_get_key_count(track) - 1, -1, -1):
+			anim.track_remove_key(track, k)
+		anim.rotation_track_insert_key(track, 0.0, straight[j])
+		anim.rotation_track_insert_key(track, 0.12, pressed[j])
+		anim.rotation_track_insert_key(track, 0.3, straight[j])
 	return anim
