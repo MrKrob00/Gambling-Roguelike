@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://1hmbsuooelvc"
-path="res://.godot/imported/poison_1_small.png-e5f0f86a3a384a4b22f9d2a6be493c22.ctex"
+uid="uid://c3elydd6dfhus"
+path="res://.godot/imported/poison_1_small.png-b16da2dbfa561ce8eeec0192e629f19f.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/art/status/64/poison_1_small.png"
-dest_files=["res://.godot/imported/poison_1_small.png-e5f0f86a3a384a4b22f9d2a6be493c22.ctex"]
+dest_files=["res://.godot/imported/poison_1_small.png-b16da2dbfa561ce8eeec0192e629f19f.ctex"]
 
 [params]
 

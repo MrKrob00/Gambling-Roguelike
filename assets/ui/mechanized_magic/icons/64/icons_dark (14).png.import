@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://0l7o0om58gyd"
-path="res://.godot/imported/icons_dark (14).png-2ded47ec1415f301817d98722054551d.ctex"
+uid="uid://dole5y4ojr762"
+path="res://.godot/imported/icons_dark (14).png-97edac64899a3555c07e76b3b81fdab6.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/ui/mechanized_magic/icons/64/icons_dark (14).png"
-dest_files=["res://.godot/imported/icons_dark (14).png-2ded47ec1415f301817d98722054551d.ctex"]
+dest_files=["res://.godot/imported/icons_dark (14).png-97edac64899a3555c07e76b3b81fdab6.ctex"]
 
 [params]
 

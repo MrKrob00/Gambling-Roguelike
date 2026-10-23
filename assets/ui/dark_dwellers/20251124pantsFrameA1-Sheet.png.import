@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dk03regi7ba1u"
-path="res://.godot/imported/20251124pantsFrameA1-Sheet.png-cea9842eb8d410cb3f470c594ba46744.ctex"
+uid="uid://8fiv2pm386aa"
+path="res://.godot/imported/20251124pantsFrameA1-Sheet.png-4192061b214307d52492d8aaab49584a.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/ui/dark_dwellers/20251124pantsFrameA1-Sheet.png"
-dest_files=["res://.godot/imported/20251124pantsFrameA1-Sheet.png-cea9842eb8d410cb3f470c594ba46744.ctex"]
+dest_files=["res://.godot/imported/20251124pantsFrameA1-Sheet.png-4192061b214307d52492d8aaab49584a.ctex"]
 
 [params]
 

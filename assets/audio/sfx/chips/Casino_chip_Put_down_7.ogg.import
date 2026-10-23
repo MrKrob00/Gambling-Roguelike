@@ -2,13 +2,13 @@
 
 importer="oggvorbisstr"
 type="AudioStreamOggVorbis"
-uid="uid://ckbie8qqivwhl"
-path="res://.godot/imported/Casino_chip_Put_down_7.ogg-b56d54a6e7f8cbf9a79bb59ecb5be9de.oggvorbisstr"
+uid="uid://4fjlhip83wxk"
+path="res://.godot/imported/Casino_chip_Put_down_7.ogg-0977cf4965eaad75ef3a99c503539684.oggvorbisstr"
 
 [deps]
 
 source_file="res://assets/audio/sfx/chips/Casino_chip_Put_down_7.ogg"
-dest_files=["res://.godot/imported/Casino_chip_Put_down_7.ogg-b56d54a6e7f8cbf9a79bb59ecb5be9de.oggvorbisstr"]
+dest_files=["res://.godot/imported/Casino_chip_Put_down_7.ogg-0977cf4965eaad75ef3a99c503539684.oggvorbisstr"]
 
 [params]
 

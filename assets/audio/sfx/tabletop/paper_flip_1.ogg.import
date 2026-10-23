@@ -2,13 +2,13 @@
 
 importer="oggvorbisstr"
 type="AudioStreamOggVorbis"
-uid="uid://cnwduoj2p4by4"
-path="res://.godot/imported/JDSherbert - Tabletop Games SFX Pack - Paper Flip - 1.ogg-aa22f82ee5b6d7c5b321ee93f5cbae91.oggvorbisstr"
+uid="uid://c7ot0b5521cko"
+path="res://.godot/imported/paper_flip_1.ogg-e68f5393a7e34c48997a1d82595e3b70.oggvorbisstr"
 
 [deps]
 
 source_file="res://assets/audio/sfx/tabletop/paper_flip_1.ogg"
-dest_files=["res://.godot/imported/JDSherbert - Tabletop Games SFX Pack - Paper Flip - 1.ogg-aa22f82ee5b6d7c5b321ee93f5cbae91.oggvorbisstr"]
+dest_files=["res://.godot/imported/paper_flip_1.ogg-e68f5393a7e34c48997a1d82595e3b70.oggvorbisstr"]
 
 [params]
 

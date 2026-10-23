@@ -2,13 +2,13 @@
 
 importer="mp3"
 type="AudioStreamMP3"
-uid="uid://c034v76gt00v2"
-path="res://.godot/imported/The Surreal Truth.mp3-f10bb8d5978679ccf2f51b8ef9505f5e.mp3str"
+uid="uid://b4a0y8tqymcdn"
+path="res://.godot/imported/the_surreal_truth.mp3-89664e8f4cf0f31544a904cbde8a9d85.mp3str"
 
 [deps]
 
 source_file="res://assets/audio/music/dark/the_surreal_truth.mp3"
-dest_files=["res://.godot/imported/The Surreal Truth.mp3-f10bb8d5978679ccf2f51b8ef9505f5e.mp3str"]
+dest_files=["res://.godot/imported/the_surreal_truth.mp3-89664e8f4cf0f31544a904cbde8a9d85.mp3str"]
 
 [params]
 

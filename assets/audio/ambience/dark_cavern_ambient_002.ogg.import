@@ -2,13 +2,13 @@
 
 importer="oggvorbisstr"
 type="AudioStreamOggVorbis"
-uid="uid://djta7tnfmrq25"
-path="res://.godot/imported/dark_cavern_ambient_002.ogg-eb9bf485f6dffa971cef2952afefd4a3.oggvorbisstr"
+uid="uid://bmaingviir1g"
+path="res://.godot/imported/dark_cavern_ambient_002.ogg-277727f0b7e639e5bb8c4da8519bcb9c.oggvorbisstr"
 
 [deps]
 
 source_file="res://assets/audio/ambience/dark_cavern_ambient_002.ogg"
-dest_files=["res://.godot/imported/dark_cavern_ambient_002.ogg-eb9bf485f6dffa971cef2952afefd4a3.oggvorbisstr"]
+dest_files=["res://.godot/imported/dark_cavern_ambient_002.ogg-277727f0b7e639e5bb8c4da8519bcb9c.oggvorbisstr"]
 
 [params]
 

@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://encsbaraf88d"
-path="res://.godot/imported/10_Dollar_casino_chip_1.png-ffbfa8602214ddea1622a83288201b23.ctex"
+uid="uid://dw6a6cdri635b"
+path="res://.godot/imported/10_Dollar_casino_chip_1.png-73c5d7f9f64e42d2f0b0e22fb8e13e29.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/art/casino/chips/10_Dollar_casino_chip_1.png"
-dest_files=["res://.godot/imported/10_Dollar_casino_chip_1.png-ffbfa8602214ddea1622a83288201b23.ctex"]
+dest_files=["res://.godot/imported/10_Dollar_casino_chip_1.png-73c5d7f9f64e42d2f0b0e22fb8e13e29.ctex"]
 
 [params]
 

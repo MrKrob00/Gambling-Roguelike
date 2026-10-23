@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cdt3av53xy28u"
-path="res://.godot/imported/icons_perspective_gray (30).png-949637d4f84221e13b499bfd56339005.ctex"
+uid="uid://dc7ecpjcd1x7s"
+path="res://.godot/imported/icons_perspective_gray (30).png-53ccf6e1266b86d739b57aa9a2d37117.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/ui/mechanized_magic/icons/64/icons_perspective_gray (30).png"
-dest_files=["res://.godot/imported/icons_perspective_gray (30).png-949637d4f84221e13b499bfd56339005.ctex"]
+dest_files=["res://.godot/imported/icons_perspective_gray (30).png-53ccf6e1266b86d739b57aa9a2d37117.ctex"]
 
 [params]
 

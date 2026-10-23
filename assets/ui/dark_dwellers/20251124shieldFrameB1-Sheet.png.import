@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c26bjeseka2ry"
-path="res://.godot/imported/20251124shieldFrameB1-Sheet.png-d3723d1fb15cbdaf818ad009ca5a2950.ctex"
+uid="uid://bpdkgly1531pn"
+path="res://.godot/imported/20251124shieldFrameB1-Sheet.png-b38a7afef4d4a84647144fe7e7704f3c.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/ui/dark_dwellers/20251124shieldFrameB1-Sheet.png"
-dest_files=["res://.godot/imported/20251124shieldFrameB1-Sheet.png-d3723d1fb15cbdaf818ad009ca5a2950.ctex"]
+dest_files=["res://.godot/imported/20251124shieldFrameB1-Sheet.png-b38a7afef4d4a84647144fe7e7704f3c.ctex"]
 
 [params]
 

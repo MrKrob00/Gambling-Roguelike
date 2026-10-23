@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://uxlncefc2hkk"
-path="res://.godot/imported/20251125upArrowButton1-Sheet.png-c1346c727daf222746df7ff193c05015.ctex"
+uid="uid://bmtg81gcvt7jk"
+path="res://.godot/imported/20251125upArrowButton1-Sheet.png-c28117ce54cabfd0765b17915edcb116.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/ui/dark_dwellers/20251125upArrowButton1-Sheet.png"
-dest_files=["res://.godot/imported/20251125upArrowButton1-Sheet.png-c1346c727daf222746df7ff193c05015.ctex"]
+dest_files=["res://.godot/imported/20251125upArrowButton1-Sheet.png-c28117ce54cabfd0765b17915edcb116.ctex"]
 
 [params]
 

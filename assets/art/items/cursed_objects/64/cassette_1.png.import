@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c1w4tqvjongwf"
-path="res://.godot/imported/cassette_1.png-bf22344980099e6a6c2c74d4778444be.ctex"
+uid="uid://blwmgcghgwc34"
+path="res://.godot/imported/cassette_1.png-4450bf902377ec3a44bc37be0ce7b9ad.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/art/items/cursed_objects/64/cassette_1.png"
-dest_files=["res://.godot/imported/cassette_1.png-bf22344980099e6a6c2c74d4778444be.ctex"]
+dest_files=["res://.godot/imported/cassette_1.png-4450bf902377ec3a44bc37be0ce7b9ad.ctex"]
 
 [params]
 

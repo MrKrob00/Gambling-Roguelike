@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://n440yy522hqq"
-path="res://.godot/imported/20251124neckFrameA1-Sheet.png-99fb5787a03f0612da7a239c952f47e1.ctex"
+uid="uid://cpnehvqd6h2g5"
+path="res://.godot/imported/20251124neckFrameA1-Sheet.png-4b0b21a74056d3b064103df1da46f098.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/ui/dark_dwellers/20251124neckFrameA1-Sheet.png"
-dest_files=["res://.godot/imported/20251124neckFrameA1-Sheet.png-99fb5787a03f0612da7a239c952f47e1.ctex"]
+dest_files=["res://.godot/imported/20251124neckFrameA1-Sheet.png-4b0b21a74056d3b064103df1da46f098.ctex"]
 
 [params]
 

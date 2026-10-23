@@ -2,13 +2,13 @@
 
 importer="mp3"
 type="AudioStreamMP3"
-uid="uid://lu0opig4lhd3"
-path="res://.godot/imported/Cage of the Cryptid.mp3-6146f60535451f1ff0967f5b7212c794.mp3str"
+uid="uid://g0kab7tyw1o"
+path="res://.godot/imported/cage_of_the_cryptid.mp3-fc779c1cef9a04ee8a3c8589e88ed430.mp3str"
 
 [deps]
 
 source_file="res://assets/audio/music/dark/cage_of_the_cryptid.mp3"
-dest_files=["res://.godot/imported/Cage of the Cryptid.mp3-6146f60535451f1ff0967f5b7212c794.mp3str"]
+dest_files=["res://.godot/imported/cage_of_the_cryptid.mp3-fc779c1cef9a04ee8a3c8589e88ed430.mp3str"]
 
 [params]
 

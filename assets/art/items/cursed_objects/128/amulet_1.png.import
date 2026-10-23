@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://7p2u0uvqqnow"
-path="res://.godot/imported/amulet_1.png-a54158fe41b8066477a775067ac39632.ctex"
+uid="uid://b5cnurq0eq302"
+path="res://.godot/imported/amulet_1.png-e597f8dc0265e56021398c9031783f13.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/art/items/cursed_objects/128/amulet_1.png"
-dest_files=["res://.godot/imported/amulet_1.png-a54158fe41b8066477a775067ac39632.ctex"]
+dest_files=["res://.godot/imported/amulet_1.png-e597f8dc0265e56021398c9031783f13.ctex"]
 
 [params]
 

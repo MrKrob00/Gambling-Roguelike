@@ -2,13 +2,13 @@
 
 importer="oggvorbisstr"
 type="AudioStreamOggVorbis"
-uid="uid://cka7ble8hf1u3"
-path="res://.godot/imported/JDSherbert - Tabletop Games SFX Pack - Deck Shuffle - 2.ogg-0b073d158e0af88692f17d621510223d.oggvorbisstr"
+uid="uid://dm8xjrrl0ohni"
+path="res://.godot/imported/deck_shuffle_2.ogg-69c6e2749b71dc365cfa0d734a528e8b.oggvorbisstr"
 
 [deps]
 
 source_file="res://assets/audio/sfx/tabletop/deck_shuffle_2.ogg"
-dest_files=["res://.godot/imported/JDSherbert - Tabletop Games SFX Pack - Deck Shuffle - 2.ogg-0b073d158e0af88692f17d621510223d.oggvorbisstr"]
+dest_files=["res://.godot/imported/deck_shuffle_2.ogg-69c6e2749b71dc365cfa0d734a528e8b.oggvorbisstr"]
 
 [params]
 

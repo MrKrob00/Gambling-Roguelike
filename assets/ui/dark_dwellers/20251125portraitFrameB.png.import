@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://hqcv4rv6c4d3"
-path="res://.godot/imported/20251125portraitFrameB.png-24fc285e3299c21426f5fb6643007e80.ctex"
+uid="uid://bkg5tibccdg6i"
+path="res://.godot/imported/20251125portraitFrameB.png-64a012186abf75f620d9fb56c2893e8c.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/ui/dark_dwellers/20251125portraitFrameB.png"
-dest_files=["res://.godot/imported/20251125portraitFrameB.png-24fc285e3299c21426f5fb6643007e80.ctex"]
+dest_files=["res://.godot/imported/20251125portraitFrameB.png-64a012186abf75f620d9fb56c2893e8c.ctex"]
 
 [params]
 

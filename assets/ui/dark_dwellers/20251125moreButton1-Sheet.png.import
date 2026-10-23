@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://mqqcptqle818"
-path="res://.godot/imported/20251125moreButton1-Sheet.png-8909d74d8d2d1b15c900505afc2ec648.ctex"
+uid="uid://cen04abyh0u43"
+path="res://.godot/imported/20251125moreButton1-Sheet.png-e2ddc5525a48b7a42adc8e6f2f900927.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/ui/dark_dwellers/20251125moreButton1-Sheet.png"
-dest_files=["res://.godot/imported/20251125moreButton1-Sheet.png-8909d74d8d2d1b15c900505afc2ec648.ctex"]
+dest_files=["res://.godot/imported/20251125moreButton1-Sheet.png-e2ddc5525a48b7a42adc8e6f2f900927.ctex"]
 
 [params]
 

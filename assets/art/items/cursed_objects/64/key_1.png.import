@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://begk5m7f87bah"
-path="res://.godot/imported/key_1.png-b9411a36fbf740e31c17f672ea3b90d7.ctex"
+uid="uid://d1vxiorvsr8i5"
+path="res://.godot/imported/key_1.png-5dd70141b6099220ea92dc2add564f37.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/art/items/cursed_objects/64/key_1.png"
-dest_files=["res://.godot/imported/key_1.png-b9411a36fbf740e31c17f672ea3b90d7.ctex"]
+dest_files=["res://.godot/imported/key_1.png-5dd70141b6099220ea92dc2add564f37.ctex"]
 
 [params]
 

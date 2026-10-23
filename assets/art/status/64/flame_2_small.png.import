@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dyxtdloq36jqa"
-path="res://.godot/imported/flame_2_small.png-19d88fc17edac403bec02043a5b263a9.ctex"
+uid="uid://dt7qrh8gufsah"
+path="res://.godot/imported/flame_2_small.png-f356b1690792ad736b834ab61d820855.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/art/status/64/flame_2_small.png"
-dest_files=["res://.godot/imported/flame_2_small.png-19d88fc17edac403bec02043a5b263a9.ctex"]
+dest_files=["res://.godot/imported/flame_2_small.png-f356b1690792ad736b834ab61d820855.ctex"]
 
 [params]
 

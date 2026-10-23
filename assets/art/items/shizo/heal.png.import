@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://damvlf8y74x5w"
-path="res://.godot/imported/heal.png-079792089c9f980068065bfb116fe75f.ctex"
+uid="uid://c42dpo373666h"
+path="res://.godot/imported/heal.png-23b07eb887b5dcb84ae427b456064170.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/art/items/shizo/heal.png"
-dest_files=["res://.godot/imported/heal.png-079792089c9f980068065bfb116fe75f.ctex"]
+dest_files=["res://.godot/imported/heal.png-23b07eb887b5dcb84ae427b456064170.ctex"]
 
 [params]
 

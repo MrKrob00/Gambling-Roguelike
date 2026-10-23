@@ -2,13 +2,13 @@
 
 importer="oggvorbisstr"
 type="AudioStreamOggVorbis"
-uid="uid://6bicc0cm8ppf"
-path="res://.godot/imported/JDSherbert - Tabletop Games SFX Pack - Piece Move - 2.ogg-acc7a54d82b827184d76ff7a550392c9.oggvorbisstr"
+uid="uid://bft3r50mow7p0"
+path="res://.godot/imported/piece_move_2.ogg-0e85b719c3360329ad0053b2a5583a81.oggvorbisstr"
 
 [deps]
 
 source_file="res://assets/audio/sfx/tabletop/piece_move_2.ogg"
-dest_files=["res://.godot/imported/JDSherbert - Tabletop Games SFX Pack - Piece Move - 2.ogg-acc7a54d82b827184d76ff7a550392c9.oggvorbisstr"]
+dest_files=["res://.godot/imported/piece_move_2.ogg-0e85b719c3360329ad0053b2a5583a81.oggvorbisstr"]
 
 [params]
 

@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://f3bmvjhg64it"
-path="res://.godot/imported/insane_green_eye.png-b90729dce65b85d247ebed7b32e4a340.ctex"
+uid="uid://1pw6ppns57aq"
+path="res://.godot/imported/insane_green_eye.png-f2c8190c4bfb8baa47fe5c19591c41e2.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/art/items/shizo/insane_green_eye.png"
-dest_files=["res://.godot/imported/insane_green_eye.png-b90729dce65b85d247ebed7b32e4a340.ctex"]
+dest_files=["res://.godot/imported/insane_green_eye.png-f2c8190c4bfb8baa47fe5c19591c41e2.ctex"]
 
 [params]
 

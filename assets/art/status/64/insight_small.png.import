@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cnhulsobrtfr5"
-path="res://.godot/imported/insight_small.png-177abc86c75179a3eb1f13f3b703c687.ctex"
+uid="uid://bmui3a7k5mxnk"
+path="res://.godot/imported/insight_small.png-e2151d35c62a63ee5d2fc222f857c194.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/art/status/64/insight_small.png"
-dest_files=["res://.godot/imported/insight_small.png-177abc86c75179a3eb1f13f3b703c687.ctex"]
+dest_files=["res://.godot/imported/insight_small.png-e2151d35c62a63ee5d2fc222f857c194.ctex"]
 
 [params]
 

@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dh61v4jnvalyt"
-path="res://.godot/imported/icon_roulette_ball.png-7bedf6899b633f8e6f58e056be85cc31.ctex"
+uid="uid://ccyje1bpxaknd"
+path="res://.godot/imported/icon_roulette_ball.png-a69fd81fa5ec5a51d34c6e47afbe6faa.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/art/items/casino_icons/icon_roulette_ball.png"
-dest_files=["res://.godot/imported/icon_roulette_ball.png-7bedf6899b633f8e6f58e056be85cc31.ctex"]
+dest_files=["res://.godot/imported/icon_roulette_ball.png-a69fd81fa5ec5a51d34c6e47afbe6faa.ctex"]
 
 [params]
 

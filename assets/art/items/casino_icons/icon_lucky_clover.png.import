@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://65s1h8jftpqs"
-path="res://.godot/imported/icon_lucky_clover.png-a1d8b31ea4ea0de4f5e8b1dbaa298ee9.ctex"
+uid="uid://bceeapgvyoeqb"
+path="res://.godot/imported/icon_lucky_clover.png-5c778e736f11831ccdffb5c9d631e163.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/art/items/casino_icons/icon_lucky_clover.png"
-dest_files=["res://.godot/imported/icon_lucky_clover.png-a1d8b31ea4ea0de4f5e8b1dbaa298ee9.ctex"]
+dest_files=["res://.godot/imported/icon_lucky_clover.png-5c778e736f11831ccdffb5c9d631e163.ctex"]
 
 [params]
 

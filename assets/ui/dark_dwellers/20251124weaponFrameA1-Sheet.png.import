@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cehr3snjgho70"
-path="res://.godot/imported/20251124weaponFrameA1-Sheet.png-1a7430c01990c3b5e9ef3694c28ce09a.ctex"
+uid="uid://4p1kcslnb2uu"
+path="res://.godot/imported/20251124weaponFrameA1-Sheet.png-ead2270dfb4b47a62391dfde567adab2.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/ui/dark_dwellers/20251124weaponFrameA1-Sheet.png"
-dest_files=["res://.godot/imported/20251124weaponFrameA1-Sheet.png-1a7430c01990c3b5e9ef3694c28ce09a.ctex"]
+dest_files=["res://.godot/imported/20251124weaponFrameA1-Sheet.png-ead2270dfb4b47a62391dfde567adab2.ctex"]
 
 [params]
 

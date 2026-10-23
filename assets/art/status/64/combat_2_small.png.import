@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bgodf4eoxjg1p"
-path="res://.godot/imported/combat_2_small.png-9b771d53d8cfdb0dcd88d28fa1c39dd2.ctex"
+uid="uid://clkd0q2oyorfu"
+path="res://.godot/imported/combat_2_small.png-7e195b27ff4f4702fbe774fc1239863a.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/art/status/64/combat_2_small.png"
-dest_files=["res://.godot/imported/combat_2_small.png-9b771d53d8cfdb0dcd88d28fa1c39dd2.ctex"]
+dest_files=["res://.godot/imported/combat_2_small.png-7e195b27ff4f4702fbe774fc1239863a.ctex"]
 
 [params]
 

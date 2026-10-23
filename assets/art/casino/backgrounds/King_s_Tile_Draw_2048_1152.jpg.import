@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dw5xrv3puqxmq"
-path="res://.godot/imported/King_s_Tile_Draw_2048_1152.jpg-343043b97ff1bf3a44df465a7f4ba83a.ctex"
+uid="uid://dljtiadxevp6t"
+path="res://.godot/imported/King_s_Tile_Draw_2048_1152.jpg-8dafa5bb04eee5308de6934bad538575.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/art/casino/backgrounds/King_s_Tile_Draw_2048_1152.jpg"
-dest_files=["res://.godot/imported/King_s_Tile_Draw_2048_1152.jpg-343043b97ff1bf3a44df465a7f4ba83a.ctex"]
+dest_files=["res://.godot/imported/King_s_Tile_Draw_2048_1152.jpg-8dafa5bb04eee5308de6934bad538575.ctex"]
 
 [params]
 

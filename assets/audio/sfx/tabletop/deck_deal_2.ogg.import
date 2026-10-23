@@ -2,13 +2,13 @@
 
 importer="oggvorbisstr"
 type="AudioStreamOggVorbis"
-uid="uid://clkfidavdcy2c"
-path="res://.godot/imported/JDSherbert - Tabletop Games SFX Pack - Deck Deal - 2.ogg-dffd26296e0f438bbcfee52ddf94b963.oggvorbisstr"
+uid="uid://c5vm1d552ksqt"
+path="res://.godot/imported/deck_deal_2.ogg-6f405e1add6324af218acd9c3b3aa2fe.oggvorbisstr"
 
 [deps]
 
 source_file="res://assets/audio/sfx/tabletop/deck_deal_2.ogg"
-dest_files=["res://.godot/imported/JDSherbert - Tabletop Games SFX Pack - Deck Deal - 2.ogg-dffd26296e0f438bbcfee52ddf94b963.oggvorbisstr"]
+dest_files=["res://.godot/imported/deck_deal_2.ogg-6f405e1add6324af218acd9c3b3aa2fe.oggvorbisstr"]
 
 [params]
 

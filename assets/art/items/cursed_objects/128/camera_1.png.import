@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://d3oga2qugd44m"
-path="res://.godot/imported/camera_1.png-fa79bca78178c1a44714a331756843c8.ctex"
+uid="uid://bxra3go85ktnb"
+path="res://.godot/imported/camera_1.png-d8bb649b27d50d6e4add2e1cc70718d3.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/art/items/cursed_objects/128/camera_1.png"
-dest_files=["res://.godot/imported/camera_1.png-fa79bca78178c1a44714a331756843c8.ctex"]
+dest_files=["res://.godot/imported/camera_1.png-d8bb649b27d50d6e4add2e1cc70718d3.ctex"]
 
 [params]
 

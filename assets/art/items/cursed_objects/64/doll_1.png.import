@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://couvv2baleatl"
-path="res://.godot/imported/doll_1.png-5dafa92a3b3cb6aba146c5d9ecf8d139.ctex"
+uid="uid://bphmliiqiv5ov"
+path="res://.godot/imported/doll_1.png-67df26481b4c4c55aabccc1818ecfd04.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/art/items/cursed_objects/64/doll_1.png"
-dest_files=["res://.godot/imported/doll_1.png-5dafa92a3b3cb6aba146c5d9ecf8d139.ctex"]
+dest_files=["res://.godot/imported/doll_1.png-67df26481b4c4c55aabccc1818ecfd04.ctex"]
 
 [params]
 

@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dje22qkuokdpp"
-path="res://.godot/imported/arcane_big.png-9ed97f0404b0bcf14759c214f36cb920.ctex"
+uid="uid://blyu8xnb5lx3u"
+path="res://.godot/imported/arcane_big.png-94564254301b459db2eee97a68c2a5a9.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/art/status/256/arcane_big.png"
-dest_files=["res://.godot/imported/arcane_big.png-9ed97f0404b0bcf14759c214f36cb920.ctex"]
+dest_files=["res://.godot/imported/arcane_big.png-94564254301b459db2eee97a68c2a5a9.ctex"]
 
 [params]
 

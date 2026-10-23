@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c16ea3vhh1dg5"
-path="res://.godot/imported/insight_3_big.png-6b306b00ec2f1712be90598c9c73e58a.ctex"
+uid="uid://dbq8jhkn6plyo"
+path="res://.godot/imported/insight_3_big.png-e2563a607e1f413baedddc7232af27b5.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/art/status/256/insight_3_big.png"
-dest_files=["res://.godot/imported/insight_3_big.png-6b306b00ec2f1712be90598c9c73e58a.ctex"]
+dest_files=["res://.godot/imported/insight_3_big.png-e2563a607e1f413baedddc7232af27b5.ctex"]
 
 [params]
 

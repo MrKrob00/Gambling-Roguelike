@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://u1wd4ut8a1h2"
-path="res://.godot/imported/20251118darkDwellersHorizontalCursourD1-Sheet.png-a648d48fae9e43ae568e6aeee5d483b4.ctex"
+uid="uid://bqh1tywriavor"
+path="res://.godot/imported/20251118darkDwellersHorizontalCursourD1-Sheet.png-b064b011a06045aff0d4499d1e651036.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/ui/dark_dwellers/20251118darkDwellersHorizontalCursourD1-Sheet.png"
-dest_files=["res://.godot/imported/20251118darkDwellersHorizontalCursourD1-Sheet.png-a648d48fae9e43ae568e6aeee5d483b4.ctex"]
+dest_files=["res://.godot/imported/20251118darkDwellersHorizontalCursourD1-Sheet.png-b064b011a06045aff0d4499d1e651036.ctex"]
 
 [params]
 

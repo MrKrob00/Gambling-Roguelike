@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cwi3ouldtwp8y"
-path="res://.godot/imported/20251124chestFrameB1-Sheet.png-4a9a04a9ba709039f4fdb3880466267c.ctex"
+uid="uid://8plfh3ut2fnp"
+path="res://.godot/imported/20251124chestFrameB1-Sheet.png-44f65847924d281461d42be9f821b782.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/ui/dark_dwellers/20251124chestFrameB1-Sheet.png"
-dest_files=["res://.godot/imported/20251124chestFrameB1-Sheet.png-4a9a04a9ba709039f4fdb3880466267c.ctex"]
+dest_files=["res://.godot/imported/20251124chestFrameB1-Sheet.png-44f65847924d281461d42be9f821b782.ctex"]
 
 [params]
 

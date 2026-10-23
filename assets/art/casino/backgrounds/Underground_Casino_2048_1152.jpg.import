@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cerldm6duybnu"
-path="res://.godot/imported/Underground_Casino_2048_1152.jpg-47974206e4d14880a2eb14245f864220.ctex"
+uid="uid://cbqdk375si5ee"
+path="res://.godot/imported/Underground_Casino_2048_1152.jpg-49738384d6df5ec24b7d80d8f2abf101.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/art/casino/backgrounds/Underground_Casino_2048_1152.jpg"
-dest_files=["res://.godot/imported/Underground_Casino_2048_1152.jpg-47974206e4d14880a2eb14245f864220.ctex"]
+dest_files=["res://.godot/imported/Underground_Casino_2048_1152.jpg-49738384d6df5ec24b7d80d8f2abf101.ctex"]
 
 [params]
 

@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cfhx8y1kpe7th"
-path="res://.godot/imported/20251118darkDwellersBarB.png-c1eae75544c0eecad058d976898c3b7c.ctex"
+uid="uid://drryxcsnp2o3n"
+path="res://.godot/imported/20251118darkDwellersBarB.png-c8f67aeb2b7374f87f9902076ea23354.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/ui/dark_dwellers/20251118darkDwellersBarB.png"
-dest_files=["res://.godot/imported/20251118darkDwellersBarB.png-c1eae75544c0eecad058d976898c3b7c.ctex"]
+dest_files=["res://.godot/imported/20251118darkDwellersBarB.png-c8f67aeb2b7374f87f9902076ea23354.ctex"]
 
 [params]
 

@@ -2,13 +2,13 @@
 
 importer="oggvorbisstr"
 type="AudioStreamOggVorbis"
-uid="uid://dyt7urvwp8vvn"
-path="res://.godot/imported/JDSherbert - Tabletop Games SFX Pack - Dice Pickup - 2.ogg-739394493720954db38262f4bb096766.oggvorbisstr"
+uid="uid://yiv0qdd2b820"
+path="res://.godot/imported/dice_pickup_2.ogg-09aa198f91278fd5e26df556c1303679.oggvorbisstr"
 
 [deps]
 
 source_file="res://assets/audio/sfx/tabletop/dice_pickup_2.ogg"
-dest_files=["res://.godot/imported/JDSherbert - Tabletop Games SFX Pack - Dice Pickup - 2.ogg-739394493720954db38262f4bb096766.oggvorbisstr"]
+dest_files=["res://.godot/imported/dice_pickup_2.ogg-09aa198f91278fd5e26df556c1303679.oggvorbisstr"]
 
 [params]
 

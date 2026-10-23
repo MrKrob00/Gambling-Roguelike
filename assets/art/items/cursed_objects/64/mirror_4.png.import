@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dvdwolohd8n2s"
-path="res://.godot/imported/mirror_4.png-d7b6505e0570b4f54047458e6c35081a.ctex"
+uid="uid://bxb8lyjaqd0ah"
+path="res://.godot/imported/mirror_4.png-17813092f227c5c426aed6462dc8e852.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/art/items/cursed_objects/64/mirror_4.png"
-dest_files=["res://.godot/imported/mirror_4.png-d7b6505e0570b4f54047458e6c35081a.ctex"]
+dest_files=["res://.godot/imported/mirror_4.png-17813092f227c5c426aed6462dc8e852.ctex"]
 
 [params]
 

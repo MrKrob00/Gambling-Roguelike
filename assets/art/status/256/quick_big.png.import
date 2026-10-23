@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://jtcosqmtkem3"
-path="res://.godot/imported/quick_big.png-5ec4872b48e8791b11c871d241f7d139.ctex"
+uid="uid://bvfierupp7bct"
+path="res://.godot/imported/quick_big.png-8b45352a9fb709c5e04322ac62cdef06.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/art/status/256/quick_big.png"
-dest_files=["res://.godot/imported/quick_big.png-5ec4872b48e8791b11c871d241f7d139.ctex"]
+dest_files=["res://.godot/imported/quick_big.png-8b45352a9fb709c5e04322ac62cdef06.ctex"]
 
 [params]
 

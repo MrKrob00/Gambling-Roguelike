@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://mteoic8t332q"
-path="res://.godot/imported/scalpel_1.png-e2287fc7848612027743873119fe2bab.ctex"
+uid="uid://bgyhkwmh12878"
+path="res://.godot/imported/scalpel_1.png-a18db91403537a67ce23b8da91f455fb.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/art/items/shizo/scalpel_1.png"
-dest_files=["res://.godot/imported/scalpel_1.png-e2287fc7848612027743873119fe2bab.ctex"]
+dest_files=["res://.godot/imported/scalpel_1.png-a18db91403537a67ce23b8da91f455fb.ctex"]
 
 [params]
 

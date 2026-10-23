@@ -1,0 +1,19 @@
+[gd_resource type="Resource" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://data/artifact_data.gd" id="1"]
+[ext_resource type="Script" path="res://data/artifacts/blackjack/effects/sleight_of_hand.gd" id="2"]
+[ext_resource type="Texture2D" path="res://assets/art/icons/game_icons/cards_dice/magick-trick.svg" id="3"]
+
+[resource]
+script = ExtResource("1")
+id = &"sleight_of_hand"
+game_id = &"blackjack"
+kind = 1
+rarity = 2
+icon = ExtResource("3")
+effect_script = ExtResource("2")
+button = false
+uses_per_hand = 0
+charges = 0
+unlock_stat = &"blackjacks"
+unlock_value = 1

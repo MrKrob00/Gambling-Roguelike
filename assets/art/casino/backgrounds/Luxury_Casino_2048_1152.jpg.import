@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b1m26tpvhdlje"
-path="res://.godot/imported/Luxury_Casino_2048_1152.jpg-8eb6b366970e21232204fecf3951a7ef.ctex"
+uid="uid://brhrawdxpe1sj"
+path="res://.godot/imported/Luxury_Casino_2048_1152.jpg-716dfaff3b547347503a9f7a1d432064.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/art/casino/backgrounds/Luxury_Casino_2048_1152.jpg"
-dest_files=["res://.godot/imported/Luxury_Casino_2048_1152.jpg-8eb6b366970e21232204fecf3951a7ef.ctex"]
+dest_files=["res://.godot/imported/Luxury_Casino_2048_1152.jpg-716dfaff3b547347503a9f7a1d432064.ctex"]
 
 [params]
 

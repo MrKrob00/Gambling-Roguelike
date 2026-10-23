@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dqxp73c0uwgwg"
-path="res://.godot/imported/icon_playing_card_ace.png-e28b7b5071b48cb97701b35bde1e476e.ctex"
+uid="uid://ck6bcbihwdr6m"
+path="res://.godot/imported/icon_playing_card_ace.png-fcbae53eca3c6200f5b30d0e62a67634.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/art/items/casino_icons/icon_playing_card_ace.png"
-dest_files=["res://.godot/imported/icon_playing_card_ace.png-e28b7b5071b48cb97701b35bde1e476e.ctex"]
+dest_files=["res://.godot/imported/icon_playing_card_ace.png-fcbae53eca3c6200f5b30d0e62a67634.ctex"]
 
 [params]
 

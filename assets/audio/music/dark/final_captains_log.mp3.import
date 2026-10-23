@@ -2,13 +2,13 @@
 
 importer="mp3"
 type="AudioStreamMP3"
-uid="uid://42q2g7jnmpc5"
-path="res://.godot/imported/Final Captain&#039;s Log.mp3-a738b6e468c20974240b0c45fe3daf25.mp3str"
+uid="uid://bvmsfc3p7bsfs"
+path="res://.godot/imported/final_captains_log.mp3-eead3cd2f680090dbe095b7049c81626.mp3str"
 
 [deps]
 
 source_file="res://assets/audio/music/dark/final_captains_log.mp3"
-dest_files=["res://.godot/imported/Final Captain&#039;s Log.mp3-a738b6e468c20974240b0c45fe3daf25.mp3str"]
+dest_files=["res://.godot/imported/final_captains_log.mp3-eead3cd2f680090dbe095b7049c81626.mp3str"]
 
 [params]
 

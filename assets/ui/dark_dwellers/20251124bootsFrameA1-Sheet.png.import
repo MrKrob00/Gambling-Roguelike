@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://574hgrvbwg4u"
-path="res://.godot/imported/20251124bootsFrameA1-Sheet.png-66a7fee6d171caacba914fd2ece027be.ctex"
+uid="uid://0h8w8tbr1ojo"
+path="res://.godot/imported/20251124bootsFrameA1-Sheet.png-cf0c4f0ee42902413112459b99c5b221.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/ui/dark_dwellers/20251124bootsFrameA1-Sheet.png"
-dest_files=["res://.godot/imported/20251124bootsFrameA1-Sheet.png-66a7fee6d171caacba914fd2ece027be.ctex"]
+dest_files=["res://.godot/imported/20251124bootsFrameA1-Sheet.png-cf0c4f0ee42902413112459b99c5b221.ctex"]
 
 [params]
 

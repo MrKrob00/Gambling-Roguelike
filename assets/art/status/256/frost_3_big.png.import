@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://1k3simnxy0nx"
-path="res://.godot/imported/frost_3_big.png-3a3ee390e81b0b4452c5b491dede9a63.ctex"
+uid="uid://3o1yyyvakcnt"
+path="res://.godot/imported/frost_3_big.png-e2cef81ad5d23391d87b77fc1090821a.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/art/status/256/frost_3_big.png"
-dest_files=["res://.godot/imported/frost_3_big.png-3a3ee390e81b0b4452c5b491dede9a63.ctex"]
+dest_files=["res://.godot/imported/frost_3_big.png-e2cef81ad5d23391d87b77fc1090821a.ctex"]
 
 [params]
 

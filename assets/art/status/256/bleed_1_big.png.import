@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bqjgrfv562pjv"
-path="res://.godot/imported/bleed_1_big.png-40a2193ce3d4fbba931bfef88fdf02f7.ctex"
+uid="uid://c7ymiw67ey7ym"
+path="res://.godot/imported/bleed_1_big.png-822ed0626f3538ab163ad7a2afde4cd6.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/art/status/256/bleed_1_big.png"
-dest_files=["res://.godot/imported/bleed_1_big.png-40a2193ce3d4fbba931bfef88fdf02f7.ctex"]
+dest_files=["res://.godot/imported/bleed_1_big.png-822ed0626f3538ab163ad7a2afde4cd6.ctex"]
 
 [params]
 

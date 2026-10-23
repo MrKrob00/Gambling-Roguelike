@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://clxln014064k1"
-path="res://.godot/imported/(23).png-714e4766128b5cbb6ce80eeb94a06ac1.ctex"
+uid="uid://b703vvalhtvf2"
+path="res://.godot/imported/skill_23.png-6ae24acf74fbc414654df6f74f85c2e9.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/art/skills/skill_23.png"
-dest_files=["res://.godot/imported/(23).png-714e4766128b5cbb6ce80eeb94a06ac1.ctex"]
+dest_files=["res://.godot/imported/skill_23.png-6ae24acf74fbc414654df6f74f85c2e9.ctex"]
 
 [params]
 

@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cbe0napc627at"
-path="res://.godot/imported/pale_1_big.png-0e771eb1c91c91c10612d8aec7ca7912.ctex"
+uid="uid://dsvoda7x5ixww"
+path="res://.godot/imported/pale_1_big.png-9b980c3edb71301fd90ce7ab66e8a5ea.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/art/status/256/pale_1_big.png"
-dest_files=["res://.godot/imported/pale_1_big.png-0e771eb1c91c91c10612d8aec7ca7912.ctex"]
+dest_files=["res://.godot/imported/pale_1_big.png-9b980c3edb71301fd90ce7ab66e8a5ea.ctex"]
 
 [params]
 

@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dgd6j2xtj0vkh"
-path="res://.godot/imported/20251124helmetFrameC1-Sheet.png-115b57fc4aa26186e0780cc065c91a3c.ctex"
+uid="uid://dci6ya5875vqh"
+path="res://.godot/imported/20251124helmetFrameC1-Sheet.png-6519e1d5ac9fe1db9296f8b06e3de2ab.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/ui/dark_dwellers/20251124helmetFrameC1-Sheet.png"
-dest_files=["res://.godot/imported/20251124helmetFrameC1-Sheet.png-115b57fc4aa26186e0780cc065c91a3c.ctex"]
+dest_files=["res://.godot/imported/20251124helmetFrameC1-Sheet.png-6519e1d5ac9fe1db9296f8b06e3de2ab.ctex"]
 
 [params]
 

@@ -2,13 +2,13 @@
 
 importer="oggvorbisstr"
 type="AudioStreamOggVorbis"
-uid="uid://bgae4so2b0ame"
-path="res://.godot/imported/JDSherbert - Tabletop Games SFX Pack - Dice Roll - 1.ogg-424aa1e3283f175053260f8dd547398b.oggvorbisstr"
+uid="uid://8wgrjmimpa64"
+path="res://.godot/imported/dice_roll_1.ogg-ea23b08c4ba97c9a43387e8a77f06b43.oggvorbisstr"
 
 [deps]
 
 source_file="res://assets/audio/sfx/tabletop/dice_roll_1.ogg"
-dest_files=["res://.godot/imported/JDSherbert - Tabletop Games SFX Pack - Dice Roll - 1.ogg-424aa1e3283f175053260f8dd547398b.oggvorbisstr"]
+dest_files=["res://.godot/imported/dice_roll_1.ogg-ea23b08c4ba97c9a43387e8a77f06b43.oggvorbisstr"]
 
 [params]
 

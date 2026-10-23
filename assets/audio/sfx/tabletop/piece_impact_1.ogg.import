@@ -2,13 +2,13 @@
 
 importer="oggvorbisstr"
 type="AudioStreamOggVorbis"
-uid="uid://d6dsbbha4bx0"
-path="res://.godot/imported/JDSherbert - Tabletop Games SFX Pack - Piece Impact - 1.ogg-af2c729f271f8451af3b27a5ca3dc18b.oggvorbisstr"
+uid="uid://br27mjothci06"
+path="res://.godot/imported/piece_impact_1.ogg-a342960009532d69f0fc4650b54e5e6e.oggvorbisstr"
 
 [deps]
 
 source_file="res://assets/audio/sfx/tabletop/piece_impact_1.ogg"
-dest_files=["res://.godot/imported/JDSherbert - Tabletop Games SFX Pack - Piece Impact - 1.ogg-af2c729f271f8451af3b27a5ca3dc18b.oggvorbisstr"]
+dest_files=["res://.godot/imported/piece_impact_1.ogg-a342960009532d69f0fc4650b54e5e6e.oggvorbisstr"]
 
 [params]
 

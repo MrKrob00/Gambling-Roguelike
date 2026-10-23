@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bm516uvk24t5s"
-path="res://.godot/imported/lantern_1.png-088b44d1fc5b2fac0d6d8860f7ca16e5.ctex"
+uid="uid://cys78rvnmm61a"
+path="res://.godot/imported/lantern_1.png-78864f679c311f392e0d01de8e36ac49.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/art/items/cursed_objects/128/lantern_1.png"
-dest_files=["res://.godot/imported/lantern_1.png-088b44d1fc5b2fac0d6d8860f7ca16e5.ctex"]
+dest_files=["res://.godot/imported/lantern_1.png-78864f679c311f392e0d01de8e36ac49.ctex"]
 
 [params]
 

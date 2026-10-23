@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b5s7xmonuut5"
-path="res://.godot/imported/HUD_default_bright (70).png-4fdc8799483e523927507f4d32660b1f.ctex"
+uid="uid://bv38mhsp2khhu"
+path="res://.godot/imported/HUD_default_bright (70).png-945f2e43b749a84295475be1caf1f662.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/ui/mechanized_magic/hud/64/HUD_default_bright (70).png"
-dest_files=["res://.godot/imported/HUD_default_bright (70).png-4fdc8799483e523927507f4d32660b1f.ctex"]
+dest_files=["res://.godot/imported/HUD_default_bright (70).png-945f2e43b749a84295475be1caf1f662.ctex"]
 
 [params]
 

@@ -2,13 +2,13 @@
 
 importer="oggvorbisstr"
 type="AudioStreamOggVorbis"
-uid="uid://dnr1nvopslqtk"
-path="res://.godot/imported/freezer.ogg-e0158b79760181973026cf6408848cc8.oggvorbisstr"
+uid="uid://byhpdxtovxhxs"
+path="res://.godot/imported/freezer.ogg-3b2f0c6de3b308641b4a707123cf55e8.oggvorbisstr"
 
 [deps]
 
 source_file="res://assets/audio/ambience/freezer.ogg"
-dest_files=["res://.godot/imported/freezer.ogg-e0158b79760181973026cf6408848cc8.oggvorbisstr"]
+dest_files=["res://.godot/imported/freezer.ogg-3b2f0c6de3b308641b4a707123cf55e8.oggvorbisstr"]
 
 [params]
 

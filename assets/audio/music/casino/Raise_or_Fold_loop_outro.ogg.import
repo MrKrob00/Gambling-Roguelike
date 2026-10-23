@@ -2,13 +2,13 @@
 
 importer="oggvorbisstr"
 type="AudioStreamOggVorbis"
-uid="uid://ds3r5d0sjp447"
-path="res://.godot/imported/Raise_or_Fold_loop_outro.ogg-1bbdc49fbb8449647e4552c88a1e021c.oggvorbisstr"
+uid="uid://5sd4micmu0q1"
+path="res://.godot/imported/Raise_or_Fold_loop_outro.ogg-ecf69198e9177d79eaea8495abf36da3.oggvorbisstr"
 
 [deps]
 
 source_file="res://assets/audio/music/casino/Raise_or_Fold_loop_outro.ogg"
-dest_files=["res://.godot/imported/Raise_or_Fold_loop_outro.ogg-1bbdc49fbb8449647e4552c88a1e021c.oggvorbisstr"]
+dest_files=["res://.godot/imported/Raise_or_Fold_loop_outro.ogg-ecf69198e9177d79eaea8495abf36da3.oggvorbisstr"]
 
 [params]
 

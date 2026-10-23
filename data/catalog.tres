@@ -1,0 +1,18 @@
+[gd_resource type="Resource" load_steps=13 format=3]
+
+[ext_resource type="Script" path="res://data/artifact_catalog.gd" id="1"]
+[ext_resource type="Resource" path="res://data/artifacts/blackjack/lucky_clover.tres" id="2"]
+[ext_resource type="Resource" path="res://data/artifacts/blackjack/marked_deck.tres" id="3"]
+[ext_resource type="Resource" path="res://data/artifacts/blackjack/card_sleeve.tres" id="4"]
+[ext_resource type="Resource" path="res://data/artifacts/blackjack/cursed_doll.tres" id="5"]
+[ext_resource type="Resource" path="res://data/artifacts/blackjack/silver_chip.tres" id="6"]
+[ext_resource type="Resource" path="res://data/artifacts/blackjack/sleight_of_hand.tres" id="7"]
+[ext_resource type="Resource" path="res://data/artifacts/blackjack/candle_of_mercy.tres" id="8"]
+[ext_resource type="Resource" path="res://data/artifacts/blackjack/gamblers_nerve.tres" id="9"]
+[ext_resource type="Resource" path="res://data/artifacts/blackjack/collectors_ledger.tres" id="10"]
+[ext_resource type="Resource" path="res://data/artifacts/blackjack/rabbits_foot.tres" id="11"]
+[ext_resource type="Resource" path="res://data/artifacts/blackjack/top_hat.tres" id="12"]
+
+[resource]
+script = ExtResource("1")
+artifacts = Array[Resource]([ExtResource("2"), ExtResource("3"), ExtResource("4"), ExtResource("5"), ExtResource("6"), ExtResource("7"), ExtResource("8"), ExtResource("9"), ExtResource("10"), ExtResource("11"), ExtResource("12")])

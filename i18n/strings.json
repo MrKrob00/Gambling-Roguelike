@@ -1,0 +1,494 @@
+{
+ "GAME_TITLE": {
+  "en": "Borrowed Luck",
+  "ru": "Одолженная удача"
+ },
+ "MENU_PLAY": {
+  "en": "Take a seat",
+  "ru": "Сесть за стол"
+ },
+ "MENU_ARTIFACTS": {
+  "en": "Collection",
+  "ru": "Коллекция"
+ },
+ "MENU_LANGUAGE": {
+  "en": "Language",
+  "ru": "Язык"
+ },
+ "MENU_QUIT": {
+  "en": "Leave",
+  "ru": "Уйти"
+ },
+ "MENU_RECORD": {
+  "en": "Record: %d payments",
+  "ru": "Рекорд: выплат %d"
+ },
+ "LOBBY_TITLE": {
+  "en": "Pick your tricks",
+  "ru": "Выбери свои трюки"
+ },
+ "LOBBY_GAME": {
+  "en": "Game: Blackjack",
+  "ru": "Игра: Блэкджек"
+ },
+ "LOBBY_SLOTS": {
+  "en": "Slots %d / %d",
+  "ru": "Слоты %d / %d"
+ },
+ "LOBBY_BORROW": {
+  "en": "Borrow %d chips",
+  "ru": "Занять %d фишек"
+ },
+ "LOBBY_BACK": {
+  "en": "Back",
+  "ru": "Назад"
+ },
+ "LOBBY_LOCKED": {
+  "en": "Locked",
+  "ru": "Закрыто"
+ },
+ "LOBBY_HINT_EMPTY": {
+  "en": "Tap an artifact to take it",
+  "ru": "Нажми на артефакт, чтобы взять его"
+ },
+ "LOBBY_OPEN": {
+  "en": "%d of %d open",
+  "ru": "Открыто %d из %d"
+ },
+ "KIND_ACTIVE": {
+  "en": "Active",
+  "ru": "Активный"
+ },
+ "KIND_PASSIVE": {
+  "en": "Passive",
+  "ru": "Пассивный"
+ },
+ "KIND_CONSUMABLE": {
+  "en": "Consumable",
+  "ru": "Расходный"
+ },
+ "KIND_CURSED": {
+  "en": "Cursed",
+  "ru": "Проклятый"
+ },
+ "CHARGES": {
+  "en": "charges: %d",
+  "ru": "зарядов: %d"
+ },
+ "TABLE_CHIPS": {
+  "en": "Chips",
+  "ru": "Фишки"
+ },
+ "TABLE_BET": {
+  "en": "Bet",
+  "ru": "Ставка"
+ },
+ "TABLE_DEAL": {
+  "en": "Deal",
+  "ru": "Раздать"
+ },
+ "TABLE_HIT": {
+  "en": "Hit",
+  "ru": "Ещё"
+ },
+ "TABLE_STAND": {
+  "en": "Stand",
+  "ru": "Хватит"
+ },
+ "TABLE_DOUBLE": {
+  "en": "Double",
+  "ru": "Удвоить"
+ },
+ "TABLE_CLEAR": {
+  "en": "Clear",
+  "ru": "Сброс"
+ },
+ "TABLE_ALL_IN": {
+  "en": "All in",
+  "ru": "Ва-банк"
+ },
+ "TABLE_NEXT": {
+  "en": "Next hand",
+  "ru": "Следующая раздача"
+ },
+ "TABLE_PAYMENT": {
+  "en": "Payment %d in %d hands",
+  "ru": "Выплата %d через раздач: %d"
+ },
+ "TABLE_PAYMENT_NOW": {
+  "en": "Payment %d is due now",
+  "ru": "Выплата %d: пора"
+ },
+ "TABLE_STREAK": {
+  "en": "Streak %d",
+  "ru": "Серия %d"
+ },
+ "TABLE_DEALER": {
+  "en": "Dealer",
+  "ru": "Крупье"
+ },
+ "TABLE_YOU": {
+  "en": "You",
+  "ru": "Ты"
+ },
+ "TABLE_MIN_BET": {
+  "en": "Minimum bet %d",
+  "ru": "Минимальная ставка %d"
+ },
+ "OUTCOME_BLACKJACK": {
+  "en": "Blackjack! +%d",
+  "ru": "Блэкджек! +%d"
+ },
+ "OUTCOME_WIN": {
+  "en": "You win +%d",
+  "ru": "Выигрыш +%d"
+ },
+ "OUTCOME_PUSH": {
+  "en": "Push",
+  "ru": "Ничья"
+ },
+ "OUTCOME_LOSE": {
+  "en": "Dealer wins %d",
+  "ru": "Крупье выигрывает %d"
+ },
+ "OUTCOME_BUST": {
+  "en": "Bust %d",
+  "ru": "Перебор %d"
+ },
+ "PAYMENT_PAID": {
+  "en": "The collectors take %d chips",
+  "ru": "Коллекторы забрали %d фишек"
+ },
+ "PAYMENT_WAIVED": {
+  "en": "The candle burns down. The debt waits.",
+  "ru": "Свеча догорает. Долг подождёт."
+ },
+ "RESULT_BROKE": {
+  "en": "Out of chips",
+  "ru": "Фишки кончились"
+ },
+ "RESULT_DEBT": {
+  "en": "The collectors came",
+  "ru": "Пришли коллекторы"
+ },
+ "RESULT_PAYMENTS": {
+  "en": "Payments survived",
+  "ru": "Выплат пережито"
+ },
+ "RESULT_PEAK": {
+  "en": "Most chips held",
+  "ru": "Максимум фишек"
+ },
+ "RESULT_HANDS": {
+  "en": "Hands played",
+  "ru": "Раздач сыграно"
+ },
+ "RESULT_NEW": {
+  "en": "New artifacts",
+  "ru": "Новые артефакты"
+ },
+ "RESULT_AGAIN": {
+  "en": "Borrow again",
+  "ru": "Занять снова"
+ },
+ "RESULT_MENU": {
+  "en": "Main menu",
+  "ru": "В меню"
+ },
+ "RESULT_NEW_RECORD": {
+  "en": "New record",
+  "ru": "Новый рекорд"
+ },
+ "TRICK_USED": {
+  "en": "%s",
+  "ru": "%s"
+ },
+ "TRICK_PEEK": {
+  "en": "The hole card is ",
+  "ru": "Закрытая карта: "
+ },
+ "HINT_UNLOCK": {
+  "en": "How to open: %s",
+  "ru": "Как открыть: %s"
+ },
+ "DEALER_WELCOME_1": {
+  "en": "Sit. The house is patient.",
+  "ru": "Садись. Дом терпелив."
+ },
+ "DEALER_WELCOME_2": {
+  "en": "You borrowed. I remember.",
+  "ru": "Ты занял. Я помню."
+ },
+ "DEALER_WELCOME_3": {
+  "en": "Chips are only borrowed time.",
+  "ru": "Фишки — это занятое время."
+ },
+ "DEALER_DEAL_1": {
+  "en": "Cards are coming.",
+  "ru": "Карты идут."
+ },
+ "DEALER_DEAL_2": {
+  "en": "Place your trust. It is cheaper.",
+  "ru": "Положись на удачу. Она дешевле."
+ },
+ "DEALER_DEAL_3": {
+  "en": "Look closely.",
+  "ru": "Смотри внимательно."
+ },
+ "DEALER_BLACKJACK_1": {
+  "en": "Twenty-one. The house blinks.",
+  "ru": "Двадцать одно. Дом моргнул."
+ },
+ "DEALER_BLACKJACK_2": {
+  "en": "A rare gift. Do not get used to it.",
+  "ru": "Редкий дар. Не привыкай."
+ },
+ "DEALER_BLACKJACK_3": {
+  "en": "Hm. Well played.",
+  "ru": "Хм. Хорошо сыграно."
+ },
+ "DEALER_PLAYER_WINS_1": {
+  "en": "Take it. It is on loan too.",
+  "ru": "Забирай. Это тоже в долг."
+ },
+ "DEALER_PLAYER_WINS_2": {
+  "en": "Luck is a loan, too.",
+  "ru": "Удача тоже взаймы."
+ },
+ "DEALER_PLAYER_WINS_3": {
+  "en": "You win. For now.",
+  "ru": "Ты выиграл. Пока."
+ },
+ "DEALER_PUSH_1": {
+  "en": "Nobody wins. Nobody loses. Nobody sleeps.",
+  "ru": "Никто не выиграл, никто не проиграл."
+ },
+ "DEALER_PUSH_2": {
+  "en": "A draw. The house waits.",
+  "ru": "Ничья. Дом подождёт."
+ },
+ "DEALER_PUSH_3": {
+  "en": "Even. How dull.",
+  "ru": "Поровну. Скучно."
+ },
+ "DEALER_PLAYER_BUST_1": {
+  "en": "Too greedy.",
+  "ru": "Слишком жадно."
+ },
+ "DEALER_PLAYER_BUST_2": {
+  "en": "Over. As they all go.",
+  "ru": "Перебор. Как и все."
+ },
+ "DEALER_PLAYER_BUST_3": {
+  "en": "The cards do not like greed.",
+  "ru": "Карты не любят жадных."
+ },
+ "DEALER_PLAYER_LOSES_1": {
+  "en": "The house thanks you.",
+  "ru": "Дом благодарит."
+ },
+ "DEALER_PLAYER_LOSES_2": {
+  "en": "Another one for the pile.",
+  "ru": "Ещё одна в копилку."
+ },
+ "DEALER_PLAYER_LOSES_3": {
+  "en": "Chips change owners.",
+  "ru": "Фишки меняют хозяина."
+ },
+ "DEALER_PAYMENT_1": {
+  "en": "The collectors send their regards.",
+  "ru": "Коллекторы передают привет."
+ },
+ "DEALER_PAYMENT_2": {
+  "en": "Time to pay.",
+  "ru": "Пора платить."
+ },
+ "DEALER_PAYMENT_3": {
+  "en": "They always come on time.",
+  "ru": "Они всегда приходят вовремя."
+ },
+ "DEALER_PEEK_1": {
+  "en": "Looking? How curious.",
+  "ru": "Подглядываешь? Любопытно."
+ },
+ "DEALER_PEEK_2": {
+  "en": "Cheating is only a matter of the house not seeing.",
+  "ru": "Обман — это когда дом не видит."
+ },
+ "DEALER_PEEK_3": {
+  "en": "Careful. I see you looking.",
+  "ru": "Осторожно. Я вижу, что ты смотришь."
+ },
+ "DEALER_TRICK_1": {
+  "en": "A trick. How charming.",
+  "ru": "Трюк. Как мило."
+ },
+ "DEALER_TRICK_2": {
+  "en": "The house did not see that. Or did it.",
+  "ru": "Дом не заметил. Или заметил."
+ },
+ "DEALER_TRICK_3": {
+  "en": "Sleight of hand costs extra.",
+  "ru": "Ловкость рук стоит дороже."
+ },
+ "DEALER_DEATH_BROKE_1": {
+  "en": "Nothing left. Not even luck.",
+  "ru": "Ничего не осталось. Даже удачи."
+ },
+ "DEALER_DEATH_BROKE_2": {
+  "en": "Empty pockets. Empty eyes.",
+  "ru": "Пустые карманы. Пустые глаза."
+ },
+ "DEALER_DEATH_BROKE_3": {
+  "en": "The table keeps your chair warm.",
+  "ru": "Стол сохранит твоё кресло тёплым."
+ },
+ "DEALER_DEATH_DEBT_1": {
+  "en": "They came. They always come.",
+  "ru": "Они пришли. Они всегда приходят."
+ },
+ "DEALER_DEATH_DEBT_2": {
+  "en": "The debt is paid in other ways.",
+  "ru": "Долг платят иначе."
+ },
+ "DEALER_DEATH_DEBT_3": {
+  "en": "Do not turn around.",
+  "ru": "Не оборачивайся."
+ },
+ "ARTIFACT_LUCKY_CLOVER_NAME": {
+  "en": "Lucky Clover",
+  "ru": "Счастливый клевер"
+ },
+ "ARTIFACT_LUCKY_CLOVER_DESC": {
+  "en": "Undo a bust: the last card is discarded. Three charges per run.",
+  "ru": "Отменяет перебор: последняя карта сбрасывается. Три заряда за забег."
+ },
+ "ARTIFACT_LUCKY_CLOVER_HINT": {
+  "en": "Open from the start",
+  "ru": "Открыт с начала"
+ },
+ "ARTIFACT_MARKED_DECK_NAME": {
+  "en": "Marked Deck",
+  "ru": "Меченая колода"
+ },
+ "ARTIFACT_MARKED_DECK_DESC": {
+  "en": "Peek at the dealer's hidden card, once per hand.",
+  "ru": "Подсмотри закрытую карту крупье, раз за раздачу."
+ },
+ "ARTIFACT_MARKED_DECK_HINT": {
+  "en": "Open from the start",
+  "ru": "Открыт с начала"
+ },
+ "ARTIFACT_CARD_SLEEVE_NAME": {
+  "en": "Card Up the Sleeve",
+  "ru": "Карта в рукаве"
+ },
+ "ARTIFACT_CARD_SLEEVE_DESC": {
+  "en": "Swap your last card for a fresh one. Costs 25% of the bet as hush money.",
+  "ru": "Замени последнюю карту новой. Стоит 25% ставки."
+ },
+ "ARTIFACT_CARD_SLEEVE_HINT": {
+  "en": "Win 5 hands",
+  "ru": "Выиграй 5 раздач"
+ },
+ "ARTIFACT_CURSED_DOLL_NAME": {
+  "en": "Cursed Doll",
+  "ru": "Проклятая кукла"
+ },
+ "ARTIFACT_CURSED_DOLL_DESC": {
+  "en": "Wins pay 25% more. Losses cost 25% more.",
+  "ru": "Выигрыши больше на 25%. Проигрыши тоже."
+ },
+ "ARTIFACT_CURSED_DOLL_HINT": {
+  "en": "Go broke for the first time",
+  "ru": "Разорись в первый раз"
+ },
+ "ARTIFACT_SILVER_CHIP_NAME": {
+  "en": "Silver Chip",
+  "ru": "Серебряная фишка"
+ },
+ "ARTIFACT_SILVER_CHIP_DESC": {
+  "en": "Payments are 10% smaller.",
+  "ru": "Выплаты на 10% меньше."
+ },
+ "ARTIFACT_SILVER_CHIP_HINT": {
+  "en": "Hold 1000 chips at once",
+  "ru": "Накопи 1000 фишек одновременно"
+ },
+ "ARTIFACT_SLEIGHT_OF_HAND_NAME": {
+  "en": "Sleight of Hand",
+  "ru": "Ловкость рук"
+ },
+ "ARTIFACT_SLEIGHT_OF_HAND_DESC": {
+  "en": "A natural blackjack pays 2 to 1.",
+  "ru": "Натуральный блэкджек платит 2 к 1."
+ },
+ "ARTIFACT_SLEIGHT_OF_HAND_HINT": {
+  "en": "Land a natural blackjack",
+  "ru": "Собери натуральный блэкджек"
+ },
+ "ARTIFACT_CANDLE_OF_MERCY_NAME": {
+  "en": "Candle of Mercy",
+  "ru": "Свеча милосердия"
+ },
+ "ARTIFACT_CANDLE_OF_MERCY_DESC": {
+  "en": "One failed payment is forgiven. You keep 50 chips.",
+  "ru": "Одна невыплата прощена. Остаётся 50 фишек."
+ },
+ "ARTIFACT_CANDLE_OF_MERCY_HINT": {
+  "en": "Go broke 3 times",
+  "ru": "Разорись 3 раза"
+ },
+ "ARTIFACT_GAMBLERS_NERVE_NAME": {
+  "en": "Gambler's Nerve",
+  "ru": "Нервы игрока"
+ },
+ "ARTIFACT_GAMBLERS_NERVE_DESC": {
+  "en": "A hand won after doubling down pays half a bet more.",
+  "ru": "Выигрыш после удвоения платит ещё полставки."
+ },
+ "ARTIFACT_GAMBLERS_NERVE_HINT": {
+  "en": "Win a hand after doubling down",
+  "ru": "Выиграй раздачу после удвоения"
+ },
+ "ARTIFACT_COLLECTORS_LEDGER_NAME": {
+  "en": "Collector's Ledger",
+  "ru": "Книга коллектора"
+ },
+ "ARTIFACT_COLLECTORS_LEDGER_DESC": {
+  "en": "Payments are 30% smaller. The minimum bet becomes 25.",
+  "ru": "Выплаты на 30% меньше. Минимальная ставка 25."
+ },
+ "ARTIFACT_COLLECTORS_LEDGER_HINT": {
+  "en": "Be killed by the collectors",
+  "ru": "Умри от рук коллекторов"
+ },
+ "ARTIFACT_RABBITS_FOOT_NAME": {
+  "en": "Rabbit's Foot",
+  "ru": "Заячья лапка"
+ },
+ "ARTIFACT_RABBITS_FOOT_DESC": {
+  "en": "Wins in a streak of 2 or more pay a tenth of the bet more per step.",
+  "ru": "Победы в серии от 2 платят на десятую часть ставки больше за шаг."
+ },
+ "ARTIFACT_RABBITS_FOOT_HINT": {
+  "en": "Win 3 hands in a row",
+  "ru": "Выиграй 3 раздачи подряд"
+ },
+ "ARTIFACT_TOP_HAT_NAME": {
+  "en": "Top Hat",
+  "ru": "Цилиндр"
+ },
+ "ARTIFACT_TOP_HAT_DESC": {
+  "en": "Turn your last card into an Ace. One use per run.",
+  "ru": "Превращает последнюю карту в туз. Один раз за забег."
+ },
+ "ARTIFACT_TOP_HAT_HINT": {
+  "en": "Use tricks 10 times",
+  "ru": "Используй трюки 10 раз"
+ },
+ "TABLE_SHUFFLE": {
+  "en": "The shoe is shuffled",
+  "ru": "Колоду тасуют"
+ }
+}

@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://biqdthb04u2sf"
-path="res://.godot/imported/icons_isometric_gray (68).png-539bc99ca5f288f8c926eb4a6c6ca9de.ctex"
+uid="uid://isk2e0833yex"
+path="res://.godot/imported/icons_isometric_gray (68).png-649db9f8cdf831bc5d2e4ec3e30a06d3.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/ui/mechanized_magic/icons/64/icons_isometric_gray (68).png"
-dest_files=["res://.godot/imported/icons_isometric_gray (68).png-539bc99ca5f288f8c926eb4a6c6ca9de.ctex"]
+dest_files=["res://.godot/imported/icons_isometric_gray (68).png-649db9f8cdf831bc5d2e4ec3e30a06d3.ctex"]
 
 [params]
 

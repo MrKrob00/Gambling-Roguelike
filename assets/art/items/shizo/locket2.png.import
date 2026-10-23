@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bk6h3bb3k1vmc"
-path="res://.godot/imported/locket2.png-619ad5fa9222847ddb651a65b1596123.ctex"
+uid="uid://fsja2d782qku"
+path="res://.godot/imported/locket2.png-dc0e673432678e12cc3a0a64ded2877b.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/art/items/shizo/locket2.png"
-dest_files=["res://.godot/imported/locket2.png-619ad5fa9222847ddb651a65b1596123.ctex"]
+dest_files=["res://.godot/imported/locket2.png-dc0e673432678e12cc3a0a64ded2877b.ctex"]
 
 [params]
 

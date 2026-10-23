@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dofii8qra6ek6"
-path="res://.godot/imported/stop.png-d15eaee12bf86ed0d2e033da3f88ac4e.ctex"
+uid="uid://bg5bqj6bcuc62"
+path="res://.godot/imported/stop.png-7dfa0b3436bb1963e88684f461310e0e.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/art/items/shizo/stop.png"
-dest_files=["res://.godot/imported/stop.png-d15eaee12bf86ed0d2e033da3f88ac4e.ctex"]
+dest_files=["res://.godot/imported/stop.png-7dfa0b3436bb1963e88684f461310e0e.ctex"]
 
 [params]
 

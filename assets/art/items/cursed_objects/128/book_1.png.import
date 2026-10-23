@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cldagrewumsqf"
-path="res://.godot/imported/book_1.png-00ad7dba14d72ad036e4d44a6c29d4f2.ctex"
+uid="uid://kw4wqucx0y0f"
+path="res://.godot/imported/book_1.png-fcd96c52f8ff707a5953aa6f43201f2b.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/art/items/cursed_objects/128/book_1.png"
-dest_files=["res://.godot/imported/book_1.png-00ad7dba14d72ad036e4d44a6c29d4f2.ctex"]
+dest_files=["res://.godot/imported/book_1.png-fcd96c52f8ff707a5953aa6f43201f2b.ctex"]
 
 [params]
 

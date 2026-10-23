@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://wbevmh8pp4d6"
-path="res://.godot/imported/20251124ringFrameB1-Sheet.png-b44e5a7d53c973e15bf5948708c19a54.ctex"
+uid="uid://b3egj4qiqa3hq"
+path="res://.godot/imported/20251124ringFrameB1-Sheet.png-c14d645324818d37f21cb553e57687f1.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/ui/dark_dwellers/20251124ringFrameB1-Sheet.png"
-dest_files=["res://.godot/imported/20251124ringFrameB1-Sheet.png-b44e5a7d53c973e15bf5948708c19a54.ctex"]
+dest_files=["res://.godot/imported/20251124ringFrameB1-Sheet.png-c14d645324818d37f21cb553e57687f1.ctex"]
 
 [params]
 

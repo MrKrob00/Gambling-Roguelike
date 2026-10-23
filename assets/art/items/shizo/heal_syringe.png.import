@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://crqfsmracgt8v"
-path="res://.godot/imported/heal_syringe.png-41c37f71a1ae6b6e8fd0b95cd759a145.ctex"
+uid="uid://bl4imsk5gnco8"
+path="res://.godot/imported/heal_syringe.png-6eaac5e3f6b7400bf182cd2d568312dd.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/art/items/shizo/heal_syringe.png"
-dest_files=["res://.godot/imported/heal_syringe.png-41c37f71a1ae6b6e8fd0b95cd759a145.ctex"]
+dest_files=["res://.godot/imported/heal_syringe.png-6eaac5e3f6b7400bf182cd2d568312dd.ctex"]
 
 [params]
 

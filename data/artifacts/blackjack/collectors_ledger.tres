@@ -1,0 +1,19 @@
+[gd_resource type="Resource" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://data/artifact_data.gd" id="1"]
+[ext_resource type="Script" path="res://data/artifacts/blackjack/effects/collectors_ledger.gd" id="2"]
+[ext_resource type="Texture2D" path="res://assets/art/icons/game_icons/occult/black-book.svg" id="3"]
+
+[resource]
+script = ExtResource("1")
+id = &"collectors_ledger"
+game_id = &"blackjack"
+kind = 3
+rarity = 4
+icon = ExtResource("3")
+effect_script = ExtResource("2")
+button = false
+uses_per_hand = 0
+charges = 0
+unlock_stat = &"debt_deaths"
+unlock_value = 1

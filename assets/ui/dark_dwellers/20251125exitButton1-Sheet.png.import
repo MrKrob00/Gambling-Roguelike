@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://drnamchxfjp4v"
-path="res://.godot/imported/20251125exitButton1-Sheet.png-2d402b6c5dfe585d2e507fd2be4e54d3.ctex"
+uid="uid://caknl636khymn"
+path="res://.godot/imported/20251125exitButton1-Sheet.png-5573924582b6d07f1df9ac1fae068605.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/ui/dark_dwellers/20251125exitButton1-Sheet.png"
-dest_files=["res://.godot/imported/20251125exitButton1-Sheet.png-2d402b6c5dfe585d2e507fd2be4e54d3.ctex"]
+dest_files=["res://.godot/imported/20251125exitButton1-Sheet.png-5573924582b6d07f1df9ac1fae068605.ctex"]
 
 [params]
 

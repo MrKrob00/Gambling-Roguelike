@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://drgkoklr3n1wy"
-path="res://.godot/imported/icons_bright (22).png-d379422ae1ce965a052708f149a90518.ctex"
+uid="uid://dsv8tud7ew725"
+path="res://.godot/imported/icons_bright (22).png-8ce3576fab0a792c7c197cb1eeec0d07.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/ui/mechanized_magic/icons/64/icons_bright (22).png"
-dest_files=["res://.godot/imported/icons_bright (22).png-d379422ae1ce965a052708f149a90518.ctex"]
+dest_files=["res://.godot/imported/icons_bright (22).png-8ce3576fab0a792c7c197cb1eeec0d07.ctex"]
 
 [params]
 

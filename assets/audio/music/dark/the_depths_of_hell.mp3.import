@@ -2,13 +2,13 @@
 
 importer="mp3"
 type="AudioStreamMP3"
-uid="uid://bdqr3h552vx16"
-path="res://.godot/imported/The Depths of Hell.mp3-583674989bd1566b2582f9ccfcadcc5f.mp3str"
+uid="uid://lhj2e7s20rvh"
+path="res://.godot/imported/the_depths_of_hell.mp3-87324dfa4b138d398fd23ad6761e1d2d.mp3str"
 
 [deps]
 
 source_file="res://assets/audio/music/dark/the_depths_of_hell.mp3"
-dest_files=["res://.godot/imported/The Depths of Hell.mp3-583674989bd1566b2582f9ccfcadcc5f.mp3str"]
+dest_files=["res://.godot/imported/the_depths_of_hell.mp3-87324dfa4b138d398fd23ad6761e1d2d.mp3str"]
 
 [params]
 

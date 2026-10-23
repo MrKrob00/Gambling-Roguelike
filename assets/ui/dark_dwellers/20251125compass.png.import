@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://lac6rf64pbjb"
-path="res://.godot/imported/20251125compass.png-159793a1639bf91ad0b57784f74d10dd.ctex"
+uid="uid://cc3otk2ogtkx3"
+path="res://.godot/imported/20251125compass.png-c891f771552a2ad5f0ff33926a5dc3df.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/ui/dark_dwellers/20251125compass.png"
-dest_files=["res://.godot/imported/20251125compass.png-159793a1639bf91ad0b57784f74d10dd.ctex"]
+dest_files=["res://.godot/imported/20251125compass.png-c891f771552a2ad5f0ff33926a5dc3df.ctex"]
 
 [params]
 
