@@ -27,18 +27,19 @@ const BODY_FONT: Font = preload("res://ui/fonts/body_font.tres")
 const TOP := 1.03
 const CARD_SPACING := 0.33
 const SHOE := Vector3(1.55, TOP + 0.12, -1.05)
-const DEALER_ROW := Vector3(0.0, TOP + 0.004, -0.74)
-const PLAYER_ROW := Vector3(0.0, TOP + 0.004, -0.0)
-const BET_SPOT := Vector3(0.0, TOP, 0.7)
+const DEALER_ROW := Vector3(0.0, TOP + 0.004, -0.84)
+const PLAYER_ROW := Vector3(0.0, TOP + 0.004, -0.18)
+const BET_SPOT := Vector3(0.0, TOP, 0.42)
 const DEALER_SPOT := Vector3(0.0, 0.0, -2.4)
-## Three zones: artifacts on a tray at the left, the bet and the chip piles in the middle, actions in a
-## column on the right. The tray and column each stand on their own plate so they never blend into the felt.
+## Three zones: artifacts on a tray at the left, the chip piles on a plate at the right, and the action
+## buttons in a row at the near edge, in the middle: the least distorted, thumb-friendly spot. The tray and
+## the chip plate each stand on their own plate so they never blend into the felt.
 const TRAY_X := -1.5
-const TRAY_Z: Array[float] = [-0.45, 0.15, 0.75]
-const ACTION_X := 1.5
-const ACTION_Z: Array[float] = [-0.45, 0.15, 0.75]
-const PILE_Z := 1.06
-const PILE_X: Array[float] = [-0.5, -0.17, 0.17, 0.5]
+const TRAY_Z: Array[float] = [-0.5, 0.05, 0.6]
+const CHIP_PLATE_X := 1.45
+const PILE_POS: Array[Vector2] = [Vector2(1.2, -0.15), Vector2(1.7, -0.15), Vector2(1.2, 0.45), Vector2(1.7, 0.45)]
+const ACTION_Z := 1.08
+const ACTION_X: Array[float] = [-0.8, 0.0, 0.8]
 const AMBIENCE := "res://assets/audio/ambience/dark_cavern_ambient_001.ogg"
 const GOLD := Color(0.96, 0.63, 0.23)
 const RED := Color(0.95, 0.3, 0.25)
@@ -164,13 +165,13 @@ func _add_bet_ring() -> void:
 	caption.outline_size = 6
 	caption.modulate = Color(0.7, 0.5, 0.2)
 	caption.rotation_degrees.x = -90.0
-	caption.position = BET_SPOT + Vector3(-0.52, 0.006, 0.0)
+	caption.position = BET_SPOT + Vector3(-0.55, 0.006, 0.0)
 	caption.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	add_child(caption)
 
 ## Two dark plates with a gold edge: the artifact tray (left) and the action column (right).
 func _add_plates() -> void:
-	for spec in [[TRAY_X, 0.62, 1.78], [ACTION_X, 0.7, 1.78]]:
+	for spec in [[TRAY_X, 0.62, 1.7], [CHIP_PLATE_X, 0.95, 1.7]]:
 		var edge := MeshInstance3D.new()
 		var edge_mesh := BoxMesh.new()
 		edge_mesh.size = Vector3(spec[1] + 0.05, 0.008, spec[2] + 0.05)
@@ -181,7 +182,7 @@ func _add_plates() -> void:
 		edge_mat.emission = Color(0.5, 0.34, 0.1)
 		edge_mat.emission_energy_multiplier = 0.35
 		edge.material_override = edge_mat
-		edge.position = Vector3(spec[0], TOP + 0.004, 0.15)
+		edge.position = Vector3(spec[0], TOP + 0.004, 0.05)
 		add_child(edge)
 		var plate := MeshInstance3D.new()
 		var plate_mesh := BoxMesh.new()
@@ -191,7 +192,7 @@ func _add_plates() -> void:
 		plate_mat.albedo_color = Color(0.05, 0.04, 0.08)
 		plate_mat.roughness = 0.6
 		plate.material_override = plate_mat
-		plate.position = Vector3(spec[0], TOP + 0.008, 0.15)
+		plate.position = Vector3(spec[0], TOP + 0.008, 0.05)
 		add_child(plate)
 
 func _add_shoe() -> void:
@@ -211,10 +212,10 @@ func _build_controls() -> void:
 		var pile := ChipPile.new()
 		add_child(pile)
 		pile.setup(Rules.BET_STEPS[i])
-		pile.position = Vector3(PILE_X[i], TOP, PILE_Z)
+		pile.position = Vector3(PILE_POS[i].x, TOP, PILE_POS[i].y)
 		pile.activated.connect(_on_pile.bind(pile))
 		_piles.append(pile)
-	## Slot 0 is the far end of the right column, slot 2 the near end. Phases share slots.
+	## Slot 0 is left, 1 centre, 2 right. The phases share slots.
 	var defs := {
 		&"clear": ["TABLE_CLEAR", 0], &"deal": ["TABLE_DEAL", 1], &"all_in": ["TABLE_ALL_IN", 2],
 		&"hit": ["TABLE_HIT", 0], &"stand": ["TABLE_STAND", 1], &"double": ["TABLE_DOUBLE", 2],
@@ -224,7 +225,7 @@ func _build_controls() -> void:
 		var plaque := Plaque.new()
 		add_child(plaque)
 		plaque.setup(defs[id][0])
-		plaque.position = Vector3(ACTION_X, TOP + 0.045, ACTION_Z[defs[id][1]])
+		plaque.position = Vector3(ACTION_X[defs[id][1]], TOP + 0.02, ACTION_Z)
 		plaque.activated.connect(_on_plaque.bind(id))
 		plaque.show_plaque(false)
 		plaque.scale = Vector3.ONE * 0.001
@@ -469,8 +470,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		var hit = _pick(event.position)
 		_set_hover(hit)
-		if hit != null and not _queue.busy:
-			hit.activate()
+		if hit != null:
+			hit.activate()  # a pickable that cannot act right now answers with a shake, so a tap is never silent
 
 func _pick(screen_pos: Vector2):
 	var camera: Camera3D = _rig.camera
@@ -504,7 +505,6 @@ func _on_token(token) -> void:
 	_refresh()
 
 func _on_plaque(id: StringName) -> void:
-	Audio.sfx(&"ui/ui_click")
 	match id:
 		&"clear": table.clear_bet()
 		&"all_in": table.all_in()

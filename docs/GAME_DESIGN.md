@@ -21,7 +21,8 @@ the player does (die, land a blackjack, cheat, go all-in...).
 | Tone | Dark, oppressive, modern: an abandoned underground casino, not a medieval dungeon (see `assets/README.md`) |
 | View | 3D, first person at the table, stylized low-poly with soft light. Menus stay 2D pixel UI |
 | Controls | Everything pressable is an object on the table: chip piles, plaques, artifact tokens. Numbers and subtitles are a 2D overlay |
-| Table layout | Table across the view, dealer opposite. Three zones: artifacts left, bet and chips middle, actions right |
+| Table layout | Table across the view, dealer opposite. Artifacts on a tray at the left, chip piles on a plate at the right, bet circle in the middle, action buttons in one row at the near edge |
+| Buttons | 3D but camera-aligned (never skewed), large, with hover ring, press squash and a shake when unavailable |
 
 ## Run loop
 

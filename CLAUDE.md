@@ -72,12 +72,21 @@ integer. The 3D view renders at the window's real resolution.
 ### The 3D table
 
 - Everything is built in code from `blackjack_view_3d.gd`'s layout constants (metres, `TOP` is the felt):
-  the table runs **across** the view with the dealer opposite. Three zones, each on its own plate: artifact
-  tokens on a tray at the left, the bet circle and the four chip piles in the middle, the action plaques in
-  a column at the right. Change a position there, not in a scene.
+  the table runs **across** the view with the dealer opposite. Artifact tokens on a tray at the left, the chip
+  piles in a 2x2 grid on a plate at the right, the bet circle in the middle, and the action buttons in one row
+  at the near edge. Change a position there, not in a scene.
 - **Every control is an object on the table** (`world/pickable_3d.gd`, physics layer 2): chip piles, plaques,
   artifact tokens. The view casts a ray from the pointer or a tap and calls `activate()` on what it hits. A
   touch arrives as an emulated mouse event, so one code path serves both.
+- **Buttons are billboards aligned with the camera's image plane** (`world/plaque_3d.gd`): always an upright,
+  unskewed rectangle on screen. A button that merely lies on the table, or turns toward the camera point,
+  came out skewed or rolled at the edges. Keep the action row in the middle of the near edge: off-axis
+  objects are the most distorted.
+- **A hidden plaque must drop its collision** (`collision_layer = 0`): several plaques share one slot, and a
+  hidden one would eat the tap meant for the visible one. `tools/shot.gd` with `SHOT=pickcheck` casts a real
+  ray at every visible pickable in both phases and must report 0 misses.
+- Every pickable answers the pointer: a ring and a glow on hover, a squash and a click on press, a shake and
+  a dull tick when it cannot act right now. A tap is never silent (touch has no hover).
 - **One tween per pickable** (`Pickable.new_tween()` kills the previous one): an older hide callback must never
   undo a newer show.
 - Card faces are the 2D `CardView` rendered once into a tiny `SubViewport` (`world/card_faces.gd`), so the

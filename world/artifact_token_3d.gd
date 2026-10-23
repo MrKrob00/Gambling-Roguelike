@@ -63,7 +63,8 @@ func bind(effect) -> void:
 	_tip.visible = false
 	_tip.text = "%s\n%s" % [effect.data.title(), effect.data.description()]
 	add_child(_tip)
-	add_box_shape(Vector3(RADIUS * 2.2, 0.16, RADIUS * 2.2), Vector3(0, 0.05, 0))
+	add_box_shape(Vector3(RADIUS * 2.8, 0.3, RADIUS * 2.8), Vector3(0, 0.1, 0))
+	make_ring(RADIUS * 1.12)
 
 func refresh(table) -> void:
 	var usable: bool = fx.data.button and fx.can_use(table)

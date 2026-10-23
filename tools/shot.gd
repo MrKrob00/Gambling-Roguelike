@@ -18,7 +18,7 @@ func _initialize() -> void:
 			scene = load("res://ui/menu/main_menu.tscn").instantiate()
 		"lobby":
 			scene = load("res://ui/lobby/lobby.tscn").instantiate()
-		"table3d", "table3d_play":
+		"table3d", "table3d_play", "pickcheck":
 			var loadout3 := [catalog.by_id(&"lucky_clover"), catalog.by_id(&"marked_deck"), catalog.by_id(&"cursed_doll")]
 			game.run = load("res://core/run_state.gd").new(&"blackjack", loadout3)
 			scene = load("res://games/blackjack/blackjack_scene_3d.tscn").instantiate()
@@ -38,6 +38,28 @@ func _initialize() -> void:
 		tiles[0].pressed.emit()
 		tiles[1].pressed.emit()
 		await create_timer(0.2).timeout
+	if shot == "pickcheck":
+		await create_timer(0.8).timeout
+		var view = scene
+		var failures := 0
+		var checked := 0
+		var everything: Array = view._piles + view._tokens + view._plaques.values()
+		for phase_name in ["betting", "playing"]:
+			if phase_name == "playing":
+				view.table.add_bet(25)
+				view.table.deal()
+				await create_timer(5.0).timeout
+			else:
+				await create_timer(0.5).timeout
+			var active: Array = everything.filter(func(o): return o.collision_layer != 0 and o.visible)
+			for p in active:
+				var screen: Vector2 = view._rig.camera.unproject_position(p.global_position + Vector3(0, 0.1, 0))
+				var hit = view._pick(screen)
+				checked += 1
+				if hit != p:
+					failures += 1
+					print("PICK MISS ", phase_name, " ", p.name, " at ", screen, " hit ", hit)
+		print("pickcheck: ", checked, " objects, ", failures, " misses")
 	if shot == "table3d_play":
 		await create_timer(0.8).timeout
 		var view = scene
@@ -46,6 +68,10 @@ func _initialize() -> void:
 		await create_timer(0.6).timeout
 		view.table.deal()
 		await create_timer(5.0).timeout
+		if OS.has_environment("HOVER"):
+			var target = view._plaques[&"hit"]
+			target.set_hovered(true)
+			await create_timer(0.4).timeout
 	await create_timer(0.3).timeout
 	var img := root.get_viewport().get_texture().get_image()
 	img.save_png(out)

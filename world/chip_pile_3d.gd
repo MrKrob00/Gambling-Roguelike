@@ -15,7 +15,8 @@ func setup(value: int) -> void:
 		chip.position.y = k * ChipVisual.HEIGHT
 		chip.rotation.y = randf() * TAU
 		_chips.add_child(chip)
-	add_box_shape(Vector3(0.2, 0.2, 0.2), Vector3(0, 0.08, 0))
+	add_box_shape(Vector3(0.36, 0.3, 0.36), Vector3(0, 0.1, 0))
+	make_ring(0.125)
 
 func _refresh_visual() -> void:
 	if _chips == null:
