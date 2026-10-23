@@ -44,8 +44,9 @@ const DEALER_SPOT := Vector3(0.0, 0.0, -2.4)
 ## Three zones: artifacts on a tray at the left, the chip piles on a plate at the right, and the action
 ## buttons in a row at the near edge, in the middle: the least distorted, thumb-friendly spot. The tray and
 ## the chip plate each stand on their own plate so they never blend into the felt.
-const TRAY_Z := 1.28
-const TRAY_SIZE := Vector2(1.8, 0.26)
+## The chips stand on the padded rail along the near edge (built by tools/build_room.gd: 0.07 high, centred on z 1.27).
+const RAIL_Z := 1.27
+const RAIL_TOP := TOP + 0.04
 const ACTION_Z := 0.96
 ## Early repayment sits at the right end of the action row, away from the deal button.
 const ENFORCERS_POS := Vector3(0.0, 0.0, 0.3)
@@ -157,7 +158,6 @@ func _build_world() -> void:
 	_bet_stack.position = BET_SPOT
 	add_child(_bet_stack)
 	_add_bet_ring()
-	_add_plates()
 	_add_shoe()
 	_dealer_total = _make_label(DEALER_ROW + Vector3(-1.05, 0.2, 0.0), 64, 0.0036, PALE, true)
 	_player_total = _make_label(PLAYER_ROW + Vector3(-1.05, 0.2, 0.0), 64, 0.0036, PALE, true)
@@ -220,31 +220,6 @@ func _add_bet_ring() -> void:
 	caption.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	add_child(caption)
 
-## The chip rack: a dark tray with a gold edge along the near rim, where a croupier would keep the chips.
-func _add_plates() -> void:
-	var edge := MeshInstance3D.new()
-	var edge_mesh := BoxMesh.new()
-	edge_mesh.size = Vector3(TRAY_SIZE.x + 0.05, 0.008, TRAY_SIZE.y + 0.05)
-	edge.mesh = edge_mesh
-	var edge_mat := StandardMaterial3D.new()
-	edge_mat.albedo_color = Color(0.4, 0.28, 0.1)
-	edge_mat.emission_enabled = true
-	edge_mat.emission = Color(0.5, 0.34, 0.1)
-	edge_mat.emission_energy_multiplier = 0.35
-	edge.material_override = edge_mat
-	edge.position = Vector3(0.0, TOP + 0.004, TRAY_Z)
-	add_child(edge)
-	var plate := MeshInstance3D.new()
-	var plate_mesh := BoxMesh.new()
-	plate_mesh.size = Vector3(TRAY_SIZE.x, 0.012, TRAY_SIZE.y)
-	plate.mesh = plate_mesh
-	var plate_mat := StandardMaterial3D.new()
-	plate_mat.albedo_color = Color(0.05, 0.04, 0.08)
-	plate_mat.roughness = 0.6
-	plate.material_override = plate_mat
-	plate.position = Vector3(0.0, TOP + 0.008, TRAY_Z)
-	add_child(plate)
-
 func _add_shoe() -> void:
 	var shoe := MeshInstance3D.new()
 	var box := BoxMesh.new()
@@ -259,7 +234,8 @@ func _add_shoe() -> void:
 
 func _build_controls() -> void:
 	_rack = ChipRack.new()
-	_rack.position = Vector3(0.0, TOP + 0.012, TRAY_Z)
+	_rack.position = Vector3(0.0, RAIL_TOP, RAIL_Z)
+	_rack.scale = Vector3.ONE * 0.75
 	add_child(_rack)
 	_rack.show_amount(run.chips)
 	## Slot 0 is left, 1 centre, 2 right. The phases share slots.

@@ -1,11 +1,12 @@
 extends Node3D
-## The purse as chips lying on their side in the rack, like a croupier's: one stack per denomination, only
-## showing how much the player holds. Nothing here is pressable. The bet is always the whole purse.
+## The purse as chips standing on the rack, the way a casino stacks them: one column per denomination, the
+## biggest on the left. 250 is two 100s on top of each other and a 50 beside them. Display only, nothing here is
+## pressable: the stake is always the whole purse.
 
 const ChipVisual := preload("res://world/chip_visual.gd")
-const DENOMINATIONS: Array[int] = [500, 100, 25, 10, 5]
-const SPACING := 0.34
-const MAX_SHOWN := 9
+const DENOMINATIONS: Array[int] = [500, 100, 50, 25, 10, 5]
+const SPACING := 0.26
+const MAX_SHOWN := 10
 
 var _shown: Array = []
 var _stacks: Array = []
@@ -23,12 +24,13 @@ func show_amount(amount: int) -> void:
 	for s in _stacks:
 		s.queue_free()
 	_stacks.clear()
+	var columns := counts.filter(func(c: int) -> bool: return c > 0).size()
+	var slot := 0
 	for i in DENOMINATIONS.size():
 		if counts[i] <= 0:
 			continue
 		var column := ChipVisual.make_column(DENOMINATIONS[i], counts[i])
-		# Lying on its side: the stack runs along +z and its top face looks at the player.
-		column.rotation.x = PI / 2.0
-		column.position = Vector3((i - (DENOMINATIONS.size() - 1) / 2.0) * SPACING, ChipVisual.RADIUS, -ChipVisual.HEIGHT * counts[i] / 2.0)
+		column.position = Vector3((slot - (columns - 1) / 2.0) * SPACING, 0.0, 0.0)
 		add_child(column)
 		_stacks.append(column)
+		slot += 1

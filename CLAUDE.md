@@ -148,7 +148,7 @@ integer. The 3D view renders at the window's real resolution.
   `pay_off()` pays it early. A paid debt hands out the next loan's chips, writes the next debt and opens a free
   artifact offer (`loan_closed` signal). Not enough chips at the deadline, or an empty purse, is death unless
   `prevent_death` saves it.
-- The purse is shown as chips lying on their side in a rack at the near rim (`world/chip_rack_3d.gd`), display only.
+- The purse is shown as chip columns standing on a rack at the near rim, one per denomination (`world/chip_rack_3d.gd`), display only.
 - The debt is physical too: two enforcers stand at the player's shoulders and lean in as the deadline nears
   (`world/enforcers_3d.gd`); on the last hand a hand raps three times on the felt (`world/warning_hand_3d.gd`).
 - The deadline is physical: `world/deadline_candles_3d.gd` burns one candle per hand toward the payment, the

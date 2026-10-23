@@ -6,14 +6,15 @@ const TEXTURES := {
 	5: preload("res://assets/art/casino/chip_icons/chip_5.png"),
 	10: preload("res://assets/art/casino/chip_icons/chip_10_128.png"),
 	25: preload("res://assets/art/casino/chip_icons/chip_25_128.png"),
+	50: preload("res://assets/art/casino/chip_icons/chip_50_128.png"),
 	100: preload("res://assets/art/casino/chip_icons/chip_100_128.png"),
 	500: preload("res://assets/art/casino/chip_icons/chip_500_128.png"),
 }
 const SIDE_COLORS := {
 	1: Color(0.6, 0.72, 0.78), 5: Color(0.6, 0.1, 0.1), 10: Color(0.1, 0.28, 0.62),
-	25: Color(0.08, 0.45, 0.25), 100: Color(0.8, 0.6, 0.1), 500: Color(0.28, 0.2, 0.5),
+	25: Color(0.08, 0.45, 0.25), 50: Color(0.62, 0.1, 0.35), 100: Color(0.8, 0.6, 0.1), 500: Color(0.28, 0.2, 0.5),
 }
-const DENOMINATIONS: Array[int] = [500, 100, 25, 10, 5, 1]
+const DENOMINATIONS: Array[int] = [500, 100, 50, 25, 10, 5, 1]
 const RADIUS := 0.1
 const HEIGHT := 0.026
 
