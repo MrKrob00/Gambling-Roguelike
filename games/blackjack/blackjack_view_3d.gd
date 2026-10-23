@@ -20,6 +20,7 @@ const Plaque := preload("res://world/plaque_3d.gd")
 const Token := preload("res://world/artifact_token_3d.gd")
 const OfferCard := preload("res://world/offer_card_3d.gd")
 const Candles := preload("res://world/deadline_candles_3d.gd")
+const ArtifactHand := preload("res://world/artifact_hand_3d.gd")
 const Enforcers := preload("res://world/enforcers_3d.gd")
 const WarningHand := preload("res://world/warning_hand_3d.gd")
 const InfoPanel := preload("res://ui/common/artifact_info_panel.gd")
@@ -42,17 +43,16 @@ const DEALER_SPOT := Vector3(0.0, 0.0, -2.4)
 ## Three zones: artifacts on a tray at the left, the chip piles on a plate at the right, and the action
 ## buttons in a row at the near edge, in the middle: the least distorted, thumb-friendly spot. The tray and
 ## the chip plate each stand on their own plate so they never blend into the felt.
-const TRAY_X := -1.5
-const TRAY_Z: Array[float] = [-0.5, 0.05, 0.6]
-const CHIP_PLATE_X := 1.45
-const PILE_POS: Array[Vector2] = [Vector2(1.2, -0.15), Vector2(1.7, -0.15), Vector2(1.2, 0.45), Vector2(1.7, 0.45)]
-const ACTION_Z := 1.08
+const TRAY_Z := 1.28
+const TRAY_SIZE := Vector2(1.8, 0.26)
+const PILE_X: Array[float] = [-0.6, -0.2, 0.2, 0.6]
+const ACTION_Z := 0.96
 ## Early repayment sits at the right end of the action row, away from the deal button.
 const ENFORCERS_POS := Vector3(0.0, 0.0, 0.3)
 const HAND_POS := Vector3(0.0, TOP + 0.02, 0.62)
 const PAY_OFF_X := 1.5
 const ACTION_X: Array[float] = [-0.8, 0.0, 0.8]
-const DISCARD_X := -1.5
+const DISCARD_X := 1.5
 const OFFER_Z := 0.2
 const OFFER_SPACING := 0.9
 ## The deadline candles stand on the far rail, in front of the dealer.
@@ -88,6 +88,7 @@ var _hovered
 var _pinned
 var _candles
 var _enforcers
+var _hand_rig
 var _warning_hand
 var _debt_text: int = 0
 var _rate: float = 0.0
@@ -143,6 +144,8 @@ func _build_world() -> void:
 	add_child(_dealer)
 	_rig = CameraRig.new()
 	add_child(_rig)
+	_hand_rig = ArtifactHand.new()
+	_rig.camera.add_child(_hand_rig)
 	_faces = CardFaces.new()
 	add_child(_faces)
 	_bet_stack = ChipStack.new()
@@ -212,31 +215,30 @@ func _add_bet_ring() -> void:
 	caption.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	add_child(caption)
 
-## Two dark plates with a gold edge: the artifact tray (left) and the action column (right).
+## The chip rack: a dark tray with a gold edge along the near rim, where a croupier would keep the chips.
 func _add_plates() -> void:
-	for spec in [[TRAY_X, 0.62, 1.7], [CHIP_PLATE_X, 0.95, 1.7]]:
-		var edge := MeshInstance3D.new()
-		var edge_mesh := BoxMesh.new()
-		edge_mesh.size = Vector3(spec[1] + 0.05, 0.008, spec[2] + 0.05)
-		edge.mesh = edge_mesh
-		var edge_mat := StandardMaterial3D.new()
-		edge_mat.albedo_color = Color(0.4, 0.28, 0.1)
-		edge_mat.emission_enabled = true
-		edge_mat.emission = Color(0.5, 0.34, 0.1)
-		edge_mat.emission_energy_multiplier = 0.35
-		edge.material_override = edge_mat
-		edge.position = Vector3(spec[0], TOP + 0.004, 0.05)
-		add_child(edge)
-		var plate := MeshInstance3D.new()
-		var plate_mesh := BoxMesh.new()
-		plate_mesh.size = Vector3(spec[1], 0.012, spec[2])
-		plate.mesh = plate_mesh
-		var plate_mat := StandardMaterial3D.new()
-		plate_mat.albedo_color = Color(0.05, 0.04, 0.08)
-		plate_mat.roughness = 0.6
-		plate.material_override = plate_mat
-		plate.position = Vector3(spec[0], TOP + 0.008, 0.05)
-		add_child(plate)
+	var edge := MeshInstance3D.new()
+	var edge_mesh := BoxMesh.new()
+	edge_mesh.size = Vector3(TRAY_SIZE.x + 0.05, 0.008, TRAY_SIZE.y + 0.05)
+	edge.mesh = edge_mesh
+	var edge_mat := StandardMaterial3D.new()
+	edge_mat.albedo_color = Color(0.4, 0.28, 0.1)
+	edge_mat.emission_enabled = true
+	edge_mat.emission = Color(0.5, 0.34, 0.1)
+	edge_mat.emission_energy_multiplier = 0.35
+	edge.material_override = edge_mat
+	edge.position = Vector3(0.0, TOP + 0.004, TRAY_Z)
+	add_child(edge)
+	var plate := MeshInstance3D.new()
+	var plate_mesh := BoxMesh.new()
+	plate_mesh.size = Vector3(TRAY_SIZE.x, 0.012, TRAY_SIZE.y)
+	plate.mesh = plate_mesh
+	var plate_mat := StandardMaterial3D.new()
+	plate_mat.albedo_color = Color(0.05, 0.04, 0.08)
+	plate_mat.roughness = 0.6
+	plate.material_override = plate_mat
+	plate.position = Vector3(0.0, TOP + 0.008, TRAY_Z)
+	add_child(plate)
 
 func _add_shoe() -> void:
 	var shoe := MeshInstance3D.new()
@@ -255,7 +257,7 @@ func _build_controls() -> void:
 		var pile := ChipPile.new()
 		add_child(pile)
 		pile.setup(Rules.BET_STEPS[i])
-		pile.position = Vector3(PILE_POS[i].x, TOP, PILE_POS[i].y)
+		pile.position = Vector3(PILE_X[i], TOP + 0.012, TRAY_Z)
 		pile.activated.connect(_on_pile.bind(pile))
 		_piles.append(pile)
 	## Slot 0 is left, 1 centre, 2 right. The phases share slots.
@@ -271,7 +273,7 @@ func _build_controls() -> void:
 		add_child(plaque)
 		plaque.setup(defs[id][0])
 		var slot: int = defs[id][1]
-		plaque.position = Vector3(_slot_x(slot), TOP + 0.02, ACTION_Z)
+		plaque.position = Vector3(_slot_x(slot), TOP + 0.02, ACTION_Z - (0.45 if slot == -1 else 0.0))
 		plaque.activated.connect(_on_plaque.bind(id))
 		plaque.show_plaque(false)
 		plaque.scale = Vector3.ONE * 0.001
@@ -285,16 +287,13 @@ func _rebuild_tokens() -> void:
 			t.queue_free()
 	_tokens.clear()
 	_pinned = null
+	_hand_rig.clear()
 	for i in run.effects.size():
 		var token := Token.new()
-		add_child(token)
 		token.bind(run.effects[i])
-		token.position = Vector3(TRAY_X, TOP + 0.014, TRAY_Z[i])
+		_hand_rig.add_token(token, i, run.effects.size())
 		token.activated.connect(_on_token.bind(token))
 		_tokens.append(token)
-		token.scale = Vector3.ONE * 0.01
-		var pop := create_tween()
-		pop.tween_property(token, "scale", Vector3.ONE, 0.25).set_delay(i * 0.06).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 func _build_overlay() -> void:
 	var layer := CanvasLayer.new()
@@ -608,6 +607,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		if hit == null:
 			_pinned = null
 			_info.clear()
+			_sync_focus()
 			return
 		## A touch screen has no hover, so the first tap on an artifact only shows what it is; the second
 		## tap acts. With a mouse the hover already showed it, so one click acts.
@@ -615,8 +615,10 @@ func _unhandled_input(event: InputEvent) -> void:
 			_pinned = hit
 			_show_info(hit)
 			Audio.sfx(&"ui/ui_hover")
+			_sync_focus()
 			return
 		_pinned = null
+		_sync_focus()
 		hit.activate()  # a pickable that cannot act right now answers with a shake, so a tap is never silent
 
 func _is_artifact(obj) -> bool:
@@ -651,6 +653,11 @@ func _set_hover(target) -> void:
 		Input.set_default_cursor_shape(Input.CURSOR_ARROW)
 	if _pinned == null and not _is_artifact_valid(_hovered):
 		_info.clear()
+	_sync_focus()
+
+func _sync_focus() -> void:
+	var target = _pinned if is_instance_valid(_pinned) else _hovered
+	_hand_rig.focus(target if is_instance_valid(target) and target in _tokens else null)
 
 func _is_artifact_valid(obj) -> bool:
 	return is_instance_valid(obj) and _is_artifact(obj)

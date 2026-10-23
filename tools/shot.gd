@@ -67,6 +67,9 @@ func _initialize() -> void:
 					failures += 1
 					print("PICK MISS ", phase_name, " ", p.name, " at ", screen, " hit ", hit)
 		print("pickcheck: ", checked, " objects, ", failures, " misses")
+	if shot == "table3d" and OS.has_environment("TOKEN"):
+		scene._set_hover(scene._tokens[int(OS.get_environment("TOKEN"))])
+		await create_timer(0.7).timeout
 	if shot == "table3d" and OS.has_environment("URGENT"):
 		scene._enforcers.set_urgency(1.0)
 		if OS.get_environment("URGENT") == "hand":

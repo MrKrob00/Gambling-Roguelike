@@ -10,7 +10,7 @@ func setup(value: int) -> void:
 	denomination = value
 	_chips = ChipVisual.make_column(value, 5)
 	add_child(_chips)
-	add_box_shape(Vector3(0.36, 0.3, 0.36), Vector3(0, 0.1, 0))
+	add_box_shape(Vector3(0.34, 0.12, 0.34), Vector3(0, 0.05, 0))
 	make_ring(0.125)
 
 func _refresh_visual() -> void:

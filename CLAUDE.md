@@ -79,9 +79,14 @@ integer. The 3D view renders at the window's real resolution.
   the first click lag behind the tap.
 
 - Everything is built in code from `blackjack_view_3d.gd`'s layout constants (metres, `TOP` is the felt):
-  the table runs **across** the view with the dealer opposite. Artifact tokens on a tray at the left, the chip
-  piles in a 2x2 grid on a plate at the right, the bet circle in the middle, and the action buttons in one row
-  at the near edge. Change a position there, not in a scene.
+  the table runs **across** the view with the dealer opposite. The chip piles stand in one row on a rack along the
+  near rim, the action buttons in a row above it, the bet circle in the middle. The artifacts are not on the table:
+  they are in the player's left hand (`world/artifact_hand_3d.gd`), a child of the camera, so they stay at a fixed
+  size in the lower-left corner (anything on the table shrinks with distance). They are fanned half edge-on; the
+  hovered or pinned one lifts and spins like a coin to show its emblem (`focus()`), the info panel stays a 2D
+  overlay. Change a position in the view's constants, not in a scene.
+- **A collider that sits in front of another pickable eats its taps.** The chip piles stand nearer the camera than the
+  buttons, so their colliders are short; `pickcheck` catches an overlap.
 - **Every control is an object on the table** (`world/pickable_3d.gd`, physics layer 2): chip piles, plaques,
   artifact tokens. The view casts a ray from the pointer or a tap and calls `activate()` on what it hits. A
   touch arrives as an emulated mouse event, so one code path serves both.
