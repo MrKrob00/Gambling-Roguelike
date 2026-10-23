@@ -54,6 +54,14 @@ func can_deal() -> bool:
 func can_double() -> bool:
 	return is_player_turn() and player.cards.size() == 2 and not doubled and run.chips >= bet
 
+func can_pay_off() -> bool:
+	return phase == Phase.BETTING and run.can_pay_off()
+
+## Early repayment of the whole debt. Only between hands, so the clock and the offer cannot clash with a hand.
+func pay_off() -> void:
+	if can_pay_off():
+		run.pay_off()
+
 # ---------------------------------------------------------------- betting
 
 func add_bet(amount: int) -> void:

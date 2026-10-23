@@ -11,10 +11,10 @@ the player does (die, land a blackjack, cheat, go all-in...).
 | Platform | PC and phone at once, landscape. 2D UI base 640x360 (`canvas_items` + `expand`); the 3D view renders at the real resolution |
 | First slice | Blackjack only. The code is built so that every game is a module with its own artifact pool |
 | Run | Endless until death, goal is a record (payments survived, then peak chips) |
-| Debt | A payment is taken every 5 hands and each one is bigger. Not enough chips = death |
+| Debt | One running debt. Every 5 hands 25% of it is taken, then interest on the rest turns `rest + interest` into the new debt; the rate climbs 5% per payment (15% to 60%). It can be paid off in full between hands: that closes the loan, brings a bigger one with its chips, and opens a free artifact offer. Not enough chips for an installment = death |
 | Death | All chips are lost, the run ends, meta progress (unlocks, stats) stays |
-| Artifacts | 3 slots. A run starts empty: a free offer of 3 random unlocked artifacts, pick one. After every payment a paid offer for 30% of the next payment. Replace or discard when full. Four kinds, each its own colour: active blue, passive green, consumable amber, cursed crimson |
-| Deadline | Five candles on the far rail, one snuffed per hand; the amount due floats beside them. Redder light, heartbeat on the last hand, three knocks when it falls |
+| Artifacts | 3 slots. A run starts empty: a free offer of 3 random unlocked artifacts, pick one. Another free offer only when a loan is paid off. Replace or discard when full. Four kinds, each its own colour: active blue, passive green, consumable amber, cursed crimson |
+| Deadline | Five candles on the far rail, one snuffed per hand; the installment due floats beside them. Redder light and two enforcers leaning in as it nears; on the last hand a hand raps three times on the felt; three knocks when it falls |
 | Feedback | A triggered artifact pops into the middle of the screen, shaking, and leaves the same way. A newly opened one slides in at the bottom-right with its icon and the reason it opened |
 | Unlocks | Deaths (first, third, by debt), risky acts (double down win, all-in), doubtful acts (using tricks), wealth and streaks, a natural blackjack |
 | Dealer | Faceless croupier with short ominous lines |
@@ -31,9 +31,9 @@ the player does (die, land a blackjack, cheat, go all-in...).
 1. Menu: take a seat. The collectors lend `START_CHIPS` and the first payment is announced.
 2. At the table the free offer opens: pick 1 of up to 3 random unlocked artifacts (or skip).
 3. Hands: bet, deal, play, resolve. Artifacts hook in at fixed points (see ARCHITECTURE in `CLAUDE.md`).
-4. Every `PAYMENT_EVERY` hands the payment is due. Paid from chips; `PAYMENT_GROWTH` makes the next bigger.
-5. After each payment the house sells a new choice of artifacts for a share of the next payment.
-6. Cannot pay or out of chips: death. The result screen shows the record and every new unlock. The menu's Collection shows every artifact and how to unlock the closed ones.
+4. Every `PAYMENT_EVERY` hands an installment is due (25% of the debt). The rest then grows by interest, and the screen spells out "left + interest = new debt".
+5. Between hands the whole debt can be paid off. That closes the loan: the house lends a bigger one (chips included) and a free artifact offer opens. Artifacts come only this way.
+6. Cannot pay an installment or out of chips: death. The result screen shows the record and every new unlock. The menu's Collection shows every artifact and how to unlock the closed ones.
 
 ## Artifact kinds
 

@@ -127,11 +127,18 @@ integer. The 3D view renders at the window's real resolution.
 ### The run and the artifact offers
 
 - A run starts with **no artifacts**. `Game.start_run(game)` opens a free offer: up to `Rules.OFFER_SIZE` random
-  unlocked artifacts the player does not hold, pick one. After every payment (paid or forgiven) the house
-  proposes a **paid** offer for `Rules.OFFER_COST_PERCENT` of the next payment (at least `OFFER_MIN_COST`);
-  buy it or skip. With full slots (`Rules.ARTIFACT_SLOTS`) a pick must name an artifact to replace. Any
+  unlocked artifacts the player does not hold, pick one. Another free offer opens **only when a loan is paid
+  off** (`RunState.pay_off`). With full slots (`Rules.ARTIFACT_SLOTS`) a pick must name an artifact to replace. Any
   artifact can also be discarded while betting. All of this is `RunState` (`offer_stage`, `choose_offer`,
-  `buy_offer`, `skip_offer`, `discard`), tested in `selftest.gd`; the view only shows the state.
+  `skip_offer`, `discard`, `pay_off`), tested in `selftest.gd`; the view only shows the state.
+- **The debt** (`RunState.debt`, numbers in `Rules`): every `PAYMENT_EVERY` hands the collectors take
+  `INSTALLMENT_SHARE` of the debt, then charge interest on the **rest**; `rest + interest` is the new debt
+  (`interest_added` signal, spelled out on screen). The rate is `INTEREST_BASE + INTEREST_STEP * payments_paid`
+  (capped), so paying slowly gets more expensive. `pay_off()` between hands pays the whole debt at once: it closes
+  the loan, the house lends a bigger one (`Rules.loan_for`, chips included, so net worth does not jump) and a free
+  offer opens. Out of chips for an installment is death unless `prevent_death` saves it (interest still accrues).
+- The debt is physical too: two enforcers stand at the player's shoulders and lean in as the deadline nears
+  (`world/enforcers_3d.gd`); on the last hand a hand raps three times on the felt (`world/warning_hand_3d.gd`).
 - The deadline is physical: `world/deadline_candles_3d.gd` burns one candle per hand toward the payment, the
   dealer's rim light reddens and the vignette darkens as it nears, the last hand has a heartbeat, and the
   payment is three knocks.

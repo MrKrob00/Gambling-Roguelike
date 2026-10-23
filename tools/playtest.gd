@@ -55,17 +55,11 @@ func _act(scene: Node, rng: RandomNumberGenerator) -> void:
 	match table.phase:
 		0:  # BETTING
 			var stage: int = scene.run.offer_stage
-			if stage == 2:  # CHOOSING: take the first card; with full slots replace the first token
+			if stage == 1:  # CHOOSING: take the first card; with full slots replace the first token
 				if scene._pending_pick != null:
 					scene._tokens[0].activate()
 				elif not scene._offer_cards.is_empty() and rng.randf() < 0.85:
 					scene._offer_cards[0].activate()
-				else:
-					_press(scene._plaques[&"skip"])
-				return
-			if stage == 1:  # PROPOSED: buy now and then
-				if rng.randf() < 0.5 and scene.run.can_buy_offer():
-					_press(scene._plaques[&"buy"])
 				else:
 					_press(scene._plaques[&"skip"])
 				return

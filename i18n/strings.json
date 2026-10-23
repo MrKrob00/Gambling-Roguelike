@@ -491,14 +491,6 @@
   "en": "The shoe is shuffled",
   "ru": "Колоду тасуют"
  },
- "OFFER_PROPOSAL": {
-  "en": "The house offers new tricks.\nOne of three, for a price.",
-  "ru": "Дом предлагает новые трюки.\nОдин из трёх, за плату."
- },
- "OFFER_BUY": {
-  "en": "Buy %d",
-  "ru": "Купить %d"
- },
  "OFFER_SKIP": {
   "en": "Skip",
   "ru": "Пропустить"
@@ -506,10 +498,6 @@
  "OFFER_FREE": {
   "en": "Take your first trick",
   "ru": "Выбери свой первый трюк"
- },
- "OFFER_PICK": {
-  "en": "Pick one",
-  "ru": "Выбери один"
  },
  "OFFER_REPLACE": {
   "en": "Slots full. Tap the artifact to replace.",
@@ -626,5 +614,25 @@
  "REASON_TRICKS_USED": {
   "en": "Used tricks %d times",
   "ru": "Трюков использовано: %d"
+ },
+ "TABLE_PAY_OFF": {
+  "en": "Pay off %d",
+  "ru": "Погасить %d"
+ },
+ "TABLE_DEBT": {
+  "en": "Debt %d  (interest %d%%)",
+  "ru": "Долг %d  (проценты %d%%)"
+ },
+ "DEBT_WARNING": {
+  "en": "They come next hand.\nInstallment: %d",
+  "ru": "Они придут со следующей раздачей.\nВзнос: %d"
+ },
+ "DEBT_INTEREST": {
+  "en": "Left %d + interest %d%% (%d)\n= new debt %d",
+  "ru": "Остаток %d + проценты %d%% (%d)\n= новый долг %d"
+ },
+ "DEBT_CLOSED": {
+  "en": "Debt paid: %d.\nThe house lends you %d more.",
+  "ru": "Долг закрыт: %d.\nДом ссужает ещё %d."
  }
 }

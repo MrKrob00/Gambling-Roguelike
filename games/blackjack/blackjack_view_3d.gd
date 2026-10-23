@@ -20,6 +20,8 @@ const Plaque := preload("res://world/plaque_3d.gd")
 const Token := preload("res://world/artifact_token_3d.gd")
 const OfferCard := preload("res://world/offer_card_3d.gd")
 const Candles := preload("res://world/deadline_candles_3d.gd")
+const Enforcers := preload("res://world/enforcers_3d.gd")
+const WarningHand := preload("res://world/warning_hand_3d.gd")
 const InfoPanel := preload("res://ui/common/artifact_info_panel.gd")
 const KindStyle := preload("res://core/kind_style.gd")
 const ArtifactFlash := preload("res://ui/common/artifact_flash.gd")
@@ -45,6 +47,10 @@ const TRAY_Z: Array[float] = [-0.5, 0.05, 0.6]
 const CHIP_PLATE_X := 1.45
 const PILE_POS: Array[Vector2] = [Vector2(1.2, -0.15), Vector2(1.7, -0.15), Vector2(1.2, 0.45), Vector2(1.7, 0.45)]
 const ACTION_Z := 1.08
+## Early repayment sits at the right end of the action row, away from the deal button.
+const ENFORCERS_POS := Vector3(0.0, 0.0, 0.3)
+const HAND_POS := Vector3(0.0, TOP + 0.02, 0.62)
+const PAY_OFF_X := 1.5
 const ACTION_X: Array[float] = [-0.8, 0.0, 0.8]
 const DISCARD_X := -1.5
 const OFFER_Z := 0.2
@@ -81,6 +87,10 @@ var _hole_actor
 var _hovered
 var _pinned
 var _candles
+var _enforcers
+var _warning_hand
+var _debt_text: int = 0
+var _rate: float = 0.0
 var _rim: OmniLight3D
 var _info
 var _flash
@@ -122,6 +132,12 @@ func _build_world() -> void:
 	_candles = Candles.new()
 	_candles.position = CANDLES_POS
 	add_child(_candles)
+	_enforcers = Enforcers.new()
+	_enforcers.position = ENFORCERS_POS
+	add_child(_enforcers)
+	_warning_hand = WarningHand.new()
+	_warning_hand.position = HAND_POS
+	add_child(_warning_hand)
 	_dealer = Dealer3D.new()
 	_dealer.position = DEALER_SPOT
 	add_child(_dealer)
@@ -247,15 +263,15 @@ func _build_controls() -> void:
 		&"clear": ["TABLE_CLEAR", 0], &"deal": ["TABLE_DEAL", 1], &"all_in": ["TABLE_ALL_IN", 2],
 		&"hit": ["TABLE_HIT", 0], &"stand": ["TABLE_STAND", 1], &"double": ["TABLE_DOUBLE", 2],
 		&"next": ["TABLE_NEXT", 1],
-		&"buy": ["OFFER_BUY", 0], &"skip": ["OFFER_SKIP", 2], &"cancel": ["OFFER_CANCEL", 1],
-		&"discard": ["DISCARD", -1],
+		&"skip": ["OFFER_SKIP", 2], &"cancel": ["OFFER_CANCEL", 1],
+		&"discard": ["DISCARD", -1], &"pay_off": ["TABLE_PAY_OFF", -2],
 	}
 	for id in defs:
 		var plaque := Plaque.new()
 		add_child(plaque)
 		plaque.setup(defs[id][0])
 		var slot: int = defs[id][1]
-		plaque.position = Vector3(ACTION_X[slot] if slot >= 0 else DISCARD_X, TOP + 0.02, ACTION_Z)
+		plaque.position = Vector3(_slot_x(slot), TOP + 0.02, ACTION_Z)
 		plaque.activated.connect(_on_plaque.bind(id))
 		plaque.show_plaque(false)
 		plaque.scale = Vector3.ONE * 0.001
@@ -333,6 +349,9 @@ func _connect_run() -> void:
 	run.countdown_changed.connect(func(h: int, a: int) -> void: _enqueue(_do_countdown.bind(h, a)))
 	run.payment_made.connect(func(a: int, i: int) -> void: _enqueue(_do_payment.bind(a, i)))
 	run.payment_waived.connect(func(i: int) -> void: _enqueue(_do_waived.bind(i)))
+	run.debt_changed.connect(func(d: int) -> void: _enqueue(_do_debt.bind(d)))
+	run.interest_added.connect(func(r: int, i: int, rate: float, d: int) -> void: _enqueue(_do_interest.bind(r, i, rate, d)))
+	run.loan_closed.connect(func(p: int, n: int) -> void: _enqueue(_do_loan_closed.bind(p, n)))
 	run.died.connect(func(r: StringName) -> void: _enqueue(_do_death.bind(r)))
 	run.artifacts_changed.connect(func() -> void: _enqueue(_do_artifacts))
 	run.artifact_triggered.connect(func(fx) -> void: _enqueue(_do_triggered.bind(fx)))
@@ -511,10 +530,35 @@ func _do_countdown(hands_left: int, amount: int) -> void:
 	else:
 		_candles.set_remaining(hands_left, amount)
 	_apply_urgency(_candles.urgency)
+	_enforcers.set_urgency(_candles.urgency)
 	if hands_left == 1:
 		Audio.sfx(&"game/heartbeat")
 		_say(&"deadline")
+		_subtitle.text = tr("DEBT_WARNING") % amount
+		await _warning_hand.knock(3, _on_finger_tap)
 	_update_ledger()
+
+func _on_finger_tap(index: int) -> void:
+	Audio.sfx(&"game/knock", 1.0 + index * 0.06, -6.0)
+	_rig.shake(0.02, 0.2)
+
+func _do_debt(debt: int) -> void:
+	_debt_text = debt
+	_update_ledger()
+
+## Spells out where the new debt comes from: what is left, the interest on it, the sum.
+func _do_interest(remainder: int, interest: int, rate: float, new_debt: int) -> void:
+	_rate = rate
+	_subtitle.text = tr("DEBT_INTEREST") % [remainder, int(round(rate * 100.0)), interest, new_debt]
+	_add_text_node(BET_SPOT + Vector3(0.0, 0.5, 0.0), "+%d" % interest, RED)
+	Audio.sfx(&"game/coin_ding", 0.7)
+	await _pause(2.4)
+
+func _do_loan_closed(paid: int, new_loan: int) -> void:
+	_subtitle.text = tr("DEBT_CLOSED") % [paid, new_loan]
+	Audio.sfx(&"trick/sparkle")
+	_vignette.flash_color(Color(0.9, 0.8, 0.4), 0.5, 0.8)
+	await _pause(2.0)
 
 ## The closer the deadline, the redder the dealer's rim light and the darker the screen edges.
 func _apply_urgency(urgency: float) -> void:
@@ -634,6 +678,11 @@ func _on_offer_card(card) -> void:
 		run.choose_offer(card.data)
 	_refresh()
 
+func _slot_x(slot: int) -> float:
+	if slot >= 0:
+		return ACTION_X[slot]
+	return DISCARD_X if slot == -1 else PAY_OFF_X
+
 func _on_plaque(id: StringName) -> void:
 	match id:
 		&"clear": table.clear_bet()
@@ -646,7 +695,7 @@ func _on_plaque(id: StringName) -> void:
 		&"stand": table.stand()
 		&"double": table.double_down()
 		&"next": table.next_hand()
-		&"buy": run.buy_offer()
+		&"pay_off": table.pay_off()
 		&"skip": run.skip_offer()
 		&"cancel":
 			_discarding = false
@@ -691,6 +740,7 @@ func _update_totals() -> void:
 
 func _update_ledger() -> void:
 	var lines := ["%s %d" % [tr("TABLE_CHIPS"), _chips_text]]
+	lines.append(tr("TABLE_DEBT") % [_debt_text, int(round(run.interest_rate() * 100.0))])
 	if run.win_streak >= 2:
 		lines.append(tr("TABLE_STREAK") % run.win_streak)
 	_hud.text = "\n".join(lines)
@@ -719,18 +769,15 @@ func _refresh() -> void:
 	var playing := phase == Table.Phase.PLAYER_TURN
 	var stage: int = run.offer_stage if betting else RunState.Offer.NONE
 	var picking := stage == RunState.Offer.CHOOSING
-	var proposed := stage == RunState.Offer.PROPOSED
 	var replacing := picking and _pending_pick != null
-	var normal := betting and not picking and not proposed and not _discarding
+	var normal := betting and not picking and not _discarding
 	var show: Array = []
 	if normal:
-		show = [&"deal", &"clear", &"all_in"]
+		show = [&"deal", &"clear", &"all_in", &"pay_off"]
 		if not run.effects.is_empty():
 			show.append(&"discard")
 	elif _discarding or replacing:
 		show = [&"cancel"]
-	elif proposed:
-		show = [&"buy", &"skip"]
 	elif picking:
 		show = [&"skip"]
 	elif playing:
@@ -749,8 +796,8 @@ func _refresh() -> void:
 	_plaques[&"discard"].set_enabled(true)
 	_plaques[&"cancel"].set_enabled(true)
 	_plaques[&"skip"].set_enabled(true)
-	_plaques[&"buy"].set_caption(tr("OFFER_BUY") % run.offer_cost)
-	_plaques[&"buy"].set_enabled(run.can_buy_offer())
+	_plaques[&"pay_off"].set_caption(tr("TABLE_PAY_OFF") % run.debt)
+	_plaques[&"pay_off"].set_enabled(table.can_pay_off())
 	for p in _piles:
 		p.set_enabled(normal and table.can_add_bet(p.denomination))
 	var selecting := _discarding or replacing
@@ -793,9 +840,5 @@ func _update_prompt(stage: int, replacing: bool) -> void:
 		_subtitle.text = tr("OFFER_REPLACE")
 	elif _discarding:
 		_subtitle.text = tr("DISCARD_PICK")
-	elif stage == RunState.Offer.PROPOSED:
-		_subtitle.text = tr("OFFER_PROPOSAL")
-		Audio.sfx(&"trick/sparkle")
-		_dealer.react(&"deal")
 	elif stage == RunState.Offer.CHOOSING:
-		_subtitle.text = tr("OFFER_FREE") if run.offer_cost == 0 else tr("OFFER_PICK")
+		_subtitle.text = tr("OFFER_FREE")

@@ -270,9 +270,9 @@ func _artifacts() -> void:
 	# Collector's ledger raises the minimum bet and lowers payments.
 	run = _run([&"collectors_ledger"])
 	check(run.min_bet() == 25, "ledger raises the minimum bet")
-	check(run.next_payment() == 70, "ledger cuts the first payment to 70, got %d" % run.next_payment())
+	check(run.next_payment() == 88, "ledger cuts the first installment to 88, got %d" % run.next_payment())
 	run = _run([&"silver_chip"])
-	check(run.next_payment() == 90, "silver chip cuts the first payment to 90, got %d" % run.next_payment())
+	check(run.next_payment() == 113, "silver chip cuts the first installment to 113, got %d" % run.next_payment())
 
 # ---------------------------------------------------------------- payments and death
 
@@ -292,10 +292,12 @@ func _payments_and_death() -> void:
 	var paid := []
 	run.payment_made.connect(func(amount: int, index: int) -> void: paid.append([amount, index]))
 	_push_hands(table, 5, 10)
-	check(paid == [[100, 1]], "first payment of 100 after 5 hands, got %s" % str(paid))
-	check(run.chips == 400 and run.hands_to_payment == 5, "chips %d, clock reset" % run.chips)
+	check(paid == [[125, 1]], "first installment of 125 after 5 hands, got %s" % str(paid))
+	check(run.chips == 375 and run.hands_to_payment == 5, "chips %d, clock reset" % run.chips)
+	check(run.debt == 435, "500 - 125 = 375, plus 15%% interest (60) = 435, got %d" % run.debt)
 	_push_hands(table, 5, 10)
-	check(run.payments_paid == 2 and run.chips == 250, "second payment is 150, chips %d" % run.chips)
+	check(run.payments_paid == 2 and run.chips == 265, "second installment is 110, chips %d" % run.chips)
+	check(run.debt == 390, "325 + 20%% interest (65) = 390, got %d" % run.debt)
 
 	# Cannot pay: death by debt.
 	run = _run()
@@ -336,7 +338,6 @@ func _offers() -> void:
 	var run = RunState.new(&"blackjack", [])
 	run.start_free_offer()
 	check(run.offer_stage == Offer.CHOOSING and run.offer.size() == 2, "free offer shows the 2 open artifacts, got %d" % run.offer.size())
-	check(run.offer_cost == 0, "the first offer is free")
 	var first = run.offer[0]
 	check(run.choose_offer(first) and run.effects.size() == 1, "taking an offer equips it")
 	check(run.offer_stage == Offer.NONE and run.offer.is_empty(), "the offer closes after a pick")
@@ -367,23 +368,25 @@ func _offers() -> void:
 	var dropped = run.effects[0]
 	run.discard(dropped)
 	check(run.effects.size() == 2 and not (dropped in run.effects), "discard removes an artifact")
-	# A paid offer follows every payment and costs a share of the next one.
+	# Payments alone never open an offer; closing the loan does.
 	run = RunState.new(&"blackjack", [])
 	var table = Table.new(run, 1)
 	_push_hands(table, 5, 10)
-	check(run.offer_stage == Offer.PROPOSED, "a payment proposes a paid offer")
-	var expected_cost := maxi(Rules.OFFER_MIN_COST, int(run.next_payment() * Rules.OFFER_COST_PERCENT))
-	check(run.offer_cost == expected_cost, "the offer costs %d%% of the next payment: %d, got %d" % [int(Rules.OFFER_COST_PERCENT * 100), expected_cost, run.offer_cost])
-	var chips_before: int = run.chips
-	run.buy_offer()
-	check(run.chips == chips_before - expected_cost and run.offer_stage == Offer.CHOOSING, "buying takes the chips and opens the choice")
+	check(run.offer_stage == Offer.NONE, "an installment opens no offer")
+	run.chips = 1000
+	check(table.can_pay_off(), "a rich player can pay the debt off between hands")
+	var owed: int = run.debt
+	var closed := []
+	run.loan_closed.connect(func(p: int, n: int) -> void: closed.append([p, n]))
+	table.pay_off()
+	check(closed == [[owed, 750]], "paying off closes the loan and opens a bigger one: %s" % str(closed))
+	check(run.chips == 1000 - owed + 750 and run.debt == 750, "the new loan comes with its chips, chips %d" % run.chips)
+	check(run.offer_stage == Offer.CHOOSING, "a closed loan opens the free offer")
 	run.skip_offer()
 	check(run.offer_stage == Offer.NONE, "skipping closes the offer")
 	run = RunState.new(&"blackjack", [])
 	run.chips = 15
-	run.offer_stage = Offer.PROPOSED
-	run.offer_cost = 45
-	check(not run.can_buy_offer(), "a poor player cannot buy an offer")
+	check(not run.can_pay_off() and not run.pay_off(), "a poor player cannot pay off")
 	profile.reset()
 
 # ---------------------------------------------------------------- unlocks
