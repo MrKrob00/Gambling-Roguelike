@@ -762,5 +762,9 @@
  "REASON_BUSTS": {
   "en": "Went bust %d times",
   "ru": "Перебор: %d раз"
+ },
+ "PEEK_NEXT": {
+  "en": "The next card.",
+  "ru": "Следующая карта."
  }
 }

@@ -37,7 +37,9 @@ const BODY_FONT: Font = preload("res://ui/fonts/body_font.tres")
 ## Everything below is in metres, table-centred; the felt is at TOP.
 const TOP := 1.03
 const CARD_SPACING := 0.33
-const SHOE := Vector3(1.55, TOP + 0.12, -1.05)
+const SHOE := Vector3(1.35, TOP + 0.12, -1.2)
+## Where the card shown by the Cracked Mirror lies until it is drawn.
+const PEEK_SPOT := Vector3(1.35, TOP + 0.014, -0.7)
 const DEALER_ROW := Vector3(0.0, TOP + 0.004, -0.84)
 const PLAYER_ROW := Vector3(0.0, TOP + 0.004, -0.18)
 const BET_SPOT := Vector3(0.0, TOP, 0.42)
@@ -88,6 +90,8 @@ var _player_cards: Array = []
 var _dealer_shown: Hand = Hand.new()
 var _player_shown: Hand = Hand.new()
 var _hole_actor
+var _hole_counted: bool = false
+var _peek_actor
 var _hovered
 var _pinned
 var _candles
@@ -368,11 +372,14 @@ func _do_clear() -> void:
 	_dealer_shown.clear()
 	_player_shown.clear()
 	_hole_actor = null
+	_hole_counted = false
+	_clear_peek()
 	_update_totals()
 	Audio.sfx(&"tabletop/paper_flip_1")
 	await _pause(0.3)
 
 func _do_card(to_dealer: bool, card, face_up: bool) -> void:
+	_clear_peek()
 	var actor := CardActor.new()
 	add_child(actor)
 	actor.setup(card, _faces.texture_for(card), false)
@@ -396,6 +403,7 @@ func _do_card(to_dealer: bool, card, face_up: bool) -> void:
 			_dealer_shown.add(card)
 		else:
 			_hole_actor = actor
+			_hole_counted = false
 	else:
 		_player_shown.add(card)
 	_update_totals()
@@ -424,36 +432,54 @@ func _do_reveal(card) -> void:
 		Audio.sfx(&"game/card_reveal")
 		await _hole_actor.flip_to(true)
 		_hole_actor = null
-	_dealer_shown.add(card)
+	if not _hole_counted:
+		_dealer_shown.add(card)
+		_hole_counted = true
 	_update_totals()
 	await _pause(0.25)
 
 ## The hidden card on the table turns into the real one: it is shown face up, the total still waits for the reveal.
-func _do_peek(_card) -> void:
+func _do_peek(card) -> void:
 	Audio.sfx(&"trick/sparkle")
 	_dealer.react(&"peek")
 	_say(&"peek")
 	if is_instance_valid(_hole_actor):
 		await _hole_actor.flip_to(true)
+	## The card is face up now, so the dealer's total counts it; the reveal at the end will not count it twice.
+	if not _hole_counted:
+		_dealer_shown.add(card)
+		_hole_counted = true
+		_update_totals()
 	await _pause(0.3)
 
-## The next card of the shoe floats above it for a moment, face up.
+## The next card of the shoe is laid face up beside the shoe and stays there until it is drawn, so it can be read
+## calmly after the artifact has flashed.
 func _do_next_peek(card) -> void:
-	var ghost := CardActor.new()
-	add_child(ghost)
-	ghost.setup(card, _faces.texture_for(card), true)
-	ghost.position = SHOE + Vector3(0.0, 0.55, 0.3)
-	ghost.rotation.x = 0.9
-	ghost.scale = Vector3.ONE * 0.01
-	var tween := create_tween()
-	tween.tween_property(ghost, "scale", Vector3.ONE * 1.1, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	tween.tween_interval(2.0)
-	tween.tween_property(ghost, "scale", Vector3.ONE * 0.01, 0.25)
-	tween.tween_callback(ghost.queue_free)
+	_clear_peek()
+	var actor := CardActor.new()
+	add_child(actor)
+	actor.setup(card, _faces.texture_for(card), true)
+	actor.position = PEEK_SPOT
+	actor.rotation.y = -0.12
+	actor.scale = Vector3.ONE * 0.01
+	var pop := create_tween()
+	pop.tween_property(actor, "scale", Vector3.ONE * 1.25, 0.3).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	_peek_actor = actor
 	Audio.sfx(&"trick/sparkle")
-	await _pause(0.5)
+	_subtitle.text = tr("PEEK_NEXT")
+	await _pause(0.8)
+
+func _clear_peek() -> void:
+	if not is_instance_valid(_peek_actor):
+		return
+	var actor = _peek_actor
+	_peek_actor = null
+	var tween := create_tween()
+	tween.tween_property(actor, "scale", Vector3.ONE * 0.01, 0.2)
+	tween.tween_callback(actor.queue_free)
 
 func _do_shuffled() -> void:
+	_clear_peek()
 	Audio.sfx(&"tabletop/deck_shuffle_1")
 	_subtitle.text = tr("TABLE_SHUFFLE")
 	await _pause(0.6)

@@ -20,6 +20,10 @@ func _initialize() -> void:
 			scene = load("res://ui/lobby/lobby.tscn").instantiate()
 		"table3d", "table3d_play", "pickcheck", "table3d_offer":
 			var loadout3 := [catalog.by_id(&"lucky_clover"), catalog.by_id(&"marked_deck"), catalog.by_id(&"cursed_doll")]
+			if OS.has_environment("ARTS"):
+				loadout3 = []
+				for id in OS.get_environment("ARTS").split(","):
+					loadout3.append(catalog.by_id(StringName(id)))
 			game.run = load("res://core/run_state.gd").new(&"blackjack", loadout3)
 			if shot == "table3d_offer":
 				var profile = root.get_node("Profile")
@@ -132,6 +136,10 @@ func _initialize() -> void:
 		await create_timer(0.6).timeout
 		view.table.deal_all_in()
 		await create_timer(5.0).timeout
+		if OS.has_environment("MIRROR"):
+			for fx in view.run.effects:
+				view.table.use_artifact(fx)
+			await create_timer(4.0).timeout
 		if OS.has_environment("HOVER"):
 			var target = view._plaques[&"hit"]
 			target.set_hovered(true)

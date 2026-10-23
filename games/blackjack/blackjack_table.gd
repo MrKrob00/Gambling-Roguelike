@@ -159,9 +159,9 @@ func next_hand() -> void:
 func use_artifact(fx) -> void:
 	if not fx.can_use(self):
 		return
+	fx.notify()  # the artifact announces itself first, then its effect plays
 	fx.use(self)
 	fx.spend()
-	fx.notify()
 	run.retire_spent()
 	Events.stat_added.emit(Stat.TRICKS_USED, 1)
 	trick_used.emit(fx)
