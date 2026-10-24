@@ -171,6 +171,13 @@ func peek_next_card() -> void:
 	if not shoe.cards.is_empty():
 		next_card_peeked.emit(shoe.cards.back())
 
+## Buries the next card at the bottom of the shoe and shows the one under it.
+func bury_next_card() -> void:
+	if shoe.cards.size() < 2:
+		return
+	shoe.cards.insert(0, shoe.cards.pop_back())
+	next_card_peeked.emit(shoe.cards.back())
+
 func freeze_dealer() -> void:
 	dealer_frozen = true
 
@@ -306,6 +313,14 @@ func _record(outcome: int) -> void:
 			Events.stat_added.emit(Stat.DOUBLES_WON, 1)
 	elif outcome != Outcome.PUSH:
 		run.win_streak = 0
+	if outcome == Outcome.PUSH:
+		Events.stat_added.emit(Stat.PUSHES, 1)
+	if outcome == Outcome.WIN:
+		# Only a dealer's bust lets a small hand win.
+		if player.total() <= Rules.LOW_WIN_TOTAL:
+			Events.stat_added.emit(Stat.LOW_WINS, 1)
+	if won and hole_known:
+		Events.stat_added.emit(Stat.HOLE_WINS, 1)
 	if outcome == Outcome.BLACKJACK:
 		Events.stat_added.emit(Stat.BLACKJACKS, 1)
 	if outcome == Outcome.BUST:

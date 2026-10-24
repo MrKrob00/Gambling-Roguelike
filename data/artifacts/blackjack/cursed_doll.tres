@@ -15,5 +15,5 @@ effect_script = ExtResource("2")
 button = false
 uses_per_hand = 0
 charges = 0
-unlock_stat = &"deaths"
-unlock_value = 1
+unlock_stat = &""
+unlock_value = 0

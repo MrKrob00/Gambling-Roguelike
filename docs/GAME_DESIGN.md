@@ -54,11 +54,11 @@ Each cell is one artifact; an empty cell is room for the next one.
 
 | System | Active (button, cooldown) | Passive (always on) | Consumable (charges, then gone) | Cursed (a price) |
 |---|---|---|---|---|
-| Hand and cards | Card Sleeve (swap a card, 3 hands), Cracked Mirror (next card, 3 hands) | Marked Deck (hole card), Gambler's Nerve (4+ cards) | Lucky Clover (undo a bust), Top Hat (ace), Second Wind (redeal), Sleeping Powder (dealer stands) | |
-| Payout | | Sleight of Hand (blackjack 2:1), Rabbit's Foot (streaks), Lucky Penny (pushes) | | Cursed Doll (+50% wins, pushes lose), Black Cat (19+ pay double, 17- only the stake) |
+| Hand and cards | Card Sleeve (swap a card, 3 hands), Cracked Mirror (next card, 3 hands), Stacked Deck (bury the next card, 3 hands) | Marked Deck (hole card), Glass Eye (next card each hand), Gambler's Nerve (4+ cards) | Lucky Clover (undo a bust), Top Hat (ace), Second Wind (redeal), Sleeping Powder (dealer stands) | |
+| Payout | | Sleight of Hand (blackjack 2:1), Rabbit's Foot (streaks), Lucky Penny (pushes), Steady Hands (doubles), Pauper's Crown (small winning hands) | | Cursed Doll (+50% wins, pushes lose), Black Cat (19+ pay double, 17- only the stake) |
 | The stake | | Loose Change (keep a quarter) | | |
 | The debt | | Silver Chip (-10% due), Pawn Ticket (new debts -15%) | Hush Envelope (-25% now) | Collector's Ledger (-30% due, a hand sooner), Fat Purse (+50% loans, +75% debts) |
-| The deadline | | | Hourglass (+2 hands) | Collector's Ledger |
+| The deadline | | | Hourglass (+2 hands) | Collector's Ledger, Borrowed Time (+2 hands, smaller loans) |
 | Lives | | | Candle of Mercy (survive a death, the last loan again) | |
 
 Ideas for the empty cells: an active that trades a finger for a win, a passive that grows the loan with the win streak, a cursed
@@ -77,13 +77,13 @@ artifact that shortens the deadline for bigger payouts.
 |---|---|---|---|
 | lucky_clover | consumable, 3 | Undo a bust: the last card goes back on top of the shoe and lies face up beside it, as with the Cracked Mirror | open |
 | marked_deck | passive | Every hand starts with the dealer's hole card shown | use the Cracked Mirror 10 times |
-| card_sleeve | active, 3 hands | Swap your last card for a fresh one, costs 20% of the stake | win 5 hands |
+| card_sleeve | active, 3 hands | Swap your last card for a fresh one, costs 20% of the stake | open |
 | cracked_mirror | active, 3 hands | Show the next card of the shoe | win 3 hands |
-| cursed_doll | cursed | Wins pay +50%, a push counts as a loss | die once |
+| cursed_doll | cursed | Wins pay +50%, a push counts as a loss | open |
 | black_cat | cursed | 19+ wins pay double, wins on 17 or less only return the stake | win 4 in a row |
-| silver_chip | passive | The debt due is 10% smaller | hold 1000 chips |
+| silver_chip | passive | The debt due is 10% smaller | open |
 | sleight_of_hand | passive | A natural blackjack pays 2:1 | land a natural blackjack |
-| lucky_penny | passive | A push pays half a stake more | play 15 hands |
+| lucky_penny | passive | A push pays half a stake more | the first push |
 | gamblers_nerve | passive | Winning with 4+ cards pays +50% | win 12 hands |
 | rabbits_foot | passive | Wins in a streak of 2+ pay +10% per streak step | win 3 in a row |
 | loose_change | passive | A quarter of the purse stays out of the stake | die twice |
@@ -96,5 +96,12 @@ artifact that shortens the deadline for bigger payouts.
 | sleeping_powder | consumable, 2 | The dealer stands on whatever he has | bust 4 times |
 | hourglass | consumable, 2 | +2 hands before the debt falls due, also between hands | pay 2 debts |
 | hush_envelope | consumable, 1 | Cut the debt by a quarter, also between hands | die to the collectors |
+| stacked_deck | active, 3 hands | Bury the next card at the bottom of the shoe and show the one beneath | win 8 hands with the hole card known (Marked Deck) |
+| glass_eye | passive, rare | Every hand starts with the next card of the shoe shown beside it | use the Stacked Deck 5 times |
+| steady_hands | passive | A won double down pays half a stake more | win 3 double downs |
+| borrowed_time | cursed | Two more hands before a debt falls due, new loans a fifth smaller | die to the collectors 3 times |
+| paupers_crown | passive, rare | A won hand of 15 or less pays a whole stake more | win a hand with 10 or less (the dealer busts) |
+
+Chains of unlocks: Cracked Mirror -> (10 uses) Marked Deck -> (8 wins with the hole card known) Stacked Deck -> (5 uses) Glass Eye. Open from the start: Lucky Clover, Card Sleeve, Cursed Doll, Silver Chip.
 
 Numbers live in `core/rules.gd` and in each artifact `.tres`; this table is a retelling.

@@ -1,4 +1,4 @@
-[gd_resource type="Resource" load_steps=23 format=3]
+[gd_resource type="Resource" load_steps=28 format=3]
 
 [ext_resource type="Script" path="res://data/artifact_catalog.gd" id="1"]
 [ext_resource type="Resource" path="res://data/artifacts/blackjack/lucky_clover.tres" id="2"]
@@ -22,7 +22,12 @@
 [ext_resource type="Resource" path="res://data/artifacts/blackjack/black_cat.tres" id="107"]
 [ext_resource type="Resource" path="res://data/artifacts/blackjack/pawn_ticket.tres" id="108"]
 [ext_resource type="Resource" path="res://data/artifacts/blackjack/fat_purse.tres" id="109"]
+[ext_resource type="Resource" path="res://data/artifacts/blackjack/stacked_deck.tres" id="200"]
+[ext_resource type="Resource" path="res://data/artifacts/blackjack/glass_eye.tres" id="201"]
+[ext_resource type="Resource" path="res://data/artifacts/blackjack/steady_hands.tres" id="202"]
+[ext_resource type="Resource" path="res://data/artifacts/blackjack/borrowed_time.tres" id="203"]
+[ext_resource type="Resource" path="res://data/artifacts/blackjack/paupers_crown.tres" id="204"]
 
 [resource]
 script = ExtResource("1")
-artifacts = Array[Resource]([ExtResource("2"), ExtResource("3"), ExtResource("4"), ExtResource("5"), ExtResource("6"), ExtResource("7"), ExtResource("8"), ExtResource("9"), ExtResource("10"), ExtResource("11"), ExtResource("12"), ExtResource("100"), ExtResource("101"), ExtResource("102"), ExtResource("103"), ExtResource("104"), ExtResource("105"), ExtResource("106"), ExtResource("107"), ExtResource("108"), ExtResource("109")])
+artifacts = Array[Resource]([ExtResource("2"), ExtResource("3"), ExtResource("4"), ExtResource("5"), ExtResource("6"), ExtResource("7"), ExtResource("8"), ExtResource("9"), ExtResource("10"), ExtResource("11"), ExtResource("12"), ExtResource("100"), ExtResource("101"), ExtResource("102"), ExtResource("103"), ExtResource("104"), ExtResource("105"), ExtResource("106"), ExtResource("107"), ExtResource("108"), ExtResource("109"), ExtResource("200"), ExtResource("201"), ExtResource("202"), ExtResource("203"), ExtResource("204")])

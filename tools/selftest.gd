@@ -69,7 +69,7 @@ func _load_everything(path: String) -> void:
 
 func _catalog() -> void:
 	var cat = root.get_node("Catalog")
-	check(cat.all().size() == 21, "catalog holds 21 artifacts, has %d" % cat.all().size())
+	check(cat.all().size() == 26, "catalog holds 26 artifacts, has %d" % cat.all().size())
 	var tr_ok := true
 	for a in cat.all():
 		for part in ["NAME", "DESC", "HINT"]:
@@ -195,6 +195,23 @@ func _artifacts() -> void:
 	check(table.phase == Table.Phase.PLAYER_TURN and table.player.total() == 16, "clover undoes the bust")
 	check(_fx(run, &"lucky_clover").charges_left == 2, "clover spends a charge")
 	check(peeked.size() == 1 and peeked[0] == table.shoe.cards.back(), "clover lays the undone card face up beside the shoe")
+
+	# Stacked deck buries the next card and shows the one beneath.
+	run = _run([&"stacked_deck"])
+	table = Table.new(run, 1)
+	_stack(table, [[10], [10], [6], [7], [4], [9]])
+	table.add_bet(100)
+	table.deal()
+	var shown := []
+	table.next_card_peeked.connect(func(c) -> void: shown.append(c))
+	var next_before = table.shoe.cards.back()
+	table.use_artifact(_fx(run, &"stacked_deck"))
+	check(shown.size() == 1 and shown[0] != next_before and table.shoe.cards.back() == shown[0] and table.shoe.cards[0] == next_before, "stacked deck buries the next card and shows the one beneath")
+
+	# Borrowed time: two more hands, a smaller loan.
+	run = _run([&"borrowed_time"])
+	check(_fx(run, &"borrowed_time").modify_deadline(Rules.PAYMENT_EVERY) == Rules.PAYMENT_EVERY + 2, "borrowed time adds two hands")
+	check(_fx(run, &"borrowed_time").modify_new_loan(150) == 120, "borrowed time shrinks the loan by a fifth")
 
 	# Marked deck is passive: the hole card is known from the deal.
 	run = _run([&"marked_deck"])
@@ -455,10 +472,10 @@ func _offers() -> void:
 	var profile = root.get_node("Profile")
 	profile.reset()
 	var Offer = RunState.Offer
-	# At the start only the open artifact (the clover) can be offered.
+	# At the start only the four open artifacts can be offered, three of them at a time.
 	var run = RunState.new(&"blackjack", [])
 	run.start_free_offer()
-	check(run.offer_stage == Offer.CHOOSING and run.offer.size() == 1, "free offer shows the 1 open artifact, got %d" % run.offer.size())
+	check(run.offer_stage == Offer.CHOOSING and run.offer.size() == Rules.OFFER_SIZE, "free offer shows %d of the open artifacts, got %d" % [Rules.OFFER_SIZE, run.offer.size()])
 	var first = run.offer[0]
 	check(run.choose_offer(first) and run.effects.size() == 1, "taking an offer equips it")
 	check(run.offer_stage == Offer.NONE and run.offer.is_empty(), "the offer closes after a pick")
@@ -531,22 +548,34 @@ func _unlocks() -> void:
 	var profile = root.get_node("Profile")
 	var events = root.get_node("Events")
 	profile.reset()
-	check(profile.is_unlocked(_artifact(&"lucky_clover")), "clover is open from the start")
-	check(not profile.is_unlocked(_artifact(&"cursed_doll")), "doll starts locked")
+	for id in [&"lucky_clover", &"card_sleeve", &"cursed_doll", &"silver_chip"]:
+		check(profile.is_unlocked(_artifact(id)), "%s is open from the start" % id)
+	check(not profile.is_unlocked(_artifact(&"loose_change")), "loose change starts locked")
 	events.stat_added.emit(Stat.DEATHS, 1)
-	check(profile.is_unlocked(_artifact(&"cursed_doll")), "first death unlocks the doll")
+	check(not profile.is_unlocked(_artifact(&"loose_change")), "one death does not open loose change")
+	events.stat_added.emit(Stat.DEATHS, 1)
+	check(profile.is_unlocked(_artifact(&"loose_change")), "two deaths open loose change")
 	check(profile.fresh_unlocks.size() == 1, "one fresh unlock is waiting")
-	events.stat_peaked.emit(Stat.CHIPS_PEAK, 1200)
-	check(profile.is_unlocked(_artifact(&"silver_chip")), "1000 chips unlock the silver chip")
-	check(_artifact(&"card_sleeve").unlock_reason() == "Won 5 hands", "unlock reason reads naturally: %s" % _artifact(&"card_sleeve").unlock_reason())
+	events.stat_peaked.emit(Stat.CHIPS_PEAK, 1600)
+	check(profile.is_unlocked(_artifact(&"fat_purse")), "1500 chips unlock the fat purse")
+	check(_artifact(&"gamblers_nerve").unlock_reason() == "Won 12 hands", "unlock reason reads naturally: %s" % _artifact(&"gamblers_nerve").unlock_reason())
 	events.stat_peaked.emit(Stat.CHIPS_PEAK, 300)
-	check(profile.stat(Stat.CHIPS_PEAK) == 1200, "a peak never goes down")
+	check(profile.stat(Stat.CHIPS_PEAK) == 1600, "a peak never goes down")
+	check(not profile.is_unlocked(_artifact(&"lucky_penny")) and not profile.is_unlocked(_artifact(&"paupers_crown")), "penny and crown start locked")
+	events.stat_added.emit(Stat.PUSHES, 1)
+	check(profile.is_unlocked(_artifact(&"lucky_penny")), "the first push opens the lucky penny")
+	events.stat_added.emit(Stat.LOW_WINS, 1)
+	check(profile.is_unlocked(_artifact(&"paupers_crown")), "a win with 10 or less opens the pauper's crown")
 	check(not profile.is_unlocked(_artifact(&"marked_deck")), "the marked deck starts locked")
 	for i in 9:
 		events.stat_added.emit(Stat.MIRROR_USES, 1)
 	check(not profile.is_unlocked(_artifact(&"marked_deck")), "nine mirror uses do not open the marked deck")
 	events.stat_added.emit(Stat.MIRROR_USES, 1)
 	check(profile.is_unlocked(_artifact(&"marked_deck")), "ten mirror uses open the marked deck")
+	check(not profile.is_unlocked(_artifact(&"glass_eye")), "the glass eye starts locked")
+	for i in 5:
+		events.stat_added.emit(Stat.STACKED_USES, 1)
+	check(profile.is_unlocked(_artifact(&"glass_eye")), "five stacked deck uses open the glass eye")
 	profile.reset()
 
 # ---------------------------------------------------------------- fuzz

@@ -32,3 +32,6 @@ static func debt_for(index: int) -> int:
 
 static func _rounded(amount: float) -> int:
 	return int(round(amount / MONEY_ROUND_TO)) * MONEY_ROUND_TO
+
+## A hand that wins with this total or less (the dealer busted) opens the Pauper's Crown.
+const LOW_WIN_TOTAL := 10

@@ -660,8 +660,8 @@
   "ru": "+ Ничья приносит полставки сверху"
  },
  "ARTIFACT_LUCKY_PENNY_HINT": {
-  "en": "Play 15 hands",
-  "ru": "Сыграть 15 раздач"
+  "en": "Push a hand with the dealer",
+  "ru": "Сыграть вничью с дилером"
  },
  "ARTIFACT_CRACKED_MIRROR_NAME": {
   "en": "Cracked Mirror",
@@ -778,5 +778,81 @@
  "PEEK_NEXT": {
   "en": "The next card.",
   "ru": "Следующая карта."
+ },
+ "ARTIFACT_STACKED_DECK_NAME": {
+  "en": "Stacked Deck",
+  "ru": "Крапленая колода"
+ },
+ "ARTIFACT_STACKED_DECK_DESC": {
+  "en": "+ Buries the next card at the bottom of the shoe\n+ and shows the one beneath",
+  "ru": "+ Прячет следующую карту на дно колоды\n+ и показывает ту, что под ней"
+ },
+ "ARTIFACT_STACKED_DECK_HINT": {
+  "en": "Win 8 hands with the hole card known",
+  "ru": "Выиграть 8 раздач, зная закрытую карту"
+ },
+ "ARTIFACT_GLASS_EYE_NAME": {
+  "en": "Glass Eye",
+  "ru": "Стеклянный глаз"
+ },
+ "ARTIFACT_GLASS_EYE_DESC": {
+  "en": "+ Every hand starts with the next card of the shoe shown",
+  "ru": "+ Каждая раздача начинается с показа следующей карты колоды"
+ },
+ "ARTIFACT_GLASS_EYE_HINT": {
+  "en": "Use the Stacked Deck 5 times",
+  "ru": "Использовать Крапленую колоду 5 раз"
+ },
+ "ARTIFACT_STEADY_HANDS_NAME": {
+  "en": "Steady Hands",
+  "ru": "Твёрдые руки"
+ },
+ "ARTIFACT_STEADY_HANDS_DESC": {
+  "en": "+ A won double down pays half a stake more",
+  "ru": "+ Выигранное удвоение платит на полставки больше"
+ },
+ "ARTIFACT_STEADY_HANDS_HINT": {
+  "en": "Win 3 double downs",
+  "ru": "Выиграть 3 удвоения"
+ },
+ "ARTIFACT_BORROWED_TIME_NAME": {
+  "en": "Borrowed Time",
+  "ru": "Взятое время"
+ },
+ "ARTIFACT_BORROWED_TIME_DESC": {
+  "en": "+ Two more hands before a debt falls due\n- New loans are a fifth smaller",
+  "ru": "+ На две раздачи больше до срока долга\n- Новые займы меньше на пятую часть"
+ },
+ "ARTIFACT_BORROWED_TIME_HINT": {
+  "en": "Die to the collectors 3 times",
+  "ru": "Погибнуть от коллекторов 3 раза"
+ },
+ "ARTIFACT_PAUPERS_CROWN_NAME": {
+  "en": "Pauper's Crown",
+  "ru": "Корона нищего"
+ },
+ "ARTIFACT_PAUPERS_CROWN_DESC": {
+  "en": "+ A won hand of 15 or less pays a whole stake more",
+  "ru": "+ Выигранная рука в 15 очков или меньше платит ставку сверху"
+ },
+ "ARTIFACT_PAUPERS_CROWN_HINT": {
+  "en": "Win a hand with 10 or less",
+  "ru": "Выиграть раздачу, имея 10 очков или меньше"
+ },
+ "REASON_PUSHES": {
+  "en": "Played a hand to a push",
+  "ru": "Сыграна ничья"
+ },
+ "REASON_LOW_WINS": {
+  "en": "Won with 10 or less",
+  "ru": "Победа с 10 очками или меньше"
+ },
+ "REASON_HOLE_WINS": {
+  "en": "Won %d hands with the hole card known",
+  "ru": "Побед со знанием закрытой карты: %d"
+ },
+ "REASON_STACKED_USES": {
+  "en": "Used the Stacked Deck %d times",
+  "ru": "Крапленая колода использована: %d раз"
  }
 }

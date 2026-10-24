@@ -16,5 +16,5 @@ button = false
 uses_per_hand = 0
 cooldown_hands = 0
 charges = 0
-unlock_stat = &"hands_played"
-unlock_value = 15
+unlock_stat = &"pushes"
+unlock_value = 1
