@@ -75,3 +75,6 @@ removed (they stay in git history if torches and barrels are ever wanted).
 The build environment can only reach GitHub, GitLab and Bitbucket. itch.io, OpenGameArt, Kenney and Freesound are blocked, so new assets from there have to be added to the repo by hand.
 
 Texture sizes matter for the first frames on a phone: the cleaver and revolver textures are 512, the gloves 512, the menu backgrounds 1280x720 (they were 2048). Do not store anything bigger than the screen needs.
+
+### Player's pain and breathing (procedural)
+`assets/audio/sfx/voice/pain_grunt|pain_yelp|pain_scream.ogg` and `breath_loop.ogg` are made by `tools/generate_sfx.py` (formant-filtered sawtooth voice and filtered noise, no external source). The cry plays at the cut; the breath loop swells with every finger lost.

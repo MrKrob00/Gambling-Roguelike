@@ -83,6 +83,11 @@ const SPEECH_STEP := 0.032
 ## Chance that the dealer comments on a routine moment.
 const SAY_OFTEN := 0.4
 const SAY_RARELY := 0.2
+## The player's breathing grows louder, quicker and higher with every finger lost (silent while all are left).
+const BREATH_PATH := "res://assets/audio/sfx/voice/breath_loop.ogg"
+const BREATH_QUIET_DB := -38.0
+const BREATH_LOUD_DB := -8.0
+const BREATH_PITCH := Vector2(0.9, 1.45)
 
 var run
 var table
@@ -133,6 +138,7 @@ var _discarding: bool = false
 var _stashing: bool = false
 var _swap_with
 var _wells: Array = []
+var _breath: AudioStreamPlayer
 ## A hand artifact that wants to trade places with a pocket one (the pocket is full).
 var _stash_out
 var _ui_state: String = ""
@@ -184,6 +190,7 @@ func _build_world() -> void:
 	_player_hand = PlayerHand.new()
 	add_child(_player_hand)
 	_player_hand.set_lives.call_deferred(run.lives)
+	_build_breath()
 	_finger_cut = FingerCut.new()
 	_finger_cut.dealer = _dealer
 	_finger_cut.enforcers = _enforcers
@@ -741,6 +748,7 @@ func _do_life_lost(left: int, reason: StringName) -> void:
 	_vignette.flash_color(RED, 1.0, 1.6)
 	_rig.shake(0.08, 0.6)
 	await _lose_finger(left, reason)
+	_update_breath()
 	await _pause(0.3)
 
 ## One of four scenes takes the finger: the skeleton bites, an enforcer chops it off, the finger bursts, or it is shot
@@ -762,11 +770,49 @@ func _lose_finger(left: int, reason: StringName, forced_kind: int = -1) -> void:
 	var tip: Vector3 = _player_hand.finger_tip(left)
 	_finger_cut.joint = _player_hand.finger_joint(left)
 	_finger_cut.finger_direction = _player_hand.finger_direction(left)
-	await _finger_cut.play(kind, tip, _player_hand.cut_finger.bind(left))
+	await _finger_cut.play(kind, tip, _cut_with_cry.bind(left))
 	await _player_hand.lower_after_cut(left)
+
+func _build_breath() -> void:
+	var stream: AudioStreamOggVorbis = load(BREATH_PATH).duplicate()
+	stream.loop = true
+	_breath = AudioStreamPlayer.new()
+	_breath.stream = stream
+	_breath.volume_db = -80.0
+	add_child(_breath)
+	_update_breath(false)
+
+## Breathing follows the fingers left: none lost is silence, one left is a loud, quick rasp.
+func _update_breath(animate: bool = true) -> void:
+	var level := clampf(float(Rules.LIVES - run.lives) / float(Rules.LIVES - 1), 0.0, 1.0)
+	if level <= 0.0 or not run.alive:
+		_breath.stop()
+		return
+	if not _breath.playing:
+		_breath.play()
+	var db := lerpf(BREATH_QUIET_DB, BREATH_LOUD_DB, level)
+	var pitch := lerpf(BREATH_PITCH.x, BREATH_PITCH.y, level)
+	if animate:
+		var tween := create_tween().set_parallel()
+		tween.tween_property(_breath, "volume_db", db, 1.0)
+		tween.tween_property(_breath, "pitch_scale", pitch, 1.0)
+	else:
+		_breath.volume_db = db
+		_breath.pitch_scale = pitch
+
+## The cry at the instant of impact: a grunt for the first fingers, a yelp, a scream for the last.
+func _cut_with_cry(left: int) -> void:
+	_player_hand.cut_finger(left)
+	var cry := &"voice/pain_grunt"
+	if left <= 1:
+		cry = &"voice/pain_scream"
+	elif left <= 3:
+		cry = &"voice/pain_yelp"
+	Audio.sfx(cry, randf_range(0.94, 1.06), -3.0)
 
 func _do_death(reason: StringName) -> void:
 	await _lose_finger(0, reason)
+	_update_breath()
 	_say(&"death_broke" if reason == run.DEATH_BROKE else &"death_debt")
 	_dealer.react(&"death")
 	Audio.sfx(&"game/lose_sting")

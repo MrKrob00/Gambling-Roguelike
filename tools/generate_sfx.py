@@ -432,15 +432,78 @@ def blood_splat():
     return lowpass(noise(dur), 1500) * env(n, 0.002, 0.08, 6) * 0.8 + sine(np.linspace(180, 70, n), dur) * env(n, 0.001, 0.1, 6) * 0.5
 
 
+def _resonate(x, freq, bw):
+    """Two-pole band-pass: one vocal formant."""
+    r = np.exp(-np.pi * bw / SR)
+    a1 = -2 * r * np.cos(2 * np.pi * freq / SR)
+    a2 = r * r
+    y = np.zeros(len(x))
+    y1 = y2 = 0.0
+    for i, v in enumerate(x):
+        out = (1 - r) * v - a1 * y1 - a2 * y2
+        y[i] = out
+        y2 = y1
+        y1 = out
+    return y
+
+
+def _voice(f0, dur, formants, breath=0.15, vib=0.0, jitter=0.02):
+    n = int(SR * dur)
+    f0 = np.broadcast_to(f0, (n,)) * (1 + vib * np.sin(2 * np.pi * 6.5 * np.arange(n) / SR))
+    f0 = f0 * (1 + jitter * lowpass(noise(dur), 30) * 8)
+    src = saw(f0, dur)
+    src = src + breath * noise(dur)
+    out = np.zeros(n)
+    for freq, bw, amp in formants:
+        out += amp * _resonate(src, freq, bw)
+    return out
+
+
+def pain_grunt():
+    dur = 0.45
+    n = int(SR * dur)
+    f0 = np.linspace(150, 105, n)
+    return reverb(_voice(f0, dur, [(550, 120, 1.0), (1000, 150, 0.6), (2400, 250, 0.2)], 0.35) * env(n, 0.03, 0.25, 3.5), 0.3, 0.15)
+
+
+def pain_yelp():
+    dur = 0.8
+    n = int(SR * dur)
+    f0 = np.concatenate([np.linspace(220, 380, int(n * 0.25)), np.linspace(380, 190, n - int(n * 0.25))])
+    return reverb(_voice(f0, dur, [(780, 130, 1.0), (1200, 160, 0.7), (2600, 250, 0.25)], 0.2, 0.01) * env(n, 0.02, 0.55, 3.0), 0.35, 0.18)
+
+
+def pain_scream():
+    dur = 1.9
+    n = int(SR * dur)
+    rise = int(n * 0.12)
+    f0 = np.concatenate([np.linspace(260, 520, rise), np.linspace(520, 430, int(n * 0.6) - rise), np.linspace(430, 200, n - int(n * 0.6))])
+    body = _voice(f0, dur, [(850, 140, 1.0), (1350, 170, 0.8), (2800, 260, 0.35)], 0.25, 0.015, 0.03)
+    return reverb(body * env(n, 0.02, 1.4, 2.4), 0.5, 0.22)
+
+
+def breath_loop():
+    """One breath cycle, loops without a click: a soft hiss in, a lower one out."""
+    dur = 2.0
+    n = int(SR * dur)
+    t = np.arange(n) / SR
+    inhale = np.exp(-((t - 0.45) ** 2) / (2 * 0.17 ** 2))
+    exhale = np.exp(-((t - 1.3) ** 2) / (2 * 0.26 ** 2))
+    hiss_in = highpass(lowpass(noise(dur), 3200), 500) * inhale
+    hiss_out = highpass(lowpass(noise(dur), 1800), 250) * exhale * 0.8
+    return hiss_in * 0.8 + hiss_out
+
+
 JOBS = {
     "ui": [ui_click, ui_hover, ui_confirm, ui_cancel, ui_error],
     "game": [knock, candle_snuff, coin_ding, win_small, win_jackpot, lose_sting, reel_stop, reel_spin, lever_pull,
              curse_hit, heartbeat, tension_drone, card_reveal, item_use,
              gunshot, hammer_click, explosion, cleaver_chop, bite_crunch, fuse_hiss, blood_splat],
+    "voice": [pain_grunt, pain_yelp, pain_scream, breath_loop],
     "trick": [poof, whoosh, card_flick, sparkle, drumroll, ta_da, reveal_sting, caught,
               lockpick_click, safe_open, glass_shatter, swap],
 }
-LOOPS = {"tension_drone"}
+LOOPS = {"tension_drone", "breath_loop"}
 
 if __name__ == "__main__":
     for folder, fns in JOBS.items():
