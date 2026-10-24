@@ -15,6 +15,8 @@ const GRIP_SHARE := 0.1
 const GAPS_SINK := 0.3
 const Token := preload("res://world/artifact_token_3d.gd")
 const FOCUS_SCALE := 0.6
+## The finger pairs the coins sit between: the joints of the first finger of each pair and the next one.
+const PAIRS: Array = [["Index", "Middle"], ["Middle", "Ring"], ["Ring", "Little"]]
 ## Where a coin stands: in the groove between two neighbouring fingers, at the joint between the proximal and the middle phalanx,
 ## in the hand's own space before HAND_SCALE. Measured from the bones in the `idle` pose: the finger-pair midpoint,
 ## plus half a finger's width, plus the coin's radius, less a little because the rim is pinched into the groove.
@@ -30,6 +32,10 @@ var _rest: Dictionary = {}
 var _focused
 var _tweens: Dictionary = {}
 var _anim: AnimationPlayer
+var _skeleton: Skeleton3D
+## Per token: the pair of fingers it sits between (0 = index and middle), and where the pair's middle was in the pose GAPS was measured in.
+var _pair: Dictionary = {}
+var _reference: Array = []
 
 func _ready() -> void:
 	var model: Node3D = HAND_SCENE.instantiate()
@@ -38,6 +44,13 @@ func _ready() -> void:
 	model.rotation_degrees = Vector3(0.0, 0.0, -90.0)
 	add_child(model)
 	_anim = model.get_node("Anim")
+	_skeleton = model.find_children("*", "Skeleton3D", true, false)[0]
+	# The pose GAPS was measured in is the start of the idle loop; the coins keep their place against it.
+	_anim.play("idle")
+	_anim.seek(0.0, true)
+	_skeleton.force_update_all_bone_transforms()
+	for i in PAIRS.size():
+		_reference.append(_pair_middle(i))
 	_anim.play("idle")
 	var glove := StandardMaterial3D.new()
 	glove.albedo_texture = GLOVE_TEXTURE
@@ -64,6 +77,7 @@ func add_token(token, index: int, _count: int) -> void:
 	var radius: float = Token.RADIUS * COIN_SCALE
 	var pos := GAPS[mini(index, GAPS.size() - 1)] * HAND_SCALE + up_in_disc * radius * (1.0 - 2.0 * GRIP_SHARE - GAPS_SINK)
 	_rest[token] = [pos, Quaternion.from_euler(rotation_at_rest)]
+	_pair[token] = mini(index, PAIRS.size() - 1)
 	token.position = pos
 	token.quaternion = _rest[token][1]
 	token.scale = Vector3.ONE * 0.01
@@ -72,6 +86,7 @@ func add_token(token, index: int, _count: int) -> void:
 
 func clear() -> void:
 	_rest.clear()
+	_pair.clear()
 	_tweens.clear()
 	_focused = null
 
@@ -109,3 +124,21 @@ func _roll_step(t: float, token, from_pos: Vector3, to_pos: Vector3, from_q: Qua
 	token.scale = Vector3.ONE * lerpf(from_s, to_s, t)
 	var q := from_q.slerp(to_q, t)
 	token.quaternion = q * Quaternion(Vector3.UP, TAU * t) if spin else q
+
+## Where the middle of the joints of finger pair `i` is, in this node's space, in the current pose.
+func _pair_middle(i: int) -> Vector3:
+	var total := Vector3.ZERO
+	for finger in PAIRS[i]:
+		var bone := _skeleton.find_bone("%s_Intermediate_L" % finger)
+		total += to_local(_skeleton.global_transform * _skeleton.get_bone_global_pose(bone).origin)
+	return total / 2.0
+
+## The coins ride on the hand: they follow their pair of fingers through the breathing and the other animations.
+func _process(_delta: float) -> void:
+	for token in _rest:
+		if not is_instance_valid(token) or token == _focused:
+			continue
+		if _tweens.has(token) and _tweens[token] != null and _tweens[token].is_running():
+			continue
+		var base: Vector3 = _rest[token][0]
+		token.position = base + (_pair_middle(_pair[token]) - _reference[_pair[token]])
