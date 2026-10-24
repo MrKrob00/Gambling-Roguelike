@@ -72,3 +72,5 @@ removed (they stay in git history if torches and barrels are ever wanted).
 ## Network note
 
 The build environment can only reach GitHub, GitLab and Bitbucket. itch.io, OpenGameArt, Kenney and Freesound are blocked, so new assets from there have to be added to the repo by hand.
+
+Texture sizes matter for the first frames on a phone: the cleaver and revolver textures are 512, the gloves 512, the menu backgrounds 1280x720 (they were 2048). Do not store anything bigger than the screen needs.

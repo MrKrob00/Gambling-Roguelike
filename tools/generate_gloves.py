@@ -94,7 +94,8 @@ def paint(side):
 
     img = img.filter(ImageFilter.GaussianBlur(0.6))
     os.makedirs(OUT, exist_ok=True)
-    img.save(os.path.join(OUT, "glove_%s.png" % side.lower()))
+    # Painted at 1024 for the detail, stored at 512: the hands are never bigger than a few hundred pixels on screen.
+    img.resize((512, 512), Image.LANCZOS).save(os.path.join(OUT, "glove_%s.png" % side.lower()), optimize=True)
 
 if __name__ == "__main__":
     for s in ("L", "R"):
