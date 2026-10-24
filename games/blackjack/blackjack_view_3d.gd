@@ -674,7 +674,7 @@ func _do_countdown(hands_left: int, amount: int) -> void:
 	if hands_left == 1 and was != 1:
 		Audio.sfx(&"game/heartbeat")
 		_say(&"deadline")
-		_speak(tr("DEBT_WARNING") % amount)
+		_speak(tr("DEBT_WARNING"))
 		await _enforcers.knock(HAND_POS, 3, _on_finger_tap)
 	_update_ledger()
 
@@ -688,7 +688,7 @@ func _do_debt(debt: int) -> void:
 
 ## Spells out where the new debt comes from: the house lends a bigger loan and writes it down at once.
 func _do_loan_closed(paid: int, new_loan: int, new_debt: int) -> void:
-	_speak(tr("DEBT_CLOSED") % [paid, new_loan, new_debt])
+	_speak(tr("DEBT_CLOSED"))
 	_add_text_node(BET_SPOT + Vector3(0.0, 0.5, 0.0), "+%d" % new_loan, GOLD)
 	Audio.sfx(&"trick/sparkle")
 	_vignette.flash_color(Color(0.9, 0.8, 0.4), 0.5, 0.8)
@@ -711,7 +711,7 @@ func _do_payment(amount: int, _index: int) -> void:
 	_rig.shake(0.05, 0.5)
 	await _pause(1.1)
 	_add_text_node(BET_SPOT + Vector3(0.0, 0.35, 0.0), "-%d" % amount, RED)
-	_speak(tr("PAYMENT_PAID") % amount)
+	_speak(tr("PAYMENT_PAID"))
 	Audio.sfx(&"game/coin_ding")
 	await _pause(0.9)
 
@@ -727,7 +727,6 @@ func _do_life_lost(left: int, reason: StringName) -> void:
 	Audio.sfx(&"game/lose_sting")
 	_vignette.flash_color(RED, 1.0, 1.6)
 	_rig.shake(0.08, 0.6)
-	_speak(tr("LIFE_LOST") % left)
 	await _lose_finger(left, reason)
 	await _pause(0.3)
 

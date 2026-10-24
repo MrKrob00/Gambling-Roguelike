@@ -148,8 +148,8 @@
   "ru": "Перебор %d"
  },
  "PAYMENT_PAID": {
-  "en": "The collectors take %d chips",
-  "ru": "Коллекторы забрали %d фишек"
+  "en": "The collectors take their share.",
+  "ru": "Коллекторы забрали своё."
  },
  "PAYMENT_WAIVED": {
   "en": "The candle burns down. The debt waits.",
@@ -612,20 +612,20 @@
   "ru": "Долг %d"
  },
  "DEBT_WARNING": {
-  "en": "They come next hand.\nThey will take %d",
-  "ru": "Они придут со следующей раздачей.\nОни заберут %d"
+  "en": "They come next hand.\nSay your goodbyes.",
+  "ru": "Они придут со следующей раздачей.\nПопрощайся с фишками."
  },
  "DEBT_CLOSED": {
-  "en": "Debt paid: %d.\nThe house lends %d chips and writes down %d.",
-  "ru": "Долг выплачен: %d.\nДом ссужает %d фишек и записывает %d."
+  "en": "The debt is settled. The house is generous.\nFor now.",
+  "ru": "Долг закрыт. Дом щедр.\nПока что."
  },
  "COOLDOWN": {
   "en": "recharge: %d hands",
   "ru": "перезарядка: %d раздачи"
  },
  "LIFE_LOST": {
-  "en": "They take a finger for it.\nFingers left: %d",
-  "ru": "Они забирают палец.\nОсталось пальцев: %d"
+  "en": "They take a finger for it.",
+  "ru": "За это они берут палец."
  },
  "ARTIFACT_LOOSE_CHANGE_NAME": {
   "en": "Loose Change",
