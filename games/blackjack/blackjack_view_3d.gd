@@ -78,6 +78,9 @@ const RED := Color(0.95, 0.3, 0.25)
 const PALE := Color(0.85, 0.85, 0.95)
 ## Seconds per letter of the dealer's line.
 const SPEECH_STEP := 0.032
+## Chance that the dealer comments on a routine moment.
+const SAY_OFTEN := 0.4
+const SAY_RARELY := 0.2
 
 var run
 var table
@@ -549,7 +552,7 @@ func _do_reveal(card) -> void:
 func _do_peek(card) -> void:
 	Audio.sfx(&"trick/sparkle")
 	_dealer.react(&"peek")
-	_say(&"peek")
+	_say(&"peek", SAY_RARELY)
 	if is_instance_valid(_hole_actor):
 		await _hole_actor.flip_to(true)
 	## The card is face up now, so the dealer's total counts it; the reveal at the end will not count it twice.
@@ -619,7 +622,7 @@ func _do_resolved(outcome: int, bet: int, payout: int) -> void:
 			slide_to = Vector3(BET_SPOT.x, TOP, -1.4)
 			_player_hand.gesture(&"clench")
 			_dealer.react(&"player_bust" if outcome == Table.Outcome.BUST else &"player_loses")
-	_say(table.dealer_event_for(outcome))
+	_say(table.dealer_event_for(outcome), SAY_OFTEN)
 	await _pause(0.7)
 	var tween := create_tween()
 	tween.tween_property(_bet_stack, "position", slide_to, 0.45).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
@@ -649,7 +652,7 @@ func _do_trick(fx) -> void:
 		_add_text_node(BET_SPOT + Vector3(0.0, 0.5, 0.0), tr("AGAINST_SELF"), RED)
 	if fx.data.id != &"marked_deck":
 		Audio.sfx(&"trick/poof")
-		_say(&"trick")
+		_say(&"trick", SAY_RARELY)
 		_dealer.react(&"trick")
 	await _pause(0.1)
 
@@ -903,7 +906,7 @@ func _slot_x(slot: int) -> float:
 func _on_plaque(id: StringName) -> void:
 	match id:
 		&"deal":
-			_say(&"deal")
+			_say(&"deal", SAY_RARELY)
 			Audio.sfx(&"tabletop/deck_deal_1")
 			table.deal_all_in()
 		&"hit": table.hit()
@@ -951,7 +954,10 @@ func _speak(message: String) -> void:
 			Audio.sfx(&"voice/dealer_%d" % randi_range(1, 4), randf_range(0.92, 1.08), -9.0)
 	_subtitle.visible_characters = -1
 
-func _say(event: StringName) -> void:
+## Routine lines come only now and then (`chance`); the rare ones (welcome, deadline, knock, death) always.
+func _say(event: StringName, chance: float = 1.0) -> void:
+	if randf() > chance:
+		return
 	_speak(DealerText.line(event))
 
 func _add_text_node(pos: Vector3, message: String, color: Color) -> void:

@@ -114,7 +114,7 @@ integer. The 3D view renders at the window's real resolution.
   undo a newer show.
 - Card faces are the 2D `CardView` rendered once into a tiny `SubViewport` (`world/card_faces.gd`), so the
   3D cards show the same pixel art. Face-up is `rotation.x = 0`, face-down is `PI`.
-- The dealer's subtitle (typed out letter by letter with a low mumble, `_speak`, a generation counter and timers) and the artifact info panel are a 2D overlay on purpose: readable on a phone. The numbers are on the
+- The dealer's subtitle (routine lines only with chance `SAY_OFTEN`/`SAY_RARELY`; typed out letter by letter with a low mumble, `_speak`, a generation counter and timers) and the artifact info panel are a 2D overlay on purpose: readable on a phone. The numbers are on the
   table: the purse in gold inlay on the felt (`world/ledger_3d.gd`: chips, counting up and down, and the win streak), the
   installment due above the candles (the total debt is written under it only when an artifact made them differ). There is
   no 2D ledger, so nothing is written twice. Everything the player presses is 3D.
