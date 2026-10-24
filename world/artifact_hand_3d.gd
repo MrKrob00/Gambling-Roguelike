@@ -29,9 +29,11 @@ var _anim: AnimationPlayer
 var _skeleton: Skeleton3D
 ## Per token: the slot (0 = between index and middle) it sits in.
 var _pair: Dictionary = {}
-## Per slot: where the coin is pinched, as an offset from the middle of its pair of finger joints, in the skeleton's space.
-## The slots are the Marker3D nodes `slot1`..`slot3` placed in `hands/hand_l.tscn` by hand.
-var _slot_offset: Array = []
+## Per slot: where the coin is pinched, in the frame of each of the two finger bones next to it (the proximal ones).
+## The slots are the Marker3D nodes `slot1`..`slot3` placed in `hands/hand_l.tscn` by hand, against the pose the scene
+## is saved in; a marker cannot be bound to a bone in the editor, so it is bound here: when the fingers spread, curl
+## or close, the point moves with both of its bones instead of staying in one place.
+var _slot_local: Array = []
 var _lift: Dictionary = {}
 
 func _ready() -> void:
@@ -40,10 +42,14 @@ func _ready() -> void:
 	# Palm down: the model stands with its palm on +x, so lay its back upwards.
 	model.rotation_degrees = Vector3(0.0, 0.0, -90.0)
 	_skeleton = model.find_children("*", "Skeleton3D", true, false)[0]
-	# The markers were placed against the pose the scene is saved in, so the offsets are taken before any animation runs.
+	# The markers were placed against the pose the scene is saved in, so their frames are taken before any animation runs.
 	for i in PAIRS.size():
 		var marker := model.find_child("slot%d" % (i + 1), true, false) as Marker3D
-		_slot_offset.append(marker.position - _pair_middle(i) if marker != null else Vector3.ZERO)
+		var frames: Array = []
+		for finger in PAIRS[i]:
+			var bone := _skeleton.find_bone("%s_Proximal_L" % finger)
+			frames.append(_skeleton.get_bone_global_pose(bone).affine_inverse() * marker.position if marker != null else Vector3.ZERO)
+		_slot_local.append(frames)
 	add_child(model)
 	_anim = model.get_node("Anim")
 	_anim.play("idle")
@@ -123,17 +129,13 @@ func _roll_step(t: float, token, from_pos: Vector3, to_pos: Vector3, from_q: Qua
 	var q := from_q.slerp(to_q, t)
 	token.quaternion = q * Quaternion(Vector3.UP, TAU * t) if spin else q
 
-## Where the middle of the joints of finger pair `i` is, in the skeleton's space, in the current pose.
-func _pair_middle(i: int) -> Vector3:
-	var total := Vector3.ZERO
-	for finger in PAIRS[i]:
-		var bone := _skeleton.find_bone("%s_Intermediate_L" % finger)
-		total += _skeleton.get_bone_global_pose(bone).origin
-	return total / 2.0
-
-## Where slot `i` is now, in this node's space.
+## Where slot `i` is now, in this node's space: the marker carried by both of its bones, averaged.
 func _slot_position(i: int) -> Vector3:
-	return to_local(_skeleton.global_transform * (_pair_middle(i) + _slot_offset[i]))
+	var total := Vector3.ZERO
+	for k in 2:
+		var bone := _skeleton.find_bone("%s_Proximal_L" % PAIRS[i][k])
+		total += _skeleton.get_bone_global_pose(bone) * _slot_local[i][k]
+	return to_local(_skeleton.global_transform * (total / 2.0))
 
 ## The coins ride on the hand: each follows its slot through the breathing and the other animations.
 func _process(_delta: float) -> void:

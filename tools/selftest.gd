@@ -69,7 +69,7 @@ func _load_everything(path: String) -> void:
 
 func _catalog() -> void:
 	var cat = root.get_node("Catalog")
-	check(cat.all().size() == 31, "catalog holds 31 artifacts, has %d" % cat.all().size())
+	check(cat.all().size() == 37, "catalog holds 37 artifacts, has %d" % cat.all().size())
 	var tr_ok := true
 	for a in cat.all():
 		for part in ["NAME", "DESC", "HINT"]:
@@ -234,6 +234,71 @@ func _artifacts() -> void:
 	run = _run([&"shaky_hand"])
 	table = Table.new(run, 1)
 	check(table._dealer_stands_on() == Rules.DEALER_STANDS_ON - 1, "shaky hand makes the dealer stand on 16")
+
+	# Rematch: a push changes the dealer's last card, he plays on.
+	run = _run([&"rematch"])
+	table = Table.new(run, 1)
+	_stack(table, [[10], [10], [9], [9], [5], [3]])
+	table.deal_all_in()
+	table.stand()
+	check(table.dealer.total() == 18 and run.chips == 1000, "rematch replays the dealer's last card, dealer %d chips %d" % [table.dealer.total(), run.chips])
+	check(_fx(run, &"rematch").cooldown_left == 3, "rematch needs hands to recharge")
+
+	# Fan of cards: three cards laid out, one taken, the rest go to the bottom.
+	run = _run([&"card_fan"])
+	table = Table.new(run, 1)
+	_stack(table, [[10], [10], [6], [7], [2], [9], [5]])
+	table.deal_all_in()
+	var offered := []
+	table.draft_offered.connect(func(c: Array) -> void: offered.append(c))
+	table.use_artifact(_fx(run, &"card_fan"))
+	check(offered.size() == 1 and offered[0].size() == 3 and not table.draft.is_empty(), "the fan lays three cards out")
+	table.hit()
+	check(table.player.cards.size() == 2, "nothing else is allowed while choosing")
+	var third = table.draft[2]
+	table.pick_draft(2)
+	check(table.player.cards.back() == third and table.draft.is_empty(), "the chosen card goes to the player")
+	check(table.shoe.cards.size() == 7 - 4 - 3 + 2 + 0 + 0 or table.shoe.cards.size() == 2, "the other two cards go under the shoe, %d left" % table.shoe.cards.size())
+
+	# Traitor's chip: a bet on the dealer.
+	run = _run([&"traitors_chip"])
+	table = Table.new(run, 1)
+	_stack(table, [[10], [10], [6], [7]])
+	check(_fx(run, &"traitors_chip").can_use(table), "the traitor's chip is used between hands")
+	table.use_artifact(_fx(run, &"traitors_chip"))
+	table.deal_all_in()
+	table.stand()
+	check(run.chips == 1000, "a lost hand pays 1:1 when betting on the dealer, chips %d" % run.chips)
+	run = _run([&"traitors_chip"])
+	table = Table.new(run, 1)
+	_stack(table, [[10], [10], [9], [7]])
+	table.use_artifact(_fx(run, &"traitors_chip"))
+	table.deal_all_in()
+	table.stand()
+	check(run.chips == 150 and run.lives == Rules.LIVES - 1, "a won hand loses the stake when betting on the dealer: a finger and the loan again, chips %d" % run.chips)
+
+	# Counter's notebook counts the cards seen: 10 -1, 10 -1, 6 +1, then the hole 7 is 0.
+	run = _run([&"card_counter"])
+	table = Table.new(run, 1)
+	_stack(table, [[10], [10], [6], [7]])
+	table.deal_all_in()
+	check(table.count == -1, "the count after the deal is -1, got %d" % table.count)
+	table.stand()
+	check(table.count == -1, "a seven does not change the count, got %d" % table.count)
+
+	# Pickpocket takes the dealer's open card, hand swap changes the hands.
+	run = _run([&"pickpocket"])
+	table = Table.new(run, 1)
+	_stack(table, [[10], [5], [6], [7], [2]])
+	table.deal_all_in()
+	table.use_artifact(_fx(run, &"pickpocket"))
+	check(table.player.cards.size() == 3 and table.player.cards[2].rank == 5 and table.dealer.cards[0].rank == 2, "the pickpocket takes the dealer's open card for a fresh one")
+	run = _run([&"hand_swap"])
+	table = Table.new(run, 1)
+	_stack(table, [[10], [5], [6], [9]])
+	table.deal_all_in()
+	table.use_artifact(_fx(run, &"hand_swap"))
+	check(table.player.total() == 14 and table.dealer.total() == 16, "the hands change places, player %d dealer %d" % [table.player.total(), table.dealer.total()])
 
 	# Marked deck is passive: the hole card is known from the deal.
 	run = _run([&"marked_deck"])
@@ -610,6 +675,14 @@ func _unlocks() -> void:
 	check(not profile.is_unlocked(_artifact(&"credit_line")), "the credit line starts locked")
 	events.stat_added.emit(Stat.DEALER_BLACKJACKS, 1)
 	check(profile.is_unlocked(_artifact(&"credit_line")), "a dealer's blackjack opens the credit line")
+	for pair in [[&"rematch", Stat.TWENTY_ONE_PUSHES, 1], [&"card_fan", Stat.LUCKY_SEVENS, 1], [&"traitors_chip", Stat.NARROW_PAYOFFS, 1], [&"pickpocket", Stat.QUICK_PAYOFFS, 1]]:
+		check(not profile.is_unlocked(_artifact(pair[0])), "%s starts locked" % pair[0])
+		events.stat_added.emit(pair[1], pair[2])
+		check(profile.is_unlocked(_artifact(pair[0])), "%s opens on its event" % pair[0])
+	events.stat_peaked.emit(Stat.SAME_KIND, 2)
+	check(not profile.is_unlocked(_artifact(&"hand_swap")), "two of a kind do not open the hand swap")
+	events.stat_peaked.emit(Stat.SAME_KIND, 3)
+	check(profile.is_unlocked(_artifact(&"hand_swap")), "three of a kind open the hand swap")
 	check(not profile.is_unlocked(_artifact(&"marked_deck")), "the marked deck starts locked")
 	for i in 9:
 		events.stat_added.emit(Stat.MIRROR_USES, 1)
@@ -655,6 +728,9 @@ func _fuzz() -> void:
 			var actions := 0
 			while table.is_player_turn() and actions < 25:
 				actions += 1
+				if not table.draft.is_empty():
+					table.pick_draft(rng.randi() % 3)
+					continue
 				var pick := rng.randi() % 6
 				if pick == 0:
 					table.stand()
@@ -665,6 +741,8 @@ func _fuzz() -> void:
 						table.use_artifact(fx)
 				else:
 					table.hit()
+			if not table.draft.is_empty():
+				table.pick_draft(0)
 			if table.is_player_turn():
 				table.stand()
 			check(run.chips >= 0, "fuzz seed %d: chips never negative" % seed_value)

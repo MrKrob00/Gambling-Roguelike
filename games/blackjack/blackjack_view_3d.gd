@@ -31,6 +31,7 @@ const UnlockToast := preload("res://ui/common/unlock_toast.gd")
 const FloatingText := preload("res://world/floating_text.gd")
 const Vignette := preload("res://ui/common/vignette.gd")
 const Ledger := preload("res://world/ledger_3d.gd")
+const DraftCard := preload("res://world/draft_card_3d.gd")
 const ROOM: PackedScene = preload("res://world/casino_room.tscn")
 const BODY_FONT: Font = preload("res://ui/fonts/body_font.tres")
 
@@ -112,6 +113,8 @@ var _info
 var _flash
 var _toast
 var _offer_cards: Array = []
+var _draft_cards: Array = []
+var _count_label: Label3D
 var _pending_pick
 var _discarding: bool = false
 var _ui_state: String = ""
@@ -278,6 +281,7 @@ func _build_controls() -> void:
 		plaque.scale = Vector3.ONE * 0.001
 		_plaques[id] = plaque
 	_rebuild_tokens()
+	_show_counter()
 
 ## One token per held artifact, rebuilt whenever the set changes.
 func _rebuild_tokens() -> void:
@@ -335,6 +339,10 @@ func _connect_table() -> void:
 	table.shoe_shuffled.connect(func() -> void: _enqueue(_do_shuffled))
 	table.hand_resolved.connect(func(o: int, b: int, p: int) -> void: _enqueue(_do_resolved.bind(o, b, p)))
 	table.trick_used.connect(func(fx) -> void: _enqueue(_do_trick.bind(fx)))
+	table.draft_offered.connect(func(cards: Array) -> void: _enqueue(_do_draft.bind(cards)))
+	table.draft_closed.connect(func() -> void: _enqueue(_do_draft_closed))
+	table.hands_swapped.connect(func() -> void: _enqueue(_do_swap))
+	table.count_changed.connect(func(v: int) -> void: _enqueue(_do_count.bind(v)))
 
 func _connect_run() -> void:
 	run.chips_changed.connect(func(c: int) -> void: _enqueue(_do_chips.bind(c)))
@@ -387,8 +395,11 @@ func _do_card(to_dealer: bool, card, face_up: bool) -> void:
 	var list: Array = _dealer_cards if to_dealer else _player_cards
 	var row: Vector3 = DEALER_ROW if to_dealer else PLAYER_ROW
 	list.append(actor)
+	if to_dealer:
+		# A stolen open card is replaced at the front of the hand: keep the row in the table's order.
+		list.sort_custom(_by_dealer_order)
 	_relayout(list, row, actor)
-	var target := _row_target(row, list.size() - 1, list.size())
+	var target := _row_target(row, list.find(actor), list.size())
 	if to_dealer and list.size() == 1:
 		_dealer.react(&"deal")
 	Audio.sfx(&"trick/card_flick", randf_range(0.95, 1.12))
@@ -408,6 +419,9 @@ func _do_card(to_dealer: bool, card, face_up: bool) -> void:
 	_update_totals()
 	await _pause(0.08)
 
+func _by_dealer_order(a, b) -> bool:
+	return table.dealer.cards.find(a.card) < table.dealer.cards.find(b.card)
+
 func _do_remove(to_dealer: bool, card) -> void:
 	var list: Array = _dealer_cards if to_dealer else _player_cards
 	var hand: Hand = _dealer_shown if to_dealer else _player_shown
@@ -425,6 +439,60 @@ func _do_remove(to_dealer: bool, card) -> void:
 	_update_totals()
 	Audio.sfx(&"trick/whoosh")
 	await _pause(0.35)
+
+## Three cards are laid out on the table to pick from.
+func _do_draft(cards: Array) -> void:
+	_clear_peek()
+	Audio.sfx(&"tabletop/deck_deal_1")
+	_subtitle.text = tr("DRAFT_PICK")
+	for i in cards.size():
+		var pick := DraftCard.new()
+		add_child(pick)
+		pick.bind(cards[i], _faces.texture_for(cards[i]))
+		pick.appear(SHOE, Vector3((i - 1) * 0.75, TOP + 0.03, OFFER_Z + 0.1), i * 0.08)
+		pick.activated.connect(_on_draft_card.bind(i))
+		_draft_cards.append(pick)
+	await _pause(0.6)
+
+func _on_draft_card(index: int) -> void:
+	table.pick_draft(index)
+	_refresh()
+
+func _do_draft_closed() -> void:
+	for pick in _draft_cards:
+		if is_instance_valid(pick):
+			pick.leave()
+	_draft_cards.clear()
+	await _pause(0.15)
+
+## The two hands change places: the actors swap rows and the dealer's hidden card turns over for its new owner.
+func _do_swap() -> void:
+	Audio.sfx(&"trick/whoosh")
+	var mine := _player_cards
+	_player_cards = _dealer_cards
+	_dealer_cards = mine
+	_relayout(_player_cards, PLAYER_ROW)
+	_relayout(_dealer_cards, DEALER_ROW)
+	if is_instance_valid(_hole_actor):
+		await _hole_actor.flip_to(true)
+	_hole_actor = null
+	_hole_counted = true
+	_player_shown.cards = table.player.cards.duplicate()
+	_dealer_shown.cards = table.dealer.cards.duplicate()
+	_update_totals()
+	await _pause(0.4)
+
+## The count of the Counter's Notebook, laid on the table beside the shoe.
+func _do_count(value: int) -> void:
+	if _count_label != null:
+		_count_label.text = tr("TABLE_COUNT") % value
+		_count_label.modulate = Color(0.55, 1.0, 0.55) if value > 0 else (Color(1.0, 0.45, 0.4) if value < 0 else PALE)
+
+func _show_counter() -> void:
+	if _count_label == null:
+		_count_label = _make_label(SHOE + Vector3(0.0, 0.5, 0.25), 48, 0.0034, PALE, true)
+	_count_label.visible = run.effects.any(func(fx) -> bool: return fx.data.id == &"card_counter")
+	_do_count(table.count)
 
 func _do_reveal(card) -> void:
 	_player_hand.gesture(&"drum")
@@ -522,6 +590,7 @@ func _do_resolved(outcome: int, bet: int, payout: int) -> void:
 
 func _do_artifacts() -> void:
 	_rebuild_tokens()
+	_show_counter()
 	_info.clear()
 	await _pause(0.3)
 
@@ -537,6 +606,8 @@ func _do_triggered(fx) -> void:
 	await _flash.play(fx.data)
 
 func _do_trick(fx) -> void:
+	if fx.data.id == &"traitors_chip":
+		_add_text_node(BET_SPOT + Vector3(0.0, 0.5, 0.0), tr("AGAINST_SELF"), RED)
 	if fx.data.id != &"marked_deck":
 		Audio.sfx(&"trick/poof")
 		_say(&"trick")
@@ -850,6 +921,9 @@ func _set_interactive(on: bool) -> void:
 	for c in _offer_cards:
 		if is_instance_valid(c):
 			c.set_enabled(false)
+	for pick in _draft_cards:
+		if is_instance_valid(pick):
+			pick.set_enabled(false)
 
 func _refresh() -> void:
 	if _queue.busy:
@@ -857,7 +931,8 @@ func _refresh() -> void:
 	var phase: int = table.phase
 	var alive: bool = run.alive
 	var betting := phase == Table.Phase.BETTING and alive
-	var playing := phase == Table.Phase.PLAYER_TURN
+	var drafting: bool = not table.draft.is_empty()
+	var playing: bool = phase == Table.Phase.PLAYER_TURN and not drafting
 	var stage: int = run.offer_stage if betting else RunState.Offer.NONE
 	var picking := stage == RunState.Offer.CHOOSING
 	var replacing := picking and _pending_pick != null
@@ -875,6 +950,8 @@ func _refresh() -> void:
 		show = [&"hit", &"stand"]
 		if table.can_double():
 			show.append(&"double")
+	elif drafting:
+		show = []
 	elif phase == Table.Phase.RESOLVED and alive:
 		show = [&"next"]
 	for id in _plaques:
@@ -897,6 +974,9 @@ func _refresh() -> void:
 				t.set_enabled(true)
 			t.show_ring(selecting, RED if selecting else KindStyle.NEUTRAL)
 	_sync_offer_cards(picking)
+	for pick in _draft_cards:
+		if is_instance_valid(pick):
+			pick.set_enabled(true)
 	for c in _offer_cards:
 		c.set_enabled(not replacing)
 	_update_prompt(stage, replacing)

@@ -84,14 +84,14 @@ integer. The 3D view renders at the window's real resolution.
 - Everything is built in code from `blackjack_view_3d.gd`'s layout constants (metres, `TOP` is the felt):
   the table runs **across** the view with the dealer opposite. The chip rack lies along the
   near rim (display only), the action buttons in a row above it, the bet circle in the middle. The artifacts are not on the table:
-  they are wedged like coins in the grooves between the fingers of the player's left hand, standing on edge with only the lowest tenth of each coin's height pinched in the grip (`GRIP_SHARE`) (`world/artifact_hand_3d.gd`; each coin follows the middle of its pair of finger joints every frame, so it rides the breathing and the other animations), which rests on the
+  they are wedged like coins in the grooves between the fingers of the player's left hand, standing on edge with only the lowest tenth of each coin's height pinched in the grip (`GRIP_SHARE`) (`world/artifact_hand_3d.gd`; each coin sits at a marker that is carried every frame by the two proximal finger bones next to it, so it rides the breathing, the spreading and the other animations), which rests on the
   table at the left of the near edge; the right hand rests at the right. Both are in world space (the room is scaled up,
   a chip is 20 cm, so the hands are 3.5x). The hovered or pinned coin rolls out of the grip, turns to face the player and
   spins (`focus()`); the info panel stays a 2D overlay. Change a position in the view's constants, not in a scene.
 - **The hands are editable scenes**, not code: `world/hands/hand_l.tscn` and `hand_r.tscn` hold the unpacked glove (a
   Skeleton3D with 26 finger bones) and an AnimationPlayer with the poses `open`, `fist`, `point`, `tap` and the loops and gestures `idle` (breathing: the fingers close and open in a slow wave, the wrist sways), `clench`, `flat` (palm pressed on the table) and `drum` (the fingers drum). `PlayerHand.gesture(name)` plays one when the hand is free; it also fidgets by itself every 6 to 11 s of idleness, and the view asks for `drum` while the dealer plays, `clench` on a lost hand and `flat` on a push.
   Open them in the editor to pose and animate; `tools/build_hands.gd` regenerates them from `assets/models/hand` and
-  **overwrites those edits** (except the left hand, which carries the artifact slots `slot1`..`slot3`, Marker3D nodes placed by hand: the tool leaves it alone, and the coins sit at those markers, following their fingers). The scripts only call `play(name)`. The right hand (`world/player_hand_3d.gd`) does
+  **overwrites those edits** (except the left hand, which carries the artifact slots `slot1`..`slot3`, Marker3D nodes placed by hand: the tool leaves it alone, and the coins sit at those markers, bound to the finger bones in code because a marker cannot be bound to a bone in the editor). The scripts only call `play(name)`. The right hand (`world/player_hand_3d.gd`) does
   every press: `BlackjackView3D._act_on` carries it over the felt to the object, taps it and activates the object at
   contact, input is ignored while it reaches. Each death takes a finger of this hand (`set_lives`, `Rules.LIVES` = 5), in one of four scenes
   (`world/finger_cut_3d.gd`, particles plus two CC0 models): the skeleton bites, an enforcer's arm chops it with a cleaver (a CC0 model), the
@@ -128,7 +128,8 @@ integer. The 3D view renders at the window's real resolution.
   from the id: `ARTIFACT_<ID>_NAME / _DESC / _HINT`.
 - `effect_script` extends `ArtifactEffect` and overrides only the hooks it needs: `hand_started`,
   `hand_dealt`, `can_use` / `use` (buttons), `prevent_bust`, `modify_payout`, `modify_payment`, `modify_stake`,
-  `modify_deadline`, `modify_new_loan`, `modify_new_debt`, `prevent_death`. The table and `RunState` call them at
+  `modify_deadline`, `modify_new_loan`, `modify_new_debt`, `prevent_death`, `hand_ended`, `rematch`, `allows_credit_double`,
+  `modify_offer_size`, `modify_dealer_stands_on`. The table and `RunState` call them at
   fixed points; `docs/GAME_DESIGN.md` has the kind x system matrix of every artifact. **Never patch a rule from outside.**
 - A new artifact: write its effect script, its `.tres`, add it to `data/catalog.tres`, add three
   translation keys. Nothing else changes.

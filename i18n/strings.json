@@ -910,5 +910,109 @@
  "REASON_DEALER_BLACKJACKS": {
   "en": "The dealer dealt himself a blackjack",
   "ru": "У дилера выпал блэкджек"
+ },
+ "ARTIFACT_REMATCH_NAME": {
+  "en": "Rematch",
+  "ru": "Реванш"
+ },
+ "ARTIFACT_REMATCH_DESC": {
+  "en": "+ A push changes the dealer's last card for a new one\n- Needs 3 hands to recharge",
+  "ru": "+ При ничьей последняя карта дилера меняется на новую\n- Перезарядка 3 раздачи"
+ },
+ "ARTIFACT_REMATCH_HINT": {
+  "en": "Push with 21 against 21",
+  "ru": "Сыграть вничью на 21 против 21"
+ },
+ "ARTIFACT_CARD_FAN_NAME": {
+  "en": "Fan of Cards",
+  "ru": "Веер карт"
+ },
+ "ARTIFACT_CARD_FAN_DESC": {
+  "en": "+ Lays out the next three cards: take one\n+ The other two go to the bottom",
+  "ru": "+ Раскладывает три следующие карты: возьми одну\n+ Две остальные уходят на дно колоды"
+ },
+ "ARTIFACT_CARD_FAN_HINT": {
+  "en": "Two sevens as the first two cards",
+  "ru": "Две семёрки первыми картами"
+ },
+ "ARTIFACT_TRAITORS_CHIP_NAME": {
+  "en": "Traitor's Chip",
+  "ru": "Фишка предателя"
+ },
+ "ARTIFACT_TRAITORS_CHIP_DESC": {
+  "en": "+ Bet on the dealer for a hand: your loss pays 1:1, a bust 2:1\n- Your win is a loss",
+  "ru": "+ Ставка на дилера на раздачу: проигрыш платит 1:1, перебор 2:1\n- Твоя победа это проигрыш"
+ },
+ "ARTIFACT_TRAITORS_CHIP_HINT": {
+  "en": "Close a debt with less than 10 chips left",
+  "ru": "Закрыть долг, оставшись с меньше чем 10 фишками"
+ },
+ "ARTIFACT_CARD_COUNTER_NAME": {
+  "en": "Counter's Notebook",
+  "ru": "Блокнот счётчика"
+ },
+ "ARTIFACT_CARD_COUNTER_DESC": {
+  "en": "+ Shows the Hi-Lo count of the cards seen since the shuffle",
+  "ru": "+ Показывает счёт Hi-Lo карт, вышедших с последней тасовки"
+ },
+ "ARTIFACT_CARD_COUNTER_HINT": {
+  "en": "Play 100 hands",
+  "ru": "Сыграть 100 раздач"
+ },
+ "ARTIFACT_PICKPOCKET_NAME": {
+  "en": "Pickpocket",
+  "ru": "Карманник"
+ },
+ "ARTIFACT_PICKPOCKET_DESC": {
+  "en": "+ Takes the dealer's open card into your hand\n+ He gets a fresh one",
+  "ru": "+ Забирает открытую карту дилера себе в руку\n+ Ему падает новая"
+ },
+ "ARTIFACT_PICKPOCKET_HINT": {
+  "en": "Pay a debt the moment it is received",
+  "ru": "Погасить долг сразу, как получен"
+ },
+ "ARTIFACT_HAND_SWAP_NAME": {
+  "en": "Hand Swap",
+  "ru": "Обмен руками"
+ },
+ "ARTIFACT_HAND_SWAP_DESC": {
+  "en": "+ You and the dealer swap hands\n+ His hidden card turns face up",
+  "ru": "+ Вы с дилером меняетесь руками\n+ Его закрытая карта открывается"
+ },
+ "ARTIFACT_HAND_SWAP_HINT": {
+  "en": "Hold three artifacts of one kind",
+  "ru": "Держать три артефакта одного вида"
+ },
+ "REASON_TWENTY_ONE_PUSHES": {
+  "en": "Pushed with 21 against 21",
+  "ru": "Ничья 21 против 21"
+ },
+ "REASON_LUCKY_SEVENS": {
+  "en": "Two sevens as the first two cards",
+  "ru": "Две семёрки первыми картами"
+ },
+ "REASON_NARROW_PAYOFFS": {
+  "en": "Closed a debt with less than 10 chips left",
+  "ru": "Закрыт долг с остатком меньше 10 фишек"
+ },
+ "REASON_QUICK_PAYOFFS": {
+  "en": "Paid a debt the moment it was received",
+  "ru": "Долг погашен сразу, как получен"
+ },
+ "REASON_SAME_KIND": {
+  "en": "Held %d artifacts of one kind",
+  "ru": "Артефактов одного вида: %d"
+ },
+ "TABLE_COUNT": {
+  "en": "Count %+d",
+  "ru": "Счёт %+d"
+ },
+ "DRAFT_PICK": {
+  "en": "Take one.",
+  "ru": "Бери одну."
+ },
+ "AGAINST_SELF": {
+  "en": "Against yourself",
+  "ru": "Против себя"
  }
 }

@@ -108,6 +108,12 @@ func _initialize() -> void:
 		while scene._player_hand._anim.current_animation != "tap":
 			await process_frame
 		await create_timer(0.08).timeout
+	if shot == "table3d" and OS.has_environment("USE"):
+		await create_timer(2.5).timeout
+		for fx in scene.run.effects:
+			if String(fx.data.id) == OS.get_environment("USE"):
+				scene.table.use_artifact(fx)
+		await create_timer(float(OS.get_environment("AFTER")) if OS.has_environment("AFTER") else 1.5).timeout
 	if shot == "table3d" and OS.has_environment("TOKEN"):
 		scene._set_hover(scene._tokens[int(OS.get_environment("TOKEN"))])
 		await create_timer(0.7).timeout

@@ -105,6 +105,12 @@ artifact that shortens the deadline for bigger payouts.
 | magpie | passive | A free offer shows one artifact more | pay 6 debts |
 | shaky_hand | passive | The dealer stands on 16 instead of 17 | win 20 hands |
 | three_cherries | passive | A won 21 of three or more cards pays a stake more | play 40 hands |
+| rematch | passive, rare | A push changes the dealer's last card for a new one and he plays on; recharge 3 hands | push with 21 against 21 |
+| card_fan | active, 3 hands | Lays out the next three cards: take one, the other two go to the bottom | two sevens as the first two cards |
+| traitors_chip | active, rare, 3 hands | Between hands: bet on the dealer (a lost hand pays 1:1, a bust 2:1, a win is a loss) | close a debt with less than 10 chips left |
+| card_counter | passive | Shows the Hi-Lo count of the cards seen since the shuffle beside the shoe | play 100 hands |
+| pickpocket | active, 4 hands | Takes the dealer's open card into your hand, he gets a fresh one | pay a debt the moment it is received |
+| hand_swap | active, rare, 6 hands | You and the dealer swap hands, his hidden card turns face up | hold three artifacts of one kind |
 | paupers_crown | passive, rare | A won hand of 15 or less pays a whole stake more | win a hand with 10 or less (the dealer busts) |
 
 The one unlock that depends on another artifact is Marked Deck (10 uses of the Cracked Mirror); every other artifact opens on its own kind of event (pushes, dealer busts, shuffles, doubles, deaths, a win with 10 or less...), so no two unlock the same way. Open from the start: Lucky Clover, Card Sleeve, Cursed Doll, Silver Chip.

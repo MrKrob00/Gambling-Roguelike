@@ -90,6 +90,10 @@ func affects_loan() -> bool:
 func hand_ended(_table, _outcome: int) -> void:
 	pass
 
+## A hand is about to end in a push: return true after changing the dealer's hand so that it is played out again.
+func rematch(_table) -> bool:
+	return false
+
 ## True lets the player double down on credit when the purse is empty: the borrowed chips are added to the debt.
 func allows_credit_double(_table) -> bool:
 	return false

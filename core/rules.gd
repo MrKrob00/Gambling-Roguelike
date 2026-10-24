@@ -35,3 +35,6 @@ static func _rounded(amount: float) -> int:
 
 ## A hand that wins with this total or less (the dealer busted) opens the Pauper's Crown.
 const LOW_WIN_TOTAL := 10
+
+## Closing a debt and being left with fewer chips than this opens the Traitor's Chip.
+const NARROW_PAYOFF_CHIPS := 10

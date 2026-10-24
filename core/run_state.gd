@@ -24,6 +24,8 @@ const DEATH_DEBT := &"debt"
 var game_id: StringName = &"blackjack"
 var chips: int = 0
 var hands_played: int = 0
+## Hands played since the last loan arrived (an early payoff before the first one opens the Pickpocket).
+var hands_since_loan: int = 0
 var payments_paid: int = 0
 ## What is owed right now (`payments_paid` counts the debts already paid).
 var debt: int = Rules.debt_for(0)
@@ -55,6 +57,17 @@ func _equip(data) -> void:
 	fx.bind(data)
 	fx.triggered.connect(artifact_triggered.emit.bind(fx))
 	effects.append(fx)
+	Events.stat_peaked.emit(Stat.SAME_KIND, _most_of_a_kind())
+
+## The most held artifacts of one kind (three of a kind opens the Hand Swap).
+func _most_of_a_kind() -> int:
+	var counts := {}
+	for fx in effects:
+		counts[fx.data.kind] = int(counts.get(fx.data.kind, 0)) + 1
+	var most := 0
+	for k in counts:
+		most = maxi(most, counts[k])
+	return most
 
 func min_bet() -> int:
 	var m := Rules.MIN_BET
@@ -114,6 +127,8 @@ func can_pay_off() -> bool:
 func pay_off() -> bool:
 	if not can_pay_off():
 		return false
+	if hands_since_loan == 0 and payments_paid > 0:
+		Events.stat_added.emit(Stat.QUICK_PAYOFFS, 1)
 	_pay()
 	return true
 
@@ -201,6 +216,7 @@ func announce() -> void:
 ## Called by a table once a hand is fully settled. Handles the payment clock and death.
 func hand_finished(bet_on_table: int, lost: bool = false) -> void:
 	hands_played += 1
+	hands_since_loan += 1
 	hands_to_payment -= 1
 	if hands_to_payment <= 0:
 		_collect_payment()
@@ -227,6 +243,8 @@ func _pay() -> void:
 		if fx.affects_payment():
 			fx.notify()
 	add_chips(-amount)
+	if chips < Rules.NARROW_PAYOFF_CHIPS:
+		Events.stat_added.emit(Stat.NARROW_PAYOFFS, 1)
 	payments_paid += 1
 	Events.stat_added.emit(Stat.PAYMENTS_PAID, 1)
 	for fx in effects:
@@ -235,6 +253,7 @@ func _pay() -> void:
 	var loan := current_loan()
 	debt = current_debt()
 	add_chips(loan)
+	hands_since_loan = 0
 	hands_to_payment = payment_every()
 	loan_closed.emit(amount, loan, debt)
 	debt_changed.emit(debt)
