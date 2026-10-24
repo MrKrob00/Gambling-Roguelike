@@ -1,0 +1,46 @@
+You owe the house 250 chips. They lent you 150.
+
+Borrowed Luck is a dark first-person roguelike about blackjack played at the worst odds a table can offer: every hand is all in. Win and your purse doubles. Lose and the collectors take a finger of your right hand, lend you the chips again, and the game goes on until you run out of fingers.
+
+You sit at an empty underground casino. A faceless croupier deals. Two men in black stand just outside the light, and with every hand the candles on the far rail burn lower. When the last one goes out, the debt is due.
+
+HOW A RUN GOES
+
+Always all in. There are no bet buttons. A win doubles your purse. A lost hand that leaves you with less than the loan costs you a finger.
+
+Pay the debt, get a bigger loan and an even bigger debt. Paying it off opens a free offer of artifacts. Every debt grows faster than every loan, so the number of wins in a row you need keeps climbing.
+
+Five fingers, five lives. Each loss is one of four scenes: the skeleton croupier bites the finger off, an enforcer chops it with a cleaver, it bursts, or the other enforcer shoots it off. Your breathing gets louder with every finger you lose, and the blood stays on the felt until the table is gone.
+
+TRICKS
+
+The theme is TRICK, and it is the whole game: 44 artifacts, each one a way to cheat, bend or break a rule of the table.
+
+Swap your last card for a fresh one, steal the dealer's open card, trade hands with the croupier. Lay out three cards and keep one, bury the next card, count the shoe, peek at the hidden card. Bend the economy with a smaller debt now and a worse deadline later, or get a rematch when a hand ends in a push.
+
+There are four kinds, each with its own colour: active tricks are blue, passive ones green, consumables amber, and cursed ones crimson. Cursed tricks are strong, and they bite back.
+
+Your artifacts are coins wedged between the fingers of your left hand. Point at one and it rolls out of the grip and spins. Only the artifacts in your hand work. Spare ones go into the pocket, where you can swap them between hands, but they do nothing while they are there.
+
+Most artifacts are locked at first. They open by what you do: die to the collectors, go all in, cheat, pay a debt in a hurry, win with a pair of tens, or lose to a dealer's natural blackjack.
+
+FEATURES
+
+A 3D table seen from the player's seat, with pixel art menus.
+A physical interface: every button is an object on the table, with nothing laid over the cards.
+Four gruesome finger loss scenes, a dealer whose lines are typed out with a low murmur, and a heartbeat on the last hand.
+A collection of 44 artifacts that fills in as you play.
+English and Russian.
+PC and phone, landscape, mouse or touch.
+
+CONTROLS
+
+Use the mouse or touch the object you want. On a touch screen the first tap on an artifact shows what it does and the second one uses it. Everything is on the table: Deal, Hit, Stand, Double, Pay off, the artifacts in your left hand, and the pocket.
+
+CONTENT WARNING
+
+Stylised violence. Fingers are bitten, chopped, shot and blown off, with blood and bone.
+
+CREDITS
+
+Game design, code, procedural audio, generated textures and card art by the author. Free assets used, all CC0 or free licences: KayKit Skeleton Rogue by Kay Lousberg, enforcer base mesh by BoQsc, cleaver and revolver models and the dealer and player voice samples from OpenGameArt, glove model from GodotVR godot-xr-tools, Tiny RPG Dark Dwellers UI kit, Dumivid status icons, game-icons.net symbols, JDSherbert tabletop sounds, Rye and Underdog fonts under SIL OFL, and the Godot Engine under the MIT licence.
