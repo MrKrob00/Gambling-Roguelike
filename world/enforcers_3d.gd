@@ -77,6 +77,7 @@ func _ready() -> void:
 		var figure := {"body": body, "step": step, "side": side, "skeleton": skeleton, "chest": skeleton.find_bone("spine.003"), "phase": randf() * TAU}
 		_figures.append(figure)
 		_rest_arms(figure)
+	_show_gunner(false)
 
 func _process(delta: float) -> void:
 	_time += delta
@@ -86,6 +87,13 @@ func _process(delta: float) -> void:
 		skeleton.set_bone_pose_scale(f.chest, Vector3(s, 1.0, s))
 	if not _gunner.is_empty():
 		_pose_gunner()
+
+## The collectors stand mostly out of frame, so they are not drawn or animated at all until the right-hand one has
+## something to do: a skinned figure costs a skeleton update and draw calls every frame (a measurable lag on phones).
+func _show_gunner(on: bool) -> void:
+	for f in _figures:
+		f.body.visible = on and f == _figures[1]
+	set_process(on)
 
 func set_urgency(urgency: float) -> void:
 	for f in _figures:
@@ -144,6 +152,7 @@ func knock(spot: Vector3, taps: int, on_tap: Callable) -> void:
 ## Raises the arm toward `tip`, the hand ending `hold` short of it. The lean (a bow of the spine) is how far he has to
 ## stoop for the elbow to stay bent: found once, here.
 func _begin(tip: Vector3, gun: Node3D, grip: Vector3, hold: float, pointing: bool) -> void:
+	_show_gunner(true)
 	_gun = gun
 	_gun_grip = grip
 	_gun_tip = tip
@@ -182,6 +191,7 @@ func end_gun() -> void:
 		_apply_lean(f.skeleton, 0.0)
 		_rest_arms(f)
 		_curl_hand(f.skeleton, "L", 0.0)
+	_show_gunner(false)
 
 ## Bows the spine toward the table (a pitch about the figure's own side axis, shared by three bones).
 func _apply_lean(skeleton: Skeleton3D, angle: float) -> void:
