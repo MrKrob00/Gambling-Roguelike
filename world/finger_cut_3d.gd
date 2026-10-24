@@ -27,7 +27,9 @@ const TABLE_TOP := 1.03
 const FELT_X := 1.45
 const FELT_Z_MIN := -0.85
 const FELT_Z_MAX := 1.0
-const MAX_STAINS := 40
+const MAX_STAINS := 80
+## A splat grows to its full size in this many seconds.
+const STAIN_GROW := 0.25
 const SPLAT_VARIANTS := 4
 const BLOOD := Color(0.55, 0.02, 0.04)
 const STEEL := Color(0.72, 0.74, 0.8)
@@ -36,8 +38,9 @@ const STEEL := Color(0.72, 0.74, 0.8)
 var dealer: Node3D
 ## The collectors; one fires the gun.
 var enforcers: Node3D
-var _stains: Array = []
-var _splats: Array = []
+var _stain_list: Array = []
+var _blood_mesh: MeshInstance3D
+var _atlas_material: StandardMaterial3D
 
 ## Makes the finger that is about to be lost tremble and the hand flush (0..1, negative = back to normal); set by the view.
 var strain: Callable = func(_amount: float) -> void: pass
@@ -57,11 +60,10 @@ func warm_up(camera: Camera3D) -> void:
 	revolver.mesh = REVOLVER
 	revolver.material_override = _revolver_material()
 	holder.add_child(revolver)
-	for i in SPLAT_VARIANTS:
-		var quad := MeshInstance3D.new()
-		quad.mesh = QuadMesh.new()
-		quad.material_override = _splat_material(i)
-		holder.add_child(quad)
+	var quad := MeshInstance3D.new()
+	quad.mesh = QuadMesh.new()
+	quad.material_override = _splat_material()
+	holder.add_child(quad)
 	_box(holder, Vector3.ONE, Vector3.ZERO, _material(BLOOD, 0.4))
 	_sphere(holder, 0.5, Vector3.ZERO, _material(Color(1.0, 0.9, 0.6), 1.0, 0.0, Color(1.0, 0.85, 0.5), 6.0))
 	var light := OmniLight3D.new()
@@ -70,6 +72,9 @@ func warm_up(camera: Camera3D) -> void:
 	_burst(holder.global_position, BLOOD, 1, 0.01, 0.1, Vector3.ZERO, 0.3)
 	await _wait(0.4)
 	holder.queue_free()
+
+func _ready() -> void:
+	set_process(false)
 
 func play(kind: int, tip: Vector3, on_hit: Callable) -> void:
 	match kind:
@@ -265,36 +270,74 @@ func _blood(at: Vector3) -> void:
 		spot = Vector2(clampf(spot.x, -FELT_X, FELT_X), clampf(spot.y, FELT_Z_MIN, FELT_Z_MAX))
 		_stain(spot, randf_range(0.06, 0.24), 0.55 + randf() * 0.4)
 
-## A splat lying on the felt. Old ones are dropped past `MAX_STAINS`, a draw call each.
+## A splat lying on the felt. Every stain of the run is one mesh (a quad each, one draw call in all); the oldest are
+## dropped past `MAX_STAINS`. The mesh is rebuilt while a splat still grows.
 func _stain(spot: Vector2, size: float, delay: float) -> void:
-	var stain := MeshInstance3D.new()
-	var quad := QuadMesh.new()
-	quad.size = Vector2.ONE * size
-	stain.mesh = quad
-	stain.material_override = _splat_material(randi() % SPLAT_VARIANTS)
-	stain.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	stain.position = Vector3(spot.x, TABLE_TOP + 0.004 + _stains.size() * 0.0002, spot.y)
-	stain.rotation = Vector3(-PI / 2.0, 0.0, randf() * TAU)
-	stain.scale = Vector3.ONE * 0.05
-	add_child(stain)
-	_stains.append(stain)
-	if _stains.size() > MAX_STAINS:
-		_stains.pop_front().queue_free()
-	var grow := create_tween()
-	grow.tween_interval(delay)
-	grow.tween_property(stain, "scale", Vector3.ONE, 0.25).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	_stain_list.append({"spot": spot, "size": size, "start": Time.get_ticks_msec() / 1000.0 + delay, "angle": randf() * TAU, "variant": randi() % SPLAT_VARIANTS})
+	if _stain_list.size() > MAX_STAINS:
+		_stain_list.pop_front()
+	if _blood_mesh == null:
+		_blood_mesh = MeshInstance3D.new()
+		_blood_mesh.mesh = ArrayMesh.new()
+		_blood_mesh.material_override = _splat_material()
+		_blood_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		add_child(_blood_mesh)
+	set_process(true)
 
-func _splat_material(variant: int) -> StandardMaterial3D:
-	if _splats.is_empty():
+func _process(_delta: float) -> void:
+	var now := Time.get_ticks_msec() / 1000.0
+	var vertices := PackedVector3Array()
+	var normals := PackedVector3Array()
+	var uvs := PackedVector2Array()
+	var indices := PackedInt32Array()
+	var growing := false
+	for i in _stain_list.size():
+		var stain: Dictionary = _stain_list[i]
+		var t := clampf((now - stain.start) / STAIN_GROW, 0.0, 1.0)
+		if t < 1.0:
+			growing = true
+		if t <= 0.0:
+			continue
+		var half: float = stain.size * 0.5 * (0.05 + 0.95 * (1.0 - (1.0 - t) * (1.0 - t)))
+		var cell := Vector2(stain.variant % 2, stain.variant / 2) * 0.5
+		var first := vertices.size()
+		var spot: Vector2 = stain.spot
+		for k in 4:
+			var corner := Vector2(1.0 if k == 1 or k == 2 else 0.0, 1.0 if k >= 2 else 0.0)
+			var local := (corner - Vector2(0.5, 0.5)) * 2.0 * half
+			local = local.rotated(stain.angle)
+			vertices.append(Vector3(spot.x + local.x, TABLE_TOP + 0.004 + i * 0.0002, spot.y + local.y))
+			normals.append(Vector3.UP)
+			uvs.append(cell + corner * 0.5)
+		indices.append_array([first, first + 1, first + 2, first, first + 2, first + 3])
+	var mesh: ArrayMesh = _blood_mesh.mesh
+	mesh.clear_surfaces()
+	if not vertices.is_empty():
+		var arrays := []
+		arrays.resize(Mesh.ARRAY_MAX)
+		arrays[Mesh.ARRAY_VERTEX] = vertices
+		arrays[Mesh.ARRAY_NORMAL] = normals
+		arrays[Mesh.ARRAY_TEX_UV] = uvs
+		arrays[Mesh.ARRAY_INDEX] = indices
+		mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+	if not growing:
+		set_process(false)
+
+## The four splats side by side in one texture, so that all the stains share a material.
+func _splat_material() -> StandardMaterial3D:
+	if _atlas_material == null:
+		var atlas := Image.create(256, 256, false, Image.FORMAT_RGBA8)
 		for i in SPLAT_VARIANTS:
-			var mat := StandardMaterial3D.new()
-			mat.albedo_texture = _splat_texture(i)
-			mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-			mat.cull_mode = BaseMaterial3D.CULL_DISABLED
-			mat.roughness = 0.25
-			mat.specular_mode = BaseMaterial3D.SPECULAR_SCHLICK_GGX
-			_splats.append(mat)
-	return _splats[variant]
+			var piece: Image = _splat_texture(i).get_image()
+			atlas.blit_rect(piece, Rect2i(0, 0, 128, 128), Vector2i((i % 2) * 128, (i / 2) * 128))
+		atlas.generate_mipmaps()
+		_atlas_material = StandardMaterial3D.new()
+		_atlas_material.albedo_texture = ImageTexture.create_from_image(atlas)
+		_atlas_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		_atlas_material.cull_mode = BaseMaterial3D.CULL_DISABLED
+		_atlas_material.roughness = 0.25
+		_atlas_material.specular_mode = BaseMaterial3D.SPECULAR_SCHLICK_GGX
+	return _atlas_material
 
 ## A blot with a ragged edge, streaks running out of it and a scatter of droplets, drawn pixel by pixel.
 func _splat_texture(seed_value: int) -> ImageTexture:

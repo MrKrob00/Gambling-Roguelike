@@ -154,16 +154,20 @@ func finger_tip(lives_after: int) -> Vector3:
 	var bone := _skeleton.find_bone("%s_Tip_R" % CUT_ORDER[clampi(Rules.LIVES - lives_after - 1, 0, CUT_ORDER.size() - 1)])
 	return (_skeleton.global_transform * _skeleton.get_bone_global_pose(bone)).origin
 
-## The finger goes and the hand clenches.
+## The finger goes. The hand stays open, so the gap is seen; the fist comes later (`lower_after_cut`).
 func cut_finger(lives_after: int) -> void:
 	set_lives(lives_after)
-	_anim.play("fist")
+	_anim.play("open")
 
-## Lowers the hand back to the table. Awaitable.
+## The hand shows the missing finger for a moment, slowly closes into a fist, and goes back to the table. Awaitable.
 func lower_after_cut(lives_after: int) -> void:
 	var gen := _begin()
 	set_lives(lives_after)
-	await get_tree().create_timer(0.5).timeout
+	await get_tree().create_timer(0.6).timeout
+	if gen != _gen:
+		return
+	_anim.play("fist", 0.5)
+	await get_tree().create_timer(0.9).timeout
 	if gen != _gen:
 		return
 	_anim.play("idle")
