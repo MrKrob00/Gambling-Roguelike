@@ -42,9 +42,6 @@ var _stain_list: Array = []
 var _blood_mesh: MeshInstance3D
 var _atlas_material: StandardMaterial3D
 
-## Makes the finger that is about to be lost tremble and the hand flush (0..1, negative = back to normal); set by the view.
-var strain: Callable = func(_amount: float) -> void: pass
-
 ## Draws everything the scenes use once, tiny and in front of the camera, so the first lost finger does not stall on
 ## compiling shaders, generating the splat textures or adding a light. Call it a moment after the table opens.
 func warm_up(camera: Camera3D) -> void:
@@ -167,17 +164,9 @@ func _cleaver_material() -> StandardMaterial3D:
 	mat.emission_energy_multiplier = 0.35
 	return mat
 
-## The finger trembles harder and harder, the hand burns red, a heartbeat quickens, and it bursts. No props, no growing.
+## The finger bursts: no build-up, no props. The hand holds still, then blood and bone fly.
 func _burst_finger(tip: Vector3, on_hit: Callable) -> void:
-	var steps := 20
-	for i in steps:
-		var amount := float(i) / (steps - 1)
-		strain.call(amount)
-		if i % 5 == 0:
-			Audio.sfx(&"game/heartbeat", 1.0 + amount * 0.5, -6.0)
-		camera_shake.emit(0.003 + 0.006 * amount, 0.1)
-		await _wait(0.06)
-	strain.call(-1.0)
+	await _wait(0.4)
 	_boom(tip)
 	_hit(tip, on_hit, &"game/explosion", 0.0)
 	await _wait(1.0)
@@ -246,19 +235,9 @@ func _hit(tip: Vector3, on_hit: Callable, sound: StringName, shake: float) -> vo
 	impact.emit()
 
 func _boom(at: Vector3) -> void:
-	var light := OmniLight3D.new()
-	light.light_color = Color(1.0, 0.2, 0.15)
-	light.light_energy = 6.0
-	light.omni_range = 3.0
-	light.position = at
-	add_child(light)
-	var fade := create_tween()
-	fade.tween_property(light, "light_energy", 0.0, 0.3)
-	fade.tween_callback(light.queue_free)
 	_burst(at, BLOOD, 70, 0.02, 3.4, Vector3(0.0, -7.0, 0.0), 0.9)
 	_burst(at, Color(0.9, 0.85, 0.75), 18, 0.022, 3.0, Vector3(0.0, -8.0, 0.0), 0.8)
 	_burst(at, Color(0.7, 0.1, 0.12), 24, 0.045, 1.6, Vector3(0.0, -3.0, 0.0), 0.7)
-	screen_flash.emit(Color(1.0, 0.25, 0.2), 1.0, 0.5)
 	camera_shake.emit(0.14, 0.6)
 
 func _blood(at: Vector3) -> void:

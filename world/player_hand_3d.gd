@@ -26,7 +26,6 @@ var _anim: AnimationPlayer
 var _tween: Tween
 var _skeleton: Skeleton3D
 var _gen: int = 0
-var _strain_base: Dictionary = {}
 var _glove: StandardMaterial3D
 ## Gestures: the hand fidgets by itself when idle, and the table asks for one at an event.
 var _gesture_gen: int = -1
@@ -128,27 +127,6 @@ func lay_for_cut(at: Vector3 = LAY_POS) -> void:
 	await get_tree().create_timer(0.6).timeout
 	if gen != _gen:
 		return
-
-## The finger the next loss takes strains: it trembles harder and the hand flushes red, `amount` 0..1 (no growing; the
-## size never changes). A negative amount puts everything back.
-func strain_finger(lives_after: int, amount: float) -> void:
-	var finger: String = CUT_ORDER[clampi(Rules.LIVES - lives_after - 1, 0, CUT_ORDER.size() - 1)]
-	for seg in ["Proximal", "Intermediate", "Distal"]:
-		var bone := _skeleton.find_bone("%s_%s_R" % [finger, seg])
-		if bone < 0:
-			continue
-		if not _strain_base.has(bone):
-			_strain_base[bone] = _skeleton.get_bone_pose_rotation(bone)
-		var base: Quaternion = _strain_base[bone]
-		if amount < 0.0:
-			_skeleton.set_bone_pose_rotation(bone, base)
-			continue
-		var axis := Vector3(randf_range(-1.0, 1.0), randf_range(-1.0, 1.0), randf_range(-1.0, 1.0)).normalized()
-		_skeleton.set_bone_pose_rotation(bone, base * Quaternion(axis, amount * 0.22 * randf()))
-	if amount < 0.0:
-		_strain_base.clear()
-	var glow := clampf(amount, 0.0, 1.0)
-	_glove.emission = Color(0.95, 0.04, 0.03) * glow * (0.7 + 0.3 * sin(Time.get_ticks_msec() * 0.03))
 
 ## Where the finger that the next loss takes is, in the world.
 func finger_tip(lives_after: int) -> Vector3:
