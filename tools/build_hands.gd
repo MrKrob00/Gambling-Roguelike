@@ -39,8 +39,13 @@ func _build(side: String) -> void:
 	player.owner = root
 	var library := AnimationLibrary.new()
 	for pose in POSES:
-		library.add_animation(pose, _pose_animation(root, skeleton, side, POSES[pose], pose == "idle"))
+		if pose != "idle":
+			library.add_animation(pose, _pose_animation(root, skeleton, side, POSES[pose], false))
 	library.add_animation("tap", _tap_animation(root, skeleton, side))
+	library.add_animation("idle", _idle_animation(root, skeleton, side))
+	library.add_animation("clench", _clench_animation(root, skeleton, side))
+	library.add_animation("flat", _flat_animation(root, skeleton, side))
+	library.add_animation("drum", _drum_animation(root, skeleton, side))
 	player.add_animation_library("", library)
 	player.playback_default_blend_time = 0.15
 	player.autoplay = "idle"
@@ -113,6 +118,78 @@ func _pose_animation(root: Node, skeleton: Skeleton3D, side: String, pose: Dicti
 			for key in keys:
 				anim.rotation_track_insert_key(track, key[0], key[1][j])
 	return anim
+
+## Writes `frames` ([time, {finger: curl}] each, missing fingers use "all") as rotation keys on every finger joint, and
+## `wrist` ([time, radians]) as a slow sway of the wrist about its own X.
+func _keyed(root: Node, skeleton: Skeleton3D, side: String, length: float, loop: bool, frames: Array, wrist: Array = []) -> Animation:
+	var anim := Animation.new()
+	anim.length = length
+	anim.loop_mode = Animation.LOOP_LINEAR if loop else Animation.LOOP_NONE
+	for finger in FINGERS + ["Thumb"]:
+		var chains: Array = []
+		for frame in frames:
+			chains.append(_chain(skeleton, side, finger, _curl_of(frame[1], finger)))
+		for j in JOINTS.size():
+			var bone := "%s_%s_%s" % [finger, JOINTS[j], side]
+			if skeleton.find_bone(bone) < 0:
+				continue
+			var track := anim.add_track(Animation.TYPE_ROTATION_3D)
+			anim.track_set_path(track, NodePath("%s:%s" % [root.get_path_to(skeleton), bone]))
+			for k in frames.size():
+				anim.rotation_track_insert_key(track, frames[k][0], chains[k][j])
+	if not wrist.is_empty():
+		var wrist_bone := "Wrist_%s" % side
+		var rest := skeleton.get_bone_rest(skeleton.find_bone(wrist_bone)).basis.get_rotation_quaternion()
+		var track := anim.add_track(Animation.TYPE_ROTATION_3D)
+		anim.track_set_path(track, NodePath("%s:%s" % [root.get_path_to(skeleton), wrist_bone]))
+		for key in wrist:
+			anim.rotation_track_insert_key(track, key[0], rest * Quaternion(Vector3.RIGHT, key[1]))
+	return anim
+
+## Breathing: the fingers close and open a little in a slow wave from the little finger to the thumb, the wrist sways.
+func _idle_animation(root: Node, skeleton: Skeleton3D, side: String) -> Animation:
+	var period := 3.6
+	var steps := 6
+	var frames: Array = []
+	var wrist: Array = []
+	for i in steps + 1:
+		var t := period * i / steps
+		var phase := TAU * i / steps
+		frames.append([t, {"all": 0.45 + 0.17 * sin(phase), "Index": 0.45 + 0.17 * sin(phase - 0.5), "Middle": 0.45 + 0.17 * sin(phase - 0.3), "Ring": 0.45 + 0.17 * sin(phase - 0.15), "Thumb": 0.25 - 0.1 * sin(phase)}])
+		wrist.append([t, 0.05 * sin(phase)])
+	return _keyed(root, skeleton, side, period, true, frames, wrist)
+
+## The hand squeezes into a fist, trembles, and lets go.
+func _clench_animation(root: Node, skeleton: Skeleton3D, side: String) -> Animation:
+	var idle := {"all": 0.45, "Thumb": 0.25}
+	var tight := {"all": 1.45, "Thumb": 0.85}
+	var tighter := {"all": 1.55, "Thumb": 0.9}
+	return _keyed(root, skeleton, side, 1.5, false, [[0.0, idle], [0.3, tight], [0.55, tighter], [0.8, tight], [1.05, tighter], [1.5, idle]], [[0.0, 0.0], [0.3, 0.08], [1.05, 0.08], [1.5, 0.0]])
+
+## The fingers spread flat, as if the palm were pressed on the table, and stay so for a moment.
+func _flat_animation(root: Node, skeleton: Skeleton3D, side: String) -> Animation:
+	var idle := {"all": 0.45, "Thumb": 0.25}
+	var flat := {"all": -0.05, "Thumb": 0.0}
+	return _keyed(root, skeleton, side, 2.0, false, [[0.0, idle], [0.4, flat], [1.5, flat], [2.0, idle]], [[0.0, 0.0], [0.4, -0.1], [1.5, -0.1], [2.0, 0.0]])
+
+## The fingers drum on the table one after another, little finger first, twice.
+func _drum_animation(root: Node, skeleton: Skeleton3D, side: String) -> Animation:
+	var base := 0.25
+	var down := 0.95
+	var order := ["Little", "Ring", "Middle", "Index"]
+	var frames: Array = [[0.0, {"all": base, "Thumb": 0.15}]]
+	var t := 0.15
+	for round in 2:
+		for finger in order:
+			var up := {"all": base, "Thumb": 0.15}
+			var dip := {"all": base, "Thumb": 0.15}
+			dip[finger] = down
+			frames.append([t, up])
+			frames.append([t + 0.07, dip])
+			frames.append([t + 0.14, up])
+			t += 0.15
+	frames.append([t + 0.3, {"all": 0.45, "Thumb": 0.25}])
+	return _keyed(root, skeleton, side, t + 0.3, false, frames)
 
 ## The index finger pointing, then pressing down and back up: a tap.
 func _tap_animation(root: Node, skeleton: Skeleton3D, side: String) -> Animation:

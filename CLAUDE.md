@@ -89,7 +89,7 @@ integer. The 3D view renders at the window's real resolution.
   a chip is 20 cm, so the hands are 3.5x). The hovered or pinned coin rolls out of the grip, turns to face the player and
   spins (`focus()`); the info panel stays a 2D overlay. Change a position in the view's constants, not in a scene.
 - **The hands are editable scenes**, not code: `world/hands/hand_l.tscn` and `hand_r.tscn` hold the unpacked glove (a
-  Skeleton3D with 26 finger bones) and an AnimationPlayer with the poses `idle`, `open`, `fist`, `point` and `tap`.
+  Skeleton3D with 26 finger bones) and an AnimationPlayer with the poses `open`, `fist`, `point`, `tap` and the loops and gestures `idle` (breathing: the fingers close and open in a slow wave, the wrist sways), `clench`, `flat` (palm pressed on the table) and `drum` (the fingers drum). `PlayerHand.gesture(name)` plays one when the hand is free; it also fidgets by itself every 6 to 11 s of idleness, and the view asks for `drum` while the dealer plays, `clench` on a lost hand and `flat` on a push.
   Open them in the editor to pose and animate; `tools/build_hands.gd` regenerates them from `assets/models/hand` and
   **overwrites those edits**. The scripts only call `play(name)`. The right hand (`world/player_hand_3d.gd`) does
   every press: `BlackjackView3D._act_on` carries it over the felt to the object, taps it and activates the object at

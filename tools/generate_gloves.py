@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Paints the players' gloves: worn oxblood leather, gold stitches along the seams, a gold spade
-on the back of the hand. The texture is drawn in the hands' own UV layout (read from the meshes by
+"""Paints the players' gloves: worn oxblood leather with tone-on-tone seam stitches
+The texture is drawn in the hands' own UV layout (read from the meshes by
 tools/dump_hand_uv.gd), so it fits whatever the layout is. Writes assets/textures/glove_l.png and glove_r.png.
 Run: python3 tools/generate_gloves.py  (needs numpy and pillow)"""
 import json, math, os
@@ -90,7 +90,7 @@ def paint(side):
     yy, xx = np.mgrid[0:S, 0:S]
     dashes = ((xx // 7 + yy // 7) % 2 == 0)
     stitch = Image.fromarray((ring & dashes).astype(np.uint8) * 255)
-    img.paste(Image.new("RGB", (S, S), (190, 140, 60)), mask=stitch)
+    img.paste(Image.new("RGB", (S, S), (78, 46, 42)), mask=stitch)
 
     img = img.filter(ImageFilter.GaussianBlur(0.6))
     os.makedirs(OUT, exist_ok=True)

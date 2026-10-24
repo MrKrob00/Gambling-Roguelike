@@ -37,7 +37,8 @@ func _ready() -> void:
 	var glove := StandardMaterial3D.new()
 	glove.albedo_texture = GLOVE_TEXTURE
 	glove.emission_texture = GLOVE_TEXTURE
-	glove.roughness = 0.55
+	glove.roughness = 0.85
+	glove.metallic_specular = 0.2
 	glove.emission_enabled = true
 	# The emission colour is added to the texture's: black leaves just the texture.
 	glove.emission = Color.BLACK

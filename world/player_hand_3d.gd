@@ -27,6 +27,10 @@ var _skeleton: Skeleton3D
 var _gen: int = 0
 var _strain_base: Dictionary = {}
 var _glove: StandardMaterial3D
+## Gestures: the hand fidgets by itself when idle, and the table asks for one at an event.
+var _gesture_gen: int = -1
+var _idle_since: float = 0.0
+var _next_fidget: float = 6.0
 
 func _ready() -> void:
 	position = REST_POS
@@ -38,11 +42,13 @@ func _ready() -> void:
 	_anim = model.get_node("Anim")
 	_skeleton = model.find_children("*", "Skeleton3D", true, false)[0]
 	_anim.play("idle")
+	_anim.animation_finished.connect(_on_animation_finished)
 	var glove := StandardMaterial3D.new()
 	_glove = glove
 	glove.albedo_texture = GLOVE_TEXTURE
 	glove.emission_texture = GLOVE_TEXTURE
-	glove.roughness = 0.55
+	glove.roughness = 0.85
+	glove.metallic_specular = 0.2
 	glove.emission_enabled = true
 	# The emission colour is added to the texture's: black leaves just the texture.
 	glove.emission = Color.BLACK
@@ -83,6 +89,7 @@ func reach(world_pos: Vector3, on_contact: Callable) -> void:
 
 func _begin() -> int:
 	_gen += 1
+	_idle_since = 0.0
 	if _tween != null:
 		_tween.kill()
 	return _gen
@@ -162,3 +169,37 @@ func lower_after_cut(lives_after: int) -> void:
 	_anim.play("idle")
 	_move(REST_POS, 0.4, Tween.TRANS_SINE)
 	await get_tree().create_timer(0.4).timeout
+
+# ---------------------------------------------------------------- gestures
+
+const GESTURES: Array[StringName] = [&"flat", &"drum", &"clench"]
+## Gestures the hand picks for itself; a clench is kept for events.
+const FIDGETS: Array[StringName] = [&"flat", &"drum", &"drum"]
+## Pressed on the table, the hand sinks a little.
+const TABLE_DIP := 0.05
+
+func _process(delta: float) -> void:
+	if _anim.current_animation == "idle" and _gesture_gen != _gen:
+		_idle_since += delta
+		if _idle_since >= _next_fidget:
+			gesture(FIDGETS[randi() % FIDGETS.size()])
+	else:
+		_idle_since = 0.0
+
+## Plays `name` (clench, flat or drum) if the hand is free: not reaching, not being cut. Then it goes back to idle.
+func gesture(name_of: StringName) -> void:
+	if _anim.current_animation != "idle" or _gesture_gen == _gen:
+		return
+	_gesture_gen = _gen
+	_idle_since = 0.0
+	_next_fidget = randf_range(6.0, 11.0)
+	_anim.play(name_of)
+	if name_of != &"clench":
+		_move(REST_POS + Vector3(0.0, -TABLE_DIP, 0.0), 0.3, Tween.TRANS_SINE)
+
+func _on_animation_finished(animation: StringName) -> void:
+	if animation not in GESTURES or _gesture_gen != _gen:
+		return
+	_gesture_gen = -1
+	_anim.play("idle")
+	_move(REST_POS, 0.3, Tween.TRANS_SINE)

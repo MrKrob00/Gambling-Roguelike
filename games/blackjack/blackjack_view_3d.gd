@@ -427,6 +427,7 @@ func _do_remove(to_dealer: bool, card) -> void:
 	await _pause(0.35)
 
 func _do_reveal(card) -> void:
+	_player_hand.gesture(&"drum")
 	if is_instance_valid(_hole_actor):
 		Audio.sfx(&"game/card_reveal")
 		await _hole_actor.flip_to(true)
@@ -500,6 +501,7 @@ func _do_resolved(outcome: int, bet: int, payout: int) -> void:
 		Table.Outcome.PUSH:
 			_add_text_node(spot, tr("OUTCOME_PUSH"), PALE)
 			Audio.sfx(&"ui/ui_cancel")
+			_player_hand.gesture(&"flat")
 			slide_to = BET_SPOT + Vector3(0.0, 0.0, 1.0)
 		_:
 			_add_text_node(spot, "-%d" % absi(net), RED)
@@ -508,6 +510,7 @@ func _do_resolved(outcome: int, bet: int, payout: int) -> void:
 			_rig.shake(0.07, 0.45)
 			_pulse_lamp(0.55, 0.7)
 			slide_to = Vector3(BET_SPOT.x, TOP, -1.4)
+			_player_hand.gesture(&"clench")
 			_dealer.react(&"player_bust" if outcome == Table.Outcome.BUST else &"player_loses")
 	_say(table.dealer_event_for(outcome))
 	await _pause(0.7)
