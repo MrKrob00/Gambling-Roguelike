@@ -85,9 +85,9 @@ const SAY_OFTEN := 0.4
 const SAY_RARELY := 0.2
 ## The player's breathing grows louder, quicker and higher with every finger lost (silent while all are left).
 const BREATH_PATH := "res://assets/audio/sfx/voice/breath_loop.ogg"
-const BREATH_QUIET_DB := -38.0
-const BREATH_LOUD_DB := -8.0
-const BREATH_PITCH := Vector2(0.95, 1.2)
+const BREATH_QUIET_DB := -34.0
+const BREATH_LOUD_DB := -4.0
+const BREATH_PITCH := Vector2(0.95, 1.4)
 
 var run
 var table
@@ -816,7 +816,7 @@ func _cut_with_cry(left: int) -> void:
 		tier = "mid"
 		count = 4
 	var cry := StringName("voice/pain_%s_%d" % [tier, randi_range(1, count)])
-	Audio.sfx(cry, randf_range(0.94, 1.06), -3.0)
+	Audio.sfx(cry, randf_range(0.94, 1.06), -2.0)
 
 func _do_death(reason: StringName) -> void:
 	await _lose_finger(0, reason)
