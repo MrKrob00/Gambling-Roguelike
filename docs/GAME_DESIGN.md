@@ -75,8 +75,8 @@ artifact that shortens the deadline for bigger payouts.
 
 | Id | Kind | Effect | Unlock |
 |---|---|---|---|
-| lucky_clover | consumable, 3 | Undo a bust: the last card goes back on top of the shoe | open |
-| marked_deck | passive | Every hand starts with the dealer's hole card shown | open |
+| lucky_clover | consumable, 3 | Undo a bust: the last card goes back on top of the shoe and lies face up beside it, as with the Cracked Mirror | open |
+| marked_deck | passive | Every hand starts with the dealer's hole card shown | use the Cracked Mirror 10 times |
 | card_sleeve | active, 3 hands | Swap your last card for a fresh one, costs 20% of the stake | win 5 hands |
 | cracked_mirror | active, 3 hands | Show the next card of the shoe | win 3 hands |
 | cursed_doll | cursed | Wins pay +50%, a push counts as a loss | die once |

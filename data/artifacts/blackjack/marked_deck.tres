@@ -15,5 +15,5 @@ effect_script = ExtResource("2")
 button = false
 uses_per_hand = 0
 charges = 0
-unlock_stat = &""
-unlock_value = 0
+unlock_stat = &"mirror_uses"
+unlock_value = 10

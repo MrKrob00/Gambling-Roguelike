@@ -368,8 +368,8 @@
   "ru": "+ Каждая раздача начинается с показа закрытой карты крупье"
  },
  "ARTIFACT_MARKED_DECK_HINT": {
-  "en": "Open from the start",
-  "ru": "Открыт с начала"
+  "en": "Use the Cracked Mirror 10 times",
+  "ru": "Используй Треснувшее зеркало 10 раз"
  },
  "ARTIFACT_CARD_SLEEVE_NAME": {
   "en": "Card Up the Sleeve",
@@ -762,6 +762,10 @@
  "REASON_BUSTS": {
   "en": "Went bust %d times",
   "ru": "Перебор: %d раз"
+ },
+ "REASON_MIRROR_USES": {
+  "en": "Used the Cracked Mirror %d times",
+  "ru": "Треснувшее зеркало использовано: %d раз"
  },
  "PEEK_NEXT": {
   "en": "The next card.",

@@ -187,11 +187,14 @@ func _artifacts() -> void:
 	table.add_bet(100)
 	table.deal()
 	var fired := []
+	var peeked := []
 	run.artifact_triggered.connect(func(fx) -> void: fired.append(fx.data.id))
+	table.next_card_peeked.connect(func(c) -> void: peeked.append(c))
 	table.hit()
 	check(fired == [&"lucky_clover"], "clover announces that it triggered, got %s" % str(fired))
 	check(table.phase == Table.Phase.PLAYER_TURN and table.player.total() == 16, "clover undoes the bust")
 	check(_fx(run, &"lucky_clover").charges_left == 2, "clover spends a charge")
+	check(peeked.size() == 1 and peeked[0] == table.shoe.cards.back(), "clover lays the undone card face up beside the shoe")
 
 	# Marked deck is passive: the hole card is known from the deal.
 	run = _run([&"marked_deck"])
@@ -452,10 +455,10 @@ func _offers() -> void:
 	var profile = root.get_node("Profile")
 	profile.reset()
 	var Offer = RunState.Offer
-	# At the start only the two open artifacts can be offered.
+	# At the start only the open artifact (the clover) can be offered.
 	var run = RunState.new(&"blackjack", [])
 	run.start_free_offer()
-	check(run.offer_stage == Offer.CHOOSING and run.offer.size() == 2, "free offer shows the 2 open artifacts, got %d" % run.offer.size())
+	check(run.offer_stage == Offer.CHOOSING and run.offer.size() == 1, "free offer shows the 1 open artifact, got %d" % run.offer.size())
 	var first = run.offer[0]
 	check(run.choose_offer(first) and run.effects.size() == 1, "taking an offer equips it")
 	check(run.offer_stage == Offer.NONE and run.offer.is_empty(), "the offer closes after a pick")
@@ -538,6 +541,12 @@ func _unlocks() -> void:
 	check(_artifact(&"card_sleeve").unlock_reason() == "Won 5 hands", "unlock reason reads naturally: %s" % _artifact(&"card_sleeve").unlock_reason())
 	events.stat_peaked.emit(Stat.CHIPS_PEAK, 300)
 	check(profile.stat(Stat.CHIPS_PEAK) == 1200, "a peak never goes down")
+	check(not profile.is_unlocked(_artifact(&"marked_deck")), "the marked deck starts locked")
+	for i in 9:
+		events.stat_added.emit(Stat.MIRROR_USES, 1)
+	check(not profile.is_unlocked(_artifact(&"marked_deck")), "nine mirror uses do not open the marked deck")
+	events.stat_added.emit(Stat.MIRROR_USES, 1)
+	check(profile.is_unlocked(_artifact(&"marked_deck")), "ten mirror uses open the marked deck")
 	profile.reset()
 
 # ---------------------------------------------------------------- fuzz

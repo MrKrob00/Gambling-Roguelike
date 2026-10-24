@@ -171,7 +171,8 @@ integer. The 3D view renders at the window's real resolution.
   panel (`ui/common/artifact_info_panel.gd`, a 2D corner overlay) renders them. Keep descriptions to short lines.
 - Buttons have a **cooldown in hands** (`ArtifactData.cooldown_hands`, usually 2 to 4, ticked in `hand_started`), and a
   consumable is removed from the slots the moment its last charge is spent (`RunState.retire_spent`). An undone card
-  returns on top of the shoe (`discard_last_player_card`), so the next draw is the same card.
+  returns on top of the shoe (`discard_last_player_card`), so the next draw is the same card, and the Lucky Clover lays it face up beside the shoe
+  through `peek_next_card`, like the Cracked Mirror. The Marked Deck opens after ten uses of the Cracked Mirror (`Stat.MIRROR_USES`).
 - **An artifact announces itself when it acts** (`ArtifactEffect.notify()` -> `RunState.artifact_triggered`): the
   view plays `ui/common/artifact_flash.gd`, the icon popping into the middle of the screen with a shake and
   leaving the same way. Call `notify()` only where the effect really changes something (`modify_payout`,
