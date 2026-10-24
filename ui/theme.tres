@@ -1,9 +1,9 @@
-[gd_resource type="Theme" format=3]
+[gd_resource type="Theme" format=3 uid="uid://cifv8tnnbtrqo"]
 
-[ext_resource type="Texture2D" path="res://assets/ui/dark_dwellers/20251029darkDwellersButtonC1-Sheet.png" id="1_6lx7k"]
-[ext_resource type="Texture2D" path="res://assets/ui/dark_dwellers/20251029darkDwellers9SlicesE.png" id="2_iqtc0"]
-[ext_resource type="Texture2D" path="res://assets/ui/dark_dwellers/20251124emptyFrameA1-Sheet.png" id="3_iqtc0"]
-[ext_resource type="FontVariation" path="res://ui/fonts/body_font.tres" id="4_iqtc0"]
+[ext_resource type="Texture2D" uid="uid://c8wroaigr3sb3" path="res://assets/ui/dark_dwellers/20251029darkDwellersButtonC1-Sheet.png" id="1_6lx7k"]
+[ext_resource type="Texture2D" uid="uid://soxmbeg1vx06" path="res://assets/ui/dark_dwellers/20251029darkDwellers9SlicesE.png" id="2_iqtc0"]
+[ext_resource type="Texture2D" uid="uid://c45b2itwkoef7" path="res://assets/ui/dark_dwellers/20251124emptyFrameA1-Sheet.png" id="3_iqtc0"]
+[ext_resource type="FontVariation" uid="uid://d34lu5rf1i70e" path="res://ui/fonts/body_font.tres" id="4_iqtc0"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_iqtc0"]
 atlas = ExtResource("1_6lx7k")

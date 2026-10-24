@@ -1,7 +1,7 @@
-[gd_resource type="FontVariation" format=3]
+[gd_resource type="FontVariation" format=3 uid="uid://d34lu5rf1i70e"]
 
-[ext_resource type="FontFile" path="res://assets/fonts/rye/Rye-Regular.ttf" id="1_ldxdo"]
-[ext_resource type="FontFile" path="res://assets/fonts/underdog/Underdog-Regular.ttf" id="2_ldxdo"]
+[ext_resource type="FontFile" uid="uid://b4drthe5wtly3" path="res://assets/fonts/rye/Rye-Regular.ttf" id="1_ldxdo"]
+[ext_resource type="FontFile" uid="uid://dlw7vg4tuyuuc" path="res://assets/fonts/underdog/Underdog-Regular.ttf" id="2_ldxdo"]
 
 [resource]
 fallbacks = Array[Font]([ExtResource("2_ldxdo")])
