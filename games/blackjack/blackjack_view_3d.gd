@@ -87,7 +87,7 @@ const SAY_RARELY := 0.2
 const BREATH_PATH := "res://assets/audio/sfx/voice/breath_loop.ogg"
 const BREATH_QUIET_DB := -38.0
 const BREATH_LOUD_DB := -8.0
-const BREATH_PITCH := Vector2(0.9, 1.45)
+const BREATH_PITCH := Vector2(0.95, 1.2)
 
 var run
 var table
@@ -808,11 +808,14 @@ func _update_breath(animate: bool = true) -> void:
 ## The cry at the instant of impact: a grunt for the first fingers, a yelp, a scream for the last.
 func _cut_with_cry(left: int) -> void:
 	_player_hand.cut_finger(left)
-	var cry := &"voice/pain_grunt"
+	var tier := "light"
+	var count := 3
 	if left <= 1:
-		cry = &"voice/pain_scream"
+		tier = "heavy"
 	elif left <= 3:
-		cry = &"voice/pain_yelp"
+		tier = "mid"
+		count = 4
+	var cry := StringName("voice/pain_%s_%d" % [tier, randi_range(1, count)])
 	Audio.sfx(cry, randf_range(0.94, 1.06), -3.0)
 
 func _do_death(reason: StringName) -> void:

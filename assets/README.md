@@ -76,5 +76,5 @@ The build environment can only reach GitHub, GitLab and Bitbucket. itch.io, Open
 
 Texture sizes matter for the first frames on a phone: the cleaver and revolver textures are 512, the gloves 512, the menu backgrounds 1280x720 (they were 2048). Do not store anything bigger than the screen needs.
 
-### Player's pain and breathing (procedural)
-`assets/audio/sfx/voice/pain_grunt|pain_yelp|pain_scream.ogg` and `breath_loop.ogg` are made by `tools/generate_sfx.py` (formant-filtered sawtooth voice and filtered noise, no external source). The cry plays at the cut; the breath loop swells with every finger lost.
+### Player's pain and breathing
+`audio/sfx/voice/pain_light_1..3` (grunts), `pain_mid_1..4` (yelps), `pain_heavy_1..3` (screams): cut from "Male Grunt/Yelling sounds" (vocalist 3) by HaelDB on OpenGameArt, dual-licensed OGA-BY 3.0 / CC0, used under CC0, trimmed and loudness-normalised. `breath_loop.ogg`: "breathing tired" by mikeask on OpenGameArt, CC0, normalised and crossfaded into a loop. The cry plays at the cut (heavier as fingers run out); the breath swells with every finger lost. READY.
