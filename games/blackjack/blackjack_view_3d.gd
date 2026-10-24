@@ -1084,6 +1084,7 @@ func _refresh() -> void:
 	var replacing := picking and _pending_pick != null
 	var pocketing := _stashing or _swap_with != null
 	var normal := betting and not picking and not _discarding and not pocketing
+	var idle := betting and not _discarding and not pocketing and not replacing
 	var show: Array = []
 	if normal:
 		show = [&"deal", &"pay_off"]
@@ -1095,6 +1096,8 @@ func _refresh() -> void:
 		show = [&"cancel"]
 	elif picking:
 		show = [&"skip"]
+		if not run.effects.is_empty() or not run.pocket.is_empty():
+			show.append(&"pocket")
 	elif playing:
 		show = [&"hit", &"stand"]
 		if table.can_double():
@@ -1120,7 +1123,7 @@ func _refresh() -> void:
 	var ring_color := RED if (_discarding or replacing) else PALE
 	for w in _wells:
 		if is_instance_valid(w):
-			w.set_enabled((replacing and w.fx == null) or (normal and (w.fx != null or not run.effects.is_empty())) or (pocketing and w.fx != null))
+			w.set_enabled((replacing and w.fx == null) or (idle and (w.fx != null or not run.effects.is_empty())) or (pocketing and w.fx != null))
 			w.show_ring((pocketing and w.fx != null) or (replacing and w.fx == null), PALE)
 	for t in _tokens:
 		if is_instance_valid(t):
@@ -1133,7 +1136,7 @@ func _refresh() -> void:
 		if is_instance_valid(pick):
 			pick.set_enabled(true)
 	for c in _offer_cards:
-		c.set_enabled(not replacing)
+		c.set_enabled(not replacing and not pocketing)
 	_update_prompt(stage, replacing)
 	_update_ledger()
 
