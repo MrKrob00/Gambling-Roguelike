@@ -59,7 +59,7 @@ Each cell is one artifact; an empty cell is room for the next one.
 | The stake | | Loose Change (half a lost stake back, every 4 hands) | | |
 | The debt | | Silver Chip (-10% due), Pawn Ticket (new debts -15%) | Hush Envelope (-25% now) | Collector's Ledger (-30% due, a hand sooner), Fat Purse (+50% loans, +75% debts) |
 | The deadline | | | Hourglass (+2 hands) | Collector's Ledger, Borrowed Time (+2 hands, smaller loans) |
-| Lives | | | Candle of Mercy (survive a death, the last loan again) | |
+| Lives | | | Candle of Mercy (survive a death, the last loan again), Pawned Finger (a finger for the whole debt) | |
 
 Ideas for the empty cells: an active that trades a finger for a win, a passive that grows the loan with the win streak, a cursed
 artifact that shortens the deadline for bigger payouts.
@@ -111,6 +111,7 @@ artifact that shortens the deadline for bigger payouts.
 | card_counter | passive | Shows the Hi-Lo count of the cards seen since the shuffle beside the shoe | play 100 hands |
 | pickpocket | active, 4 hands | Takes the dealer's open card into your hand, he gets a fresh one | pay a debt the moment it is received |
 | hand_swap | active, rare, 6 hands | You and the dealer swap hands, his hidden card turns face up | hold three artifacts of one kind |
+| pawned_finger | consumable, 1 | Between hands: lose a finger, the purse is topped up and the whole debt is paid at once (not the last finger) | die to the collectors twice |
 | paupers_crown | passive, rare | A won hand of 15 or less pays a whole stake more | win a hand with 10 or less (the dealer busts) |
 
 The one unlock that depends on another artifact is Marked Deck (10 uses of the Cracked Mirror); every other artifact opens on its own kind of event (pushes, dealer busts, shuffles, doubles, deaths, a win with 10 or less...), so no two unlock the same way. Open from the start: Lucky Clover, Card Sleeve, Cursed Doll, Silver Chip.
@@ -132,7 +133,7 @@ the same idea; a free one is room for the next artifact.
 | The stake (`modify_stake`) | nothing | a capped stake that keeps the rest safe (the old Loose Change); a bigger first hand |
 | Double down (`allows_credit_double`) | Credit Line | doubling after a hit; doubling for free once per loan |
 | The debt: payment, new debt, new loan, deadline (`modify_payment`, `modify_new_debt`, `modify_new_loan`, `modify_deadline`, `reduce_debt`, `extend_deadline`) | Silver Chip, Pawn Ticket, Fat Purse, Borrowed Time, Collector's Ledger, Hourglass, Hush Envelope | the debt growing with the win streak; paying early with a bonus; a lender who forgets a hand |
-| Lives (`prevent_death`) | Candle of Mercy | an extra finger; a finger traded for a win |
+| Lives (`prevent_death`, `pawn_finger`) | Candle of Mercy, Pawned Finger | an extra finger; healing a finger; a finger traded for chips outside a debt |
 | Offers (`modify_offer_size`) | Magpie | rerolling an offer; a guaranteed rare; selling a held artifact |
 | After a hand (`hand_ended`) | Sore Loser | momentum after a win; a reshuffle after a loss |
 | Unlock events | hands played / won, busts, deaths (all, by debt), chips peak, win streak, tricks, debts paid, blackjacks, pushes, wins with 10 or less, dealer busts, shoe shuffles, doubles, dealer blackjacks, Cracked Mirror uses | an early payoff; a fifth-finger run; surviving with fewer than ten chips |

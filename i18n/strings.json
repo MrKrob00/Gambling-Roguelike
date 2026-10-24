@@ -1038,5 +1038,17 @@
  "ARTIFACT_REWOUND_WATCH_HINT": {
   "en": "Win 30 hands",
   "ru": "Выиграть 30 раздач"
+ },
+ "ARTIFACT_PAWNED_FINGER_NAME": {
+  "en": "Pawned Finger",
+  "ru": "Заложенный палец"
+ },
+ "ARTIFACT_PAWNED_FINGER_DESC": {
+  "en": "+ The whole debt is paid at once\n- The hand loses a finger\n- Between hands only",
+  "ru": "+ Весь долг выплачивается сразу\n- Рука теряет палец\n- Только между раздачами"
+ },
+ "ARTIFACT_PAWNED_FINGER_HINT": {
+  "en": "Die to the collectors twice",
+  "ru": "Погибнуть от коллекторов дважды"
  }
 }

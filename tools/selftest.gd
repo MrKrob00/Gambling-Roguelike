@@ -69,7 +69,7 @@ func _load_everything(path: String) -> void:
 
 func _catalog() -> void:
 	var cat = root.get_node("Catalog")
-	check(cat.all().size() == 39, "catalog holds 39 artifacts, has %d" % cat.all().size())
+	check(cat.all().size() == 40, "catalog holds 40 artifacts, has %d" % cat.all().size())
 	var tr_ok := true
 	for a in cat.all():
 		for part in ["NAME", "DESC", "HINT"]:
@@ -311,6 +311,20 @@ func _artifacts() -> void:
 	table.use_artifact(_fx(run, &"rewound_watch"))
 	check(_fx(run, &"card_sleeve").cooldown_left == 0, "the rewound watch recharges everything")
 	check(run.effects.size() == 2, "the spent watch leaves the slots")
+
+	# Pawned finger: a finger for the whole debt, between hands, never the last one.
+	run = _run([&"pawned_finger"])
+	table = Table.new(run, 1)
+	check(_fx(run, &"pawned_finger").can_use(table), "the pawned finger can be used between hands")
+	var lost := []
+	run.life_lost.connect(func(left: int, r: StringName) -> void: lost.append([left, r]))
+	table.use_artifact(_fx(run, &"pawned_finger"))
+	check(lost == [[Rules.LIVES - 1, &"pawn"]] and run.payments_paid == 1, "a finger goes and the debt is paid, %s paid %d" % [str(lost), run.payments_paid])
+	check(run.effects.is_empty(), "the pawned finger is spent")
+	run = _run([&"pawned_finger"])
+	run.lives = 1
+	table = Table.new(run, 1)
+	check(not _fx(run, &"pawned_finger").can_use(table), "the last finger cannot be pawned")
 
 	# Marked deck is passive: the hole card is known from the deal.
 	run = _run([&"marked_deck"])

@@ -19,6 +19,8 @@ signal artifact_triggered(effect)
 signal offer_changed
 
 const DEATH_BROKE := &"broke"
+## A finger given up on purpose (the Pawned Finger): the hand loses it, but the run goes on.
+const DEATH_PAWN := &"pawn"
 const DEATH_DEBT := &"debt"
 
 var game_id: StringName = &"blackjack"
@@ -266,6 +268,17 @@ func _pay() -> void:
 	debt_changed.emit(debt)
 	countdown_changed.emit(hands_to_payment, next_payment())
 	start_free_offer()
+
+## A finger for the whole debt: the hand loses it now, the purse is topped up to the payment and the debt is paid.
+func pawn_finger() -> void:
+	if not alive or lives <= 1 or offer_stage == Offer.CHOOSING:
+		return
+	lives -= 1
+	life_lost.emit(lives, DEATH_PAWN)
+	var missing := next_payment() - chips
+	if missing > 0:
+		add_chips(missing)
+	pay_off()
 
 func _try_die(reason: StringName) -> void:
 	if not _survives():
