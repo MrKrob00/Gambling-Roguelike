@@ -122,7 +122,7 @@ Borrowed Luck — тёмный roguelike от первого лица про б�
 
 | File | Use |
 |---|---|
-| `cover_630x500.png`, `cover_1260x1000.png` | Cover image, drawn from scratch (not a screenshot) by `tools/make_cover.py`: the ace and king, the chips, a ringed finger on the felt. 630x500 is what itch.io asks for; the 2x file is for sharper displays |
+| `cover_630x500.png`, `cover_1260x1000.png` | Cover image, drawn from scratch (not a screenshot) by `tools/make_cover.py`: the ace and king, the candles and the chips, no text but the title. 630x500 is what itch.io asks for; the 2x file is for sharper displays |
 | `screenshot_1_table.png` | The game itself: a hand in progress, the dealer, the candles, the artifacts in the left hand |
 | `screenshot_2_collection.png` | The collection of 44 artifacts |
 | `screenshot_3_offer.png` | Choosing an artifact after a debt is paid |

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Draws the itch.io cover from scratch (no screenshot): a poster of the table, the cards, the chips and a lost finger.
+"""Draws the itch.io cover from scratch (no screenshot): a poster of the table, the cards, the candles and the chips.
 Usage: python3 tools/make_cover.py   ->  docs/itch/cover_630x500.png and cover_1260x1000.png
 Needs Pillow and numpy. Assets used: the chip pictures of the game and the Rye font."""
 import glob
@@ -260,14 +260,12 @@ def main():
         img = over(img, candle(cx, 640, 90 + rng.randint(-12, 12)))
     for cx in (960, 1045, 1130):
         img = over(img, candle(cx, 640, 90 + rng.randint(-12, 12)))
-    img = place(img, card(300, 430, "A", "\u2660", False), (455, 585), -17)
-    img = place(img, card(300, 430, "K", "\u2665", True), (640, 580), 8)
-    img = chip_stack(img, "100_Dollar_casino_chip_1.png", 135, 810, 6, 210)
-    img = chip_stack(img, "500_Dollar_casino_chip_1.png", 195, 760, 3, 170)
-    img = blood(img, 905, 800)
-    img = finger(img, 915, 770)
+    img = place(img, card(300, 430, "A", "\u2660", False), (470, 640), -17)
+    img = place(img, card(300, 430, "K", "\u2665", True), (655, 635), 8)
+    img = chip_stack(img, "100_Dollar_casino_chip_1.png", 175, 880, 6, 240)
+    img = chip_stack(img, "500_Dollar_casino_chip_1.png", 1010, 870, 4, 240)
+    img = chip_stack(img, "25_Dollar_casino_chip_1.png", 1130, 925, 2, 190)
     img = title(img)
-    img = tagline(img)
     img = vignette(img)
     out = img.convert("RGB")
     out.save(os.path.join(OUT, "cover_1260x1000.png"), optimize=True)
