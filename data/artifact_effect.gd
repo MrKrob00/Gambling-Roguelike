@@ -102,6 +102,10 @@ func allows_credit_double(_table) -> bool:
 func modify_offer_size(size: int) -> int:
 	return size
 
+## Another artifact's button has just been used (its use is already spent): give the use back to repeat the trick.
+func encore(_table, _used) -> void:
+	pass
+
 ## How many hands an artifact needs to recharge (every artifact's own wait goes through here).
 func modify_cooldown(hands: int) -> int:
 	return hands

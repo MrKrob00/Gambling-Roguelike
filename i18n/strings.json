@@ -1050,5 +1050,17 @@
  "ARTIFACT_PAWNED_FINGER_HINT": {
   "en": "Die to the collectors twice",
   "ru": "Погибнуть от коллекторов дважды"
+ },
+ "ARTIFACT_ENCORE_NAME": {
+  "en": "Encore",
+  "ru": "Бис"
+ },
+ "ARTIFACT_ENCORE_DESC": {
+  "en": "+ Once per loan a trick you use is given back: repeat it at once",
+  "ru": "+ Раз за займ использованный трюк возвращается: повтори его сразу"
+ },
+ "ARTIFACT_ENCORE_HINT": {
+  "en": "Use tricks 40 times",
+  "ru": "Использовать приёмы 40 раз"
  }
 }

@@ -112,6 +112,7 @@ artifact that shortens the deadline for bigger payouts.
 | pickpocket | active, 4 hands | Takes the dealer's open card into your hand, he gets a fresh one | pay a debt the moment it is received |
 | hand_swap | active, rare, 6 hands | You and the dealer swap hands, his hidden card turns face up | hold three artifacts of one kind |
 | pawned_finger | consumable, 1 | Between hands: lose a finger, the purse is topped up and the whole debt is paid at once (not the last finger) | die to the collectors twice |
+| encore | passive, rare | Once per loan a trick that was just used is given back, so it can be repeated at once | use tricks 40 times |
 | paupers_crown | passive, rare | A won hand of 15 or less pays a whole stake more | win a hand with 10 or less (the dealer busts) |
 
 The one unlock that depends on another artifact is Marked Deck (10 uses of the Cracked Mirror); every other artifact opens on its own kind of event (pushes, dealer busts, shuffles, doubles, deaths, a win with 10 or less...), so no two unlock the same way. Open from the start: Lucky Clover, Card Sleeve, Cursed Doll, Silver Chip.

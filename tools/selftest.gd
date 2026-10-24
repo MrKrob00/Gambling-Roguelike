@@ -69,7 +69,7 @@ func _load_everything(path: String) -> void:
 
 func _catalog() -> void:
 	var cat = root.get_node("Catalog")
-	check(cat.all().size() == 40, "catalog holds 40 artifacts, has %d" % cat.all().size())
+	check(cat.all().size() == 41, "catalog holds 41 artifacts, has %d" % cat.all().size())
 	var tr_ok := true
 	for a in cat.all():
 		for part in ["NAME", "DESC", "HINT"]:
@@ -325,6 +325,17 @@ func _artifacts() -> void:
 	run.lives = 1
 	table = Table.new(run, 1)
 	check(not _fx(run, &"pawned_finger").can_use(table), "the last finger cannot be pawned")
+
+	# Encore: once per loan a used trick comes back at once.
+	run = _run([&"cracked_mirror", &"encore"])
+	table = Table.new(run, 1)
+	_stack(table, [[10], [10], [6], [7], [2], [3], [4]])
+	table.deal_all_in()
+	var mirror = _fx(run, &"cracked_mirror")
+	table.use_artifact(mirror)
+	check(mirror.can_use(table) and mirror.cooldown_left == 0, "encore gives the first trick back at once")
+	table.use_artifact(mirror)
+	check(not mirror.can_use(table) and mirror.cooldown_left > 0, "the second use of the same loan is paid for as usual")
 
 	# Marked deck is passive: the hole card is known from the deal.
 	run = _run([&"marked_deck"])

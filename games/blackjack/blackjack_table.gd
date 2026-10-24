@@ -200,6 +200,8 @@ func use_artifact(fx) -> void:
 	fx.use(self)
 	fx.spend()
 	fx.cooldown_left = run.cooldown_for(fx.data.cooldown_hands) if fx.data.cooldown_hands > 0 else 0
+	for other in run.effects:
+		other.encore(self, fx)
 	run.retire_spent()
 	Events.stat_added.emit(Stat.TRICKS_USED, 1)
 	trick_used.emit(fx)
