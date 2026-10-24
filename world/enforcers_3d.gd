@@ -39,6 +39,7 @@ var _fore_len := 0.0
 var _lean := 0.0
 var _pointing := false
 var _arm := "L"
+var _gunner_index := 1
 var _step: float = 0.0
 ## Barrel lift in radians, for the recoil.
 var kick: float = 0.0
@@ -92,7 +93,7 @@ func _process(delta: float) -> void:
 ## something to do: a skinned figure costs a skeleton update and draw calls every frame (a measurable lag on phones).
 func _show_gunner(on: bool) -> void:
 	for f in _figures:
-		f.body.visible = on and f == _figures[1]
+		f.body.visible = on and f == _figures[_gunner_index]
 	set_process(on)
 
 func set_urgency(urgency: float) -> void:
@@ -128,16 +129,16 @@ func _point_arm(skeleton: Skeleton3D, arm: String, upper_dir: Vector3, fore_dir:
 
 # ---------------------------------------------------------------- the gunman
 
-## The right-hand collector draws the gun from beside the player: his body stays where it is, he leans over and his arm
+## The left-hand collector draws the gun from beside the player: his body stays where it is, he leans over and his arm
 ## reaches out with `gun` in the palm, its barrel along the arm (`grip` is the point of the gun node held in the palm,
 ## `reach` the grip to muzzle distance), `gap` short of `tip`.
 func begin_gun(tip: Vector3, gun: Node3D, grip: Vector3, reach: float, gap: float) -> void:
-	_begin(tip, gun, grip, gap + reach, false)
+	_begin(tip, gun, grip, gap + reach, false, 0)
 
-## The same arm raps on the felt at `spot`, with the first finger out and the rest curled.
+## The right-hand collector raps on the felt at `spot`, with the first finger out and the rest curled.
 func knock(spot: Vector3, taps: int, on_tap: Callable) -> void:
 	var raised := spot + Vector3(0.0, KNOCK_LIFT, 0.0)
-	_begin(raised, null, Vector3.ZERO, 0.02, true)
+	_begin(raised, null, Vector3.ZERO, 0.02, true, 1)
 	await get_tree().create_timer(STEP_TIME + 0.25).timeout
 	for i in taps:
 		var fall := create_tween()
@@ -151,27 +152,29 @@ func knock(spot: Vector3, taps: int, on_tap: Callable) -> void:
 
 ## Raises the arm toward `tip`, the hand ending `hold` short of it. The lean (a bow of the spine) is how far he has to
 ## stoop for the elbow to stay bent: found once, here.
-func _begin(tip: Vector3, gun: Node3D, grip: Vector3, hold: float, pointing: bool) -> void:
+func _begin(tip: Vector3, gun: Node3D, grip: Vector3, hold: float, pointing: bool, figure: int) -> void:
+	_gunner_index = figure
 	_show_gunner(true)
 	_gun = gun
 	_gun_grip = grip
 	_gun_tip = tip
 	_hold = hold
 	_pointing = pointing
-	_gunner = _figures[1]
+	_gunner = _figures[figure]
 	var skeleton: Skeleton3D = _gunner.skeleton
 	var upper := skeleton.find_bone("upper_arm.L")
 	var fore := skeleton.find_bone("forearm.L")
 	var hand := skeleton.find_bone("hand.L")
 	_upper_len = (skeleton.get_bone_global_rest(fore).origin - skeleton.get_bone_global_rest(upper).origin).length() * FIGURE_SCALE
 	_fore_len = (skeleton.get_bone_global_rest(hand).origin - skeleton.get_bone_global_rest(fore).origin).length() * FIGURE_SCALE
-	_arm = "L"
+	# The arm toward the table: the figures are the same mesh, so the left one reaches with the arm on the other side.
+	_arm = "L" if figure == 1 else "R"
 	_lean = 0.0
 	for i in 14:
 		var angle := i * 0.1
 		_apply_lean(skeleton, angle)
 		_lean = angle
-		var shoulder := _shoulder_world(skeleton, "L")
+		var shoulder := _shoulder_world(skeleton, _arm)
 		var aim := (tip - shoulder).normalized()
 		if shoulder.distance_to(tip - aim * hold) <= (_upper_len + _fore_len) * ELBOW_BEND:
 			break
