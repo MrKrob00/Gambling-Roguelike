@@ -142,7 +142,7 @@ integer. The 3D view renders at the window's real resolution.
   `core/stat.gd`. `Profile` keeps the counters, saves `user://profile.json`, and unlocks an artifact the
   moment `stat(unlock_stat) >= unlock_value`. Fresh unlocks wait in `Profile.fresh_unlocks` for the result
   screen. An artifact with an empty `unlock_stat` is open from the start.
-- A locked artifact shows only "Locked" in the collection; the result screen lists the three closest to opening with their hints (`result.gd`).
+- A locked artifact shows only "Locked" in the collection; no hints or progress are shown anywhere.
 - Adding an unlock rule is data only. Adding a new counter is one constant in `Stat` and one emit.
 
 ### The run and the artifact offers
