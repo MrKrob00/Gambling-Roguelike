@@ -71,7 +71,7 @@ const POCKET_STEP := 0.4
 ## The pocket button stands above the first well, away from the hand's coins.
 const POCKET_PLAQUE_DZ := -0.65
 const OFFER_Z := 0.2
-const OFFER_SPACING := 0.9
+const OFFER_SPACING := 1.0
 ## The deadline candles stand on the far rail, in front of the dealer.
 const CANDLES_POS := Vector3(0.0, TOP + 0.045, -1.27)
 const AMBIENCE := "res://assets/audio/ambience/dark_cavern_ambient_001.ogg"
@@ -87,7 +87,7 @@ const SAY_RARELY := 0.2
 const BREATH_PATH := "res://assets/audio/sfx/voice/breath_loop.ogg"
 const BREATH_QUIET_DB := -34.0
 const BREATH_LOUD_DB := -4.0
-const BREATH_PITCH := Vector2(0.95, 1.4)
+const BREATH_PITCH := Vector2(1.0, 1.55)
 
 var run
 var table
@@ -955,7 +955,10 @@ func _on_token(token) -> void:
 		_discarding = false
 		run.discard(token.fx)
 	elif _pending_pick != null:
-		run.choose_offer(_pending_pick, token.fx)
+		if not run.choose_offer(_pending_pick, token.fx):
+			_speak(tr("POCKET_CANT"))
+			_refresh()
+			return
 		_pending_pick = null
 	elif token.fx.data.button:
 		table.use_artifact(token.fx)
@@ -964,8 +967,8 @@ func _on_token(token) -> void:
 func _on_offer_card(card) -> void:
 	if run.slots_full():
 		_pending_pick = card.data
-	else:
-		run.choose_offer(card.data)
+	elif not run.choose_offer(card.data):
+		_speak(tr("POCKET_CANT"))
 	_refresh()
 
 func _slot_x(slot: int) -> float:
@@ -1077,6 +1080,12 @@ func _refresh() -> void:
 	var phase: int = table.phase
 	var alive: bool = run.alive
 	var betting := phase == Table.Phase.BETTING and alive
+	if not betting:
+		_stashing = false
+		_swap_with = null
+		_stash_out = null
+		_discarding = false
+		_pending_pick = null
 	var drafting: bool = not table.draft.is_empty()
 	var playing: bool = phase == Table.Phase.PLAYER_TURN and not drafting
 	var stage: int = run.offer_stage if betting else RunState.Offer.NONE

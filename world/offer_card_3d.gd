@@ -46,15 +46,16 @@ func bind(artifact) -> void:
 	_name = Label3D.new()
 	_name.text = artifact.title()
 	_name.font = TITLE_FONT
-	_name.font_size = 56
+	_name.font_size = 44
 	_name.pixel_size = 0.0026
 	_name.outline_size = 10
 	_name.modulate = color
 	_name.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	_name.no_depth_test = true
-	_name.width = 380.0
+	_name.width = 330.0
+	_name.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
 	_name.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_name.position = Vector3(0.0, 0.34, 0.12)
+	_name.position = Vector3(0.0, 0.36, 0.12)
 	_name.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	add_child(_name)
 	add_box_shape(Vector3(RADIUS * 2.5, 0.5, RADIUS * 2.5), Vector3(0, 0.2, 0))

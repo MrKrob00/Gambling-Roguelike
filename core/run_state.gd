@@ -170,7 +170,19 @@ func add_chips(delta: int) -> void:
 ## Unlocked artifacts of this game that the player does not hold yet.
 func offer_pool() -> Array:
 	var held := (effects + pocket).map(func(fx): return fx.data.id)
-	return Profile.unlocked_for(game_id).filter(func(a): return not (a.id in held))
+	return Profile.unlocked_for(game_id).filter(func(a): return not (a.id in held) and _offerable(a))
+
+## True if `data` can be taken into the hand (in the place of `replace`) without leaving the pocket overfull.
+func _can_take(data, replace = null) -> bool:
+	var held := effects.filter(func(e) -> bool: return e != replace)
+	held.append(_make_effect(data))
+	return _pocket_fits(held, pocket)
+
+## An artifact is offered only if some way of taking it works: a free slot, a swap, or an empty well.
+func _offerable(data) -> bool:
+	if not slots_full():
+		return _can_take(data)
+	return pocket.size() < pocket_capacity() or effects.any(func(e) -> bool: return _can_take(data, e))
 
 func slots_full() -> bool:
 	return effects.size() >= Rules.ARTIFACT_SLOTS
@@ -203,9 +215,11 @@ func choose_offer(data, replace = null) -> bool:
 	if offer_stage != Offer.CHOOSING or not (data in offer):
 		return false
 	if slots_full():
-		if replace == null or not (replace in effects) or not can_leave(replace):
+		if replace == null or not (replace in effects) or not _can_take(data, replace):
 			return false
 		effects.erase(replace)
+	elif not _can_take(data):
+		return false
 	_equip(data)
 	offer_stage = Offer.NONE
 	offer.clear()
