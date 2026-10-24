@@ -632,8 +632,8 @@
   "ru": "Мелочь в кармане"
  },
  "ARTIFACT_LOOSE_CHANGE_DESC": {
-  "en": "+ A quarter of your purse stays in your pocket\n+ A loss no longer takes everything",
-  "ru": "+ Четверть фишек остаётся в кармане\n+ Проигрыш больше не забирает всё"
+  "en": "+ A lost hand gives half of the stake back\n- Works once every 4 hands",
+  "ru": "+ Проигранная раздача возвращает половину ставки\n- Срабатывает раз в 4 раздачи"
  },
  "ARTIFACT_LOOSE_CHANGE_HINT": {
   "en": "Go broke twice",

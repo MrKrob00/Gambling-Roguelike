@@ -306,12 +306,15 @@ func _artifacts() -> void:
 	# wins: +100, then streak 2 pays +100 +20, then streak 3 pays +100 +30
 	check(run.chips == 500 + 100 + 120 + 130, "rabbit foot streak bonus, chips %d" % run.chips)
 
-	# Loose change keeps a quarter of the purse out of the stake.
+	# Loose change gives half of a lost stake back, once every few hands.
 	run = _run([&"loose_change"])
 	table = Table.new(run, 1)
-	_stack(table, [[10], [10], [9], [7]])
+	_stack(table, [[10], [10], [6], [7], [10]])
 	table.deal_all_in()
-	check(table.bet == 375 and run.chips == 125, "loose change stakes 375 of 500, bet %d chips %d" % [table.bet, run.chips])
+	check(table.bet == 500, "loose change stakes the whole purse, bet %d" % table.bet)
+	table.hit()
+	check(table.phase == Table.Phase.RESOLVED and run.chips == 250, "loose change returns half of a lost stake, chips %d" % run.chips)
+	check(_fx(run, &"loose_change").cooldown_left == 4, "loose change needs a few hands to recharge")
 
 	# Lucky penny: a push pays half a stake more.
 	run = _run([&"lucky_penny"])

@@ -56,7 +56,7 @@ Each cell is one artifact; an empty cell is room for the next one.
 |---|---|---|---|---|
 | Hand and cards | Card Sleeve (swap a card, 3 hands), Cracked Mirror (next card, 3 hands), Stacked Deck (bury the next card, 3 hands) | Marked Deck (hole card), Glass Eye (next card each hand), Gambler's Nerve (4+ cards) | Lucky Clover (undo a bust), Top Hat (ace), Second Wind (redeal), Sleeping Powder (dealer stands) | |
 | Payout | | Sleight of Hand (blackjack 2:1), Rabbit's Foot (streaks), Lucky Penny (pushes), Steady Hands (doubles), Pauper's Crown (small winning hands) | | Cursed Doll (+50% wins, pushes lose), Black Cat (19+ pay double, 17- only the stake) |
-| The stake | | Loose Change (keep a quarter) | | |
+| The stake | | Loose Change (half a lost stake back, every 4 hands) | | |
 | The debt | | Silver Chip (-10% due), Pawn Ticket (new debts -15%) | Hush Envelope (-25% now) | Collector's Ledger (-30% due, a hand sooner), Fat Purse (+50% loans, +75% debts) |
 | The deadline | | | Hourglass (+2 hands) | Collector's Ledger, Borrowed Time (+2 hands, smaller loans) |
 | Lives | | | Candle of Mercy (survive a death, the last loan again) | |
@@ -86,7 +86,7 @@ artifact that shortens the deadline for bigger payouts.
 | lucky_penny | passive | A push pays half a stake more | the first push |
 | gamblers_nerve | passive | Winning with 4+ cards pays +50% | win 12 hands |
 | rabbits_foot | passive | Wins in a streak of 2+ pay +10% per streak step | win 3 in a row |
-| loose_change | passive | A quarter of the purse stays out of the stake | die twice |
+| loose_change | passive | A lost hand gives half the stake back; works once every 4 hands | die twice |
 | pawn_ticket | passive | New debts are written 15% smaller | pay 4 debts |
 | fat_purse | cursed | New loans +50%, new debts +75% | hold 1500 chips |
 | collectors_ledger | cursed | The debt due is 30% smaller, the deadline a hand sooner | die to the collectors |
