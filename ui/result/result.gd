@@ -38,6 +38,30 @@ func _ready() -> void:
 		var caption := Label.new()
 		caption.text = a.title()
 		unlocks_box.add_child(caption)
+	_show_next_unlocks()
 	again_button.pressed.connect(func() -> void: Game.start_run(&"blackjack"))
 	menu_button.pressed.connect(func() -> void: Game.goto(Game.SCENE_MENU))
 	Audio.sfx(&"game/lose_sting")
+
+## The artifacts closest to opening, so there is always something to play for: the hint and how far along it is.
+func _show_next_unlocks() -> void:
+	var closed: Array = Catalog.for_game(&"blackjack").filter(func(a): return not Profile.is_unlocked(a))
+	if closed.is_empty():
+		return
+	closed.sort_custom(func(a, b) -> bool: return _progress(a) > _progress(b))
+	var lines: Array[String] = []
+	for a in closed.slice(0, 3):
+		var line: String = "%s" % a.unlock_hint()
+		if a.unlock_value > 1:
+			line += "  (%d / %d)" % [mini(Profile.stat(a.unlock_stat), a.unlock_value), a.unlock_value]
+		lines.append(line)
+	var label := Label.new()
+	label.text = tr("RESULT_NEXT_UNLOCKS") + "\n" + "\n".join(lines)
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.add_theme_color_override("font_color", Color(0.75, 0.7, 0.95))
+	var parent := unlocks_box.get_parent()
+	parent.add_child(label)
+	parent.move_child(label, unlocks_box.get_index() + 1)
+
+func _progress(a) -> float:
+	return float(Profile.stat(a.unlock_stat)) / maxf(1.0, float(a.unlock_value))

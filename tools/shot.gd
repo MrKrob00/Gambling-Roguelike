@@ -47,7 +47,7 @@ func _initialize() -> void:
 		var tiles := scene.get_node("%Grid").get_children()
 		tiles[0].button_pressed = true
 		tiles[0].pressed.emit()
-		tiles[1].pressed.emit()
+		tiles[int(OS.get_environment("TILE")) if OS.has_environment("TILE") else 1].pressed.emit()
 		await create_timer(0.2).timeout
 	if shot == "pickcheck":
 		await create_timer(0.8).timeout

@@ -199,6 +199,14 @@
   "en": "The hole card is ",
   "ru": "Закрытая карта: "
  },
+ "HINT_PROGRESS": {
+  "en": "Progress: %d / %d",
+  "ru": "Прогресс: %d / %d"
+ },
+ "RESULT_NEXT_UNLOCKS": {
+  "en": "Closest to opening:",
+  "ru": "Ближе всего к открытию:"
+ },
  "HINT_UNLOCK": {
   "en": "How to open: %s",
   "ru": "Как открыть: %s"

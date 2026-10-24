@@ -98,7 +98,10 @@ func show_locked(data) -> void:
 	_tag.text = tr(KindStyle.KIND_KEYS[data.kind])
 	_tag.add_theme_color_override("font_color", color)
 	_bar.color = Color(0.3, 0.3, 0.4)
-	_body.text = "[color=#%s]%s[/color]" % [KindStyle.COST.to_html(false), tr("HINT_UNLOCK") % data.unlock_hint()]
+	var text: String = tr("HINT_UNLOCK") % data.unlock_hint()
+	if data.unlock_value > 1:
+		text += "\n" + tr("HINT_PROGRESS") % [mini(Profile.stat(data.unlock_stat), data.unlock_value), data.unlock_value]
+	_body.text = "[color=#%s]%s[/color]" % [KindStyle.COST.to_html(false), text]
 	_foot.visible = false
 	visible = true
 
