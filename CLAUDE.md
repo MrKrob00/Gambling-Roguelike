@@ -189,6 +189,8 @@ integer. The 3D view renders at the window's real resolution.
   On touch the first tap on an artifact only shows its panel, the second acts (there is no hover); with a
   mouse the hover shows it and one click acts.
 
+- **The pocket** (`RunState.pocket`, `pocket_capacity()`, `pocket_put/take/swap`, `can_leave`): artifacts put away between hands. They do not work and do not tick, and nothing in the table sees them. Size is `Rules.POCKET_SIZE` + `pocket_bonus` (Deeper Pocket) + `modify_pocket_size` of the artifacts in hand (Smuggler's Coat +2, Clenched Fist -1, which also pays x1.5 on a win); every move is checked so the pocket never overflows (discarding the coat is refused while it would). The view shows wells in a column at the left of the felt (`world/pocket_well_3d.gd`): tap a full well to take it (or to pick the hand artifact to trade it for), an empty one to pick the artifact to put away; Cancel leaves the mode. Pocketed ids are excluded from offers.
+- **Credit** (`RunState.credit_owed`): chips borrowed by the Credit Line stay in the debt after a lost finger rewrites it, and are cleared when a payment is made.
 - A payment is due every
   `Rules.PAYMENT_EVERY` hands and each one is bigger. Failing to pay, or running out of chips, kills the
   run unless an effect's `prevent_death` saves it. Death does not touch the meta progress.

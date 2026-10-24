@@ -106,6 +106,10 @@ func modify_offer_size(size: int) -> int:
 func encore(_table, _used) -> void:
 	pass
 
+## How many artifacts the pocket holds (the size is passed through every artifact in hand).
+func modify_pocket_size(size: int) -> int:
+	return size
+
 ## How many hands an artifact needs to recharge (every artifact's own wait goes through here).
 func modify_cooldown(hands: int) -> int:
 	return hands

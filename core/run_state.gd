@@ -38,6 +38,12 @@ var alive: bool = true
 var lives: int = Rules.LIVES
 var artifacts: Array = []
 var effects: Array = []
+## Artifacts put away: they do not work and do not tick, but they keep their charges. Changed only between hands.
+var pocket: Array = []
+## Wells the Deeper Pocket added for good.
+var pocket_bonus: int = 0
+## Chips lent on credit since the last payment: a new life rewrites the debt but keeps them.
+var credit_owed: int = 0
 
 enum Offer { NONE, CHOOSING }
 ## CHOOSING: `offer` holds the options. Offers are free and come only with a closed loan.
@@ -145,6 +151,7 @@ func pay_off() -> bool:
 func borrow(amount: int) -> void:
 	add_chips(amount)
 	debt += amount
+	credit_owed += amount
 	debt_changed.emit(debt)
 	countdown_changed.emit(hands_to_payment, next_payment())
 
@@ -159,7 +166,7 @@ func add_chips(delta: int) -> void:
 
 ## Unlocked artifacts of this game that the player does not hold yet.
 func offer_pool() -> Array:
-	var held := effects.map(func(fx): return fx.data.id)
+	var held := (effects + pocket).map(func(fx): return fx.data.id)
 	return Profile.unlocked_for(game_id).filter(func(a): return not (a.id in held))
 
 func slots_full() -> bool:
@@ -193,7 +200,7 @@ func choose_offer(data, replace = null) -> bool:
 	if offer_stage != Offer.CHOOSING or not (data in offer):
 		return false
 	if slots_full():
-		if replace == null or not (replace in effects):
+		if replace == null or not (replace in effects) or not can_leave(replace):
 			return false
 		effects.erase(replace)
 	_equip(data)
@@ -202,6 +209,67 @@ func choose_offer(data, replace = null) -> bool:
 	artifacts_changed.emit()
 	offer_changed.emit()
 	return true
+
+# ---------------------------------------------------------------- the pocket
+
+## How many artifacts the pocket holds with the artifacts in hand.
+func pocket_capacity() -> int:
+	return _capacity(effects)
+
+func _capacity(held: Array) -> int:
+	var size := Rules.POCKET_SIZE + pocket_bonus
+	for fx in held:
+		size = fx.modify_pocket_size(size)
+	return clampi(size, 0, Rules.POCKET_MAX)
+
+func _pocket_fits(held: Array, stored: Array) -> bool:
+	return stored.size() <= _capacity(held)
+
+## True if `fx` can go from the hand into the pocket: a free well is left once it stops counting.
+func can_pocket_put(fx) -> bool:
+	if not (fx in effects) or not alive:
+		return false
+	var held := effects.filter(func(e) -> bool: return e != fx)
+	return _pocket_fits(held, pocket + [fx])
+
+func pocket_put(fx) -> bool:
+	if not can_pocket_put(fx):
+		return false
+	effects.erase(fx)
+	pocket.append(fx)
+	artifacts_changed.emit()
+	return true
+
+## True if `fx` can go from the pocket into the hand (the slots must have room, and the pocket must still hold the rest).
+func can_pocket_take(fx) -> bool:
+	if not (fx in pocket) or slots_full():
+		return false
+	return _pocket_fits(effects + [fx], pocket.filter(func(e) -> bool: return e != fx))
+
+func pocket_take(fx) -> bool:
+	if not can_pocket_take(fx):
+		return false
+	pocket.erase(fx)
+	effects.append(fx)
+	artifacts_changed.emit()
+	return true
+
+## Puts `inside` (from the pocket) in the hand in the place of `outside`, which goes into the pocket.
+func pocket_swap(inside, outside) -> bool:
+	if not (inside in pocket) or not (outside in effects):
+		return false
+	var held := effects.filter(func(e) -> bool: return e != outside) + [inside]
+	var stored := pocket.filter(func(e) -> bool: return e != inside) + [outside]
+	if not _pocket_fits(held, stored):
+		return false
+	effects = held
+	pocket = stored
+	artifacts_changed.emit()
+	return true
+
+## True if `fx` may leave the hand for good (discarded, replaced) without leaving the pocket overfull.
+func can_leave(fx) -> bool:
+	return _pocket_fits(effects.filter(func(e) -> bool: return e != fx), pocket)
 
 ## Takes every spent consumable out of the slots. Called after anything that can spend a charge.
 func retire_spent() -> void:
@@ -213,7 +281,7 @@ func retire_spent() -> void:
 	artifacts_changed.emit()
 
 func discard(effect) -> void:
-	if effect in effects:
+	if effect in effects and can_leave(effect):
 		effects.erase(effect)
 		artifacts_changed.emit()
 
@@ -261,6 +329,7 @@ func _pay() -> void:
 			fx.notify()
 	var loan := current_loan()
 	debt = current_debt()
+	credit_owed = 0
 	add_chips(loan)
 	hands_since_loan = 0
 	hands_to_payment = payment_every()
@@ -294,7 +363,7 @@ func _survives() -> bool:
 ## After losing a finger the house lends the current loan again, on top of what is left, and rewrites its debt.
 func _restart_loan() -> void:
 	add_chips(current_loan())
-	debt = current_debt()
+	debt = current_debt() + credit_owed
 	hands_to_payment = payment_every()
 	win_streak = 0
 	debt_changed.emit(debt)

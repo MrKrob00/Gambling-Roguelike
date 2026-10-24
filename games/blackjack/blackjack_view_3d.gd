@@ -18,6 +18,7 @@ const ChipStack := preload("res://world/chip_stack_3d.gd")
 const ChipRack := preload("res://world/chip_rack_3d.gd")
 const Plaque := preload("res://world/plaque_3d.gd")
 const Token := preload("res://world/artifact_token_3d.gd")
+const PocketWell := preload("res://world/pocket_well_3d.gd")
 const OfferCard := preload("res://world/offer_card_3d.gd")
 const Candles := preload("res://world/deadline_candles_3d.gd")
 const PlayerHand := preload("res://world/player_hand_3d.gd")
@@ -64,6 +65,9 @@ const LEDGER_POS := Vector3(1.1, TOP + 0.006, 0.12)
 const LEFT_HAND_POS := Vector3(-1.2, TOP + 0.11, 1.45)
 const ACTION_X: Array[float] = [-0.8, 0.0, 0.8]
 const DISCARD_X := -0.8
+## The pocket wells stand in a column at the left of the felt, one behind another.
+const POCKET_POS := Vector3(-1.5, TOP + 0.004, 0.2)
+const POCKET_STEP := 0.4
 const OFFER_Z := 0.2
 const OFFER_SPACING := 0.9
 ## The deadline candles stand on the far rail, in front of the dealer.
@@ -120,6 +124,10 @@ var _draft_cards: Array = []
 var _count_label: Label3D
 var _pending_pick
 var _discarding: bool = false
+## Pocket modes: stashing waits for a token of the hand to put away, swapping for one to trade with `_swap_with`.
+var _stashing: bool = false
+var _swap_with
+var _wells: Array = []
 var _ui_state: String = ""
 var _chips_text: int = 0
 var _ledger_started := false
@@ -300,6 +308,34 @@ func _rebuild_tokens() -> void:
 		_hand_rig.add_token(token, i, run.effects.size())
 		token.activated.connect(_on_token.bind(token))
 		_tokens.append(token)
+	_rebuild_wells()
+
+func _rebuild_wells() -> void:
+	for w in _wells:
+		if is_instance_valid(w):
+			w.queue_free()
+	_wells.clear()
+	_stashing = false
+	_swap_with = null
+	var count := maxi(run.pocket_capacity(), run.pocket.size())
+	for i in count:
+		var well := PocketWell.new()
+		add_child(well)
+		well.position = POCKET_POS + Vector3(0.0, 0.0, i * POCKET_STEP)
+		well.put(run.pocket[i] if i < run.pocket.size() else null)
+		well.activated.connect(_on_well.bind(well))
+		_wells.append(well)
+
+func _on_well(well) -> void:
+	if well.fx == null:
+		_stashing = true
+		_swap_with = null
+	elif run.can_pocket_take(well.fx):
+		run.pocket_take(well.fx)
+	else:
+		_swap_with = well.fx
+		_stashing = false
+	_refresh()
 
 func _build_overlay() -> void:
 	var layer := CanvasLayer.new()
@@ -832,7 +868,16 @@ func _is_artifact_valid(obj) -> bool:
 	return is_instance_valid(obj) and _is_artifact(obj)
 
 func _on_token(token) -> void:
-	if _discarding:
+	if _stashing:
+		_stashing = false
+		if not run.pocket_put(token.fx):
+			_speak(tr("POCKET_CANT"))
+	elif _swap_with != null:
+		var inside = _swap_with
+		_swap_with = null
+		if not run.pocket_swap(inside, token.fx):
+			_speak(tr("POCKET_CANT"))
+	elif _discarding:
 		_speak(tr("DISCARDED") % token.fx.data.title())
 		_discarding = false
 		run.discard(token.fx)
@@ -870,6 +915,8 @@ func _on_plaque(id: StringName) -> void:
 		&"cancel":
 			_discarding = false
 			_pending_pick = null
+			_stashing = false
+			_swap_with = null
 		&"discard": _discarding = true
 	_refresh()
 
@@ -956,13 +1003,14 @@ func _refresh() -> void:
 	var stage: int = run.offer_stage if betting else RunState.Offer.NONE
 	var picking := stage == RunState.Offer.CHOOSING
 	var replacing := picking and _pending_pick != null
-	var normal := betting and not picking and not _discarding
+	var pocketing := _stashing or _swap_with != null
+	var normal := betting and not picking and not _discarding and not pocketing
 	var show: Array = []
 	if normal:
 		show = [&"deal", &"pay_off"]
 		if not run.effects.is_empty():
 			show.append(&"discard")
-	elif _discarding or replacing:
+	elif _discarding or replacing or (pocketing and betting):
 		show = [&"cancel"]
 	elif picking:
 		show = [&"skip"]
@@ -986,13 +1034,17 @@ func _refresh() -> void:
 	_plaques[&"skip"].set_enabled(true)
 	_plaques[&"pay_off"].set_caption(tr("TABLE_PAY_OFF") % run.debt)
 	_plaques[&"pay_off"].set_enabled(table.can_pay_off())
-	var selecting := _discarding or replacing
+	var selecting := _discarding or replacing or pocketing
+	var ring_color := RED if (_discarding or replacing) else PALE
+	for w in _wells:
+		if is_instance_valid(w):
+			w.set_enabled(normal and (w.fx != null or not run.effects.is_empty()))
 	for t in _tokens:
 		if is_instance_valid(t):
 			t.refresh(table)
 			if selecting:
 				t.set_enabled(true)
-			t.show_ring(selecting, RED if selecting else KindStyle.NEUTRAL)
+			t.show_ring(selecting, ring_color if selecting else KindStyle.NEUTRAL)
 	_sync_offer_cards(picking)
 	for pick in _draft_cards:
 		if is_instance_valid(pick):
@@ -1021,7 +1073,7 @@ func _sync_offer_cards(show: bool) -> void:
 		_offer_cards.append(card)
 
 func _update_prompt(stage: int, replacing: bool) -> void:
-	var key := "%d|%s|%s" % [stage, replacing, _discarding]
+	var key := "%d|%s|%s|%s|%s" % [stage, replacing, _discarding, _stashing, _swap_with != null]
 	if key == _ui_state:
 		return
 	_ui_state = key
@@ -1029,5 +1081,9 @@ func _update_prompt(stage: int, replacing: bool) -> void:
 		_speak(tr("OFFER_REPLACE"))
 	elif _discarding:
 		_speak(tr("DISCARD_PICK"))
+	elif _stashing:
+		_speak(tr("POCKET_PUT"))
+	elif _swap_with != null:
+		_speak(tr("POCKET_SWAP"))
 	elif stage == RunState.Offer.CHOOSING:
 		_speak(tr("OFFER_FREE"))

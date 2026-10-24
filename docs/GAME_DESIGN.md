@@ -138,3 +138,7 @@ the same idea; a free one is room for the next artifact.
 | Offers (`modify_offer_size`) | Magpie | rerolling an offer; a guaranteed rare; selling a held artifact |
 | After a hand (`hand_ended`) | Sore Loser | momentum after a win; a reshuffle after a loss |
 | Unlock events | hands played / won, busts, deaths (all, by debt), chips peak, win streak, tricks, debts paid, blackjacks, pushes, wins with 10 or less, dealer busts, shoe shuffles, doubles, dealer blackjacks, Cracked Mirror uses | an early payoff; a fifth-finger run; surviving with fewer than ten chips |
+
+## The pocket
+
+Artifacts can be stored in the pocket (2 wells) between hands; stored ones do not work. Deeper Pocket (consumable, opens at 20 hands) adds a well for the run; Smuggler's Coat (passive, opens by using the Deeper Pocket) adds two while worn; Clenched Fist (cursed, opens after 5 hands in the Coat) takes one away and pays half as much again on a win.

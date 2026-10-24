@@ -1062,5 +1062,61 @@
  "ARTIFACT_ENCORE_HINT": {
   "en": "Use tricks 40 times",
   "ru": "Использовать приёмы 40 раз"
+ },
+ "ARTIFACT_DEEPER_POCKET_NAME": {
+  "en": "Deeper Pocket",
+  "ru": "Карман поглубже"
+ },
+ "ARTIFACT_DEEPER_POCKET_DESC": {
+  "en": "+ The pocket holds one more artifact for the rest of the run\n- Between hands only",
+  "ru": "+ В кармане помещается ещё один артефакт до конца забега\n- Только между раздачами"
+ },
+ "ARTIFACT_DEEPER_POCKET_HINT": {
+  "en": "Play 20 hands",
+  "ru": "Сыграть 20 раздач"
+ },
+ "ARTIFACT_SMUGGLERS_COAT_NAME": {
+  "en": "Smuggler's Coat",
+  "ru": "Контрабандное пальто"
+ },
+ "ARTIFACT_SMUGGLERS_COAT_DESC": {
+  "en": "+ The pocket holds two more artifacts while it is on",
+  "ru": "+ Пока пальто в руке, в кармане помещаются ещё два артефакта"
+ },
+ "ARTIFACT_SMUGGLERS_COAT_HINT": {
+  "en": "Use the Deeper Pocket",
+  "ru": "Использовать Карман поглубже"
+ },
+ "ARTIFACT_CLENCHED_FIST_NAME": {
+  "en": "Clenched Fist",
+  "ru": "Сжатый кулак"
+ },
+ "ARTIFACT_CLENCHED_FIST_DESC": {
+  "en": "+ A won hand pays half as much again\n- The pocket holds one artifact less",
+  "ru": "+ Выигрыш платит в полтора раза больше\n- В кармане на один артефакт меньше"
+ },
+ "ARTIFACT_CLENCHED_FIST_HINT": {
+  "en": "Play 5 hands in the Smuggler's Coat",
+  "ru": "Сыграть 5 раздач в Контрабандном пальто"
+ },
+ "REASON_POCKET_STITCHES": {
+  "en": "Sewed the pocket deeper",
+  "ru": "Карман углублён"
+ },
+ "REASON_CHEST_HANDS": {
+  "en": "Played %d hands in the Smuggler's Coat",
+  "ru": "Раздач в Контрабандном пальто: %d"
+ },
+ "POCKET_PUT": {
+  "en": "Pick an artifact to put in the pocket.",
+  "ru": "Выбери артефакт, чтобы убрать в карман."
+ },
+ "POCKET_SWAP": {
+  "en": "Pick an artifact to put away in its place.",
+  "ru": "Выбери артефакт, который уйдёт в карман вместо него."
+ },
+ "POCKET_CANT": {
+  "en": "The pocket would be too small.",
+  "ru": "Карман тогда станет мал."
  }
 }

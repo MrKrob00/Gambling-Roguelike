@@ -38,3 +38,8 @@ const LOW_WIN_TOTAL := 10
 
 ## Closing a debt and being left with fewer chips than this opens the Traitor's Chip.
 const NARROW_PAYOFF_CHIPS := 10
+
+## Artifacts that can be put away in the pocket (they do not work there) before artifacts change the size.
+const POCKET_SIZE := 2
+## The most wells the pocket shows.
+const POCKET_MAX := 6

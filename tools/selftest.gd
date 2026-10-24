@@ -69,7 +69,7 @@ func _load_everything(path: String) -> void:
 
 func _catalog() -> void:
 	var cat = root.get_node("Catalog")
-	check(cat.all().size() == 41, "catalog holds 41 artifacts, has %d" % cat.all().size())
+	check(cat.all().size() == 44, "catalog holds 44 artifacts, has %d" % cat.all().size())
 	var tr_ok := true
 	for a in cat.all():
 		for part in ["NAME", "DESC", "HINT"]:
@@ -285,6 +285,39 @@ func _artifacts() -> void:
 	check(table.count == -1, "the count after the deal is -1, got %d" % table.count)
 	table.stand()
 	check(table.count == -1, "a seven does not change the count, got %d" % table.count)
+
+	# Credit chips stay in the debt after a death.
+	run = _run([&"credit_line"])
+	run.chips = 0
+	run.borrow(100)
+	var owed: int = run.debt
+	run.chips = 0
+	run.hand_finished(0, true)
+	check(run.debt == run.current_debt() + 100 and owed == Rules.debt_for(0) + 100, "credit chips survive the loss of a finger, debt %d" % run.debt)
+
+	# The pocket: holds two, the coat widens it, the fist narrows it, nothing may overfill it.
+	run = _run([&"flat_one", &"flat_two"] if false else [&"pickpocket", &"hand_swap", &"clenched_fist"])
+	run.pocket_bonus = 0
+	check(run.pocket_capacity() == 1, "the clenched fist narrows the pocket to 1, got %d" % run.pocket_capacity())
+	var fist = _fx(run, &"clenched_fist")
+	var pick = _fx(run, &"pickpocket")
+	check(run.pocket_put(pick), "an artifact goes into the pocket")
+	check(not run.pocket_put(_fx(run, &"hand_swap")), "a full pocket takes no more")
+	check(run.can_leave(fist), "the fist may leave: the pocket only grows")
+	check(run.pocket_swap(pick, _fx(run, &"hand_swap")) == false or run.pocket.size() == 1, "a swap keeps the pocket within its size")
+	run = _run([&"pickpocket", &"hand_swap"])
+	run.pocket_put(_fx(run, &"pickpocket"))
+	check(run.pocket.size() == 1 and run.effects.size() == 1, "a pocketed artifact leaves the hand")
+	check(run.pocket_take(run.pocket[0]) and run.pocket.is_empty(), "and comes back")
+	run = _run([&"smugglers_coat", &"pickpocket", &"hand_swap"])
+	check(run.pocket_capacity() == 4, "the coat widens the pocket to 4, got %d" % run.pocket_capacity())
+	run.pocket_put(_fx(run, &"pickpocket"))
+	run.pocket_put(_fx(run, &"hand_swap"))
+	check(not run.can_pocket_put(_fx(run, &"smugglers_coat")) or run.pocket_capacity() >= 3, "the coat can go in only if the pocket still holds the rest")
+	check(not run.can_leave(_fx(run, &"smugglers_coat")) or run.pocket.size() <= 2, "the coat cannot leave while the pocket would overflow")
+	run = _run([&"pickpocket", &"hand_swap"])
+	run.pocket_bonus = 1
+	check(run.pocket_capacity() == 3, "the deeper pocket adds one, got %d" % run.pocket_capacity())
 
 	# Pickpocket takes the dealer's open card, hand swap changes the hands.
 	run = _run([&"pickpocket"])
@@ -712,7 +745,7 @@ func _unlocks() -> void:
 	check(not profile.is_unlocked(_artifact(&"credit_line")), "the credit line starts locked")
 	events.stat_added.emit(Stat.DEALER_BLACKJACKS, 1)
 	check(profile.is_unlocked(_artifact(&"credit_line")), "a dealer's blackjack opens the credit line")
-	for pair in [[&"rematch", Stat.TWENTY_ONE_PUSHES, 1], [&"card_fan", Stat.LUCKY_SEVENS, 1], [&"traitors_chip", Stat.NARROW_PAYOFFS, 1], [&"pickpocket", Stat.QUICK_PAYOFFS, 1]]:
+	for pair in [[&"rematch", Stat.TWENTY_ONE_PUSHES, 1], [&"card_fan", Stat.LUCKY_SEVENS, 1], [&"traitors_chip", Stat.NARROW_PAYOFFS, 1], [&"pickpocket", Stat.QUICK_PAYOFFS, 1], [&"smugglers_coat", Stat.POCKET_STITCHES, 1], [&"clenched_fist", Stat.CHEST_HANDS, 5]]:
 		check(not profile.is_unlocked(_artifact(pair[0])), "%s starts locked" % pair[0])
 		events.stat_added.emit(pair[1], pair[2])
 		check(profile.is_unlocked(_artifact(pair[0])), "%s opens on its event" % pair[0])
