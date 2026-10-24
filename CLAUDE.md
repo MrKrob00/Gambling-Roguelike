@@ -95,7 +95,7 @@ integer. The 3D view renders at the window's real resolution.
   every press: `BlackjackView3D._act_on` carries it over the felt to the object, taps it and activates the object at
   contact, input is ignored while it reaches. Each death takes a finger of this hand (`set_lives`, `Rules.LIVES` = 5), in one of four scenes
   (`world/finger_cut_3d.gd`, particles plus two CC0 models): the skeleton bites, an enforcer's arm chops it with a cleaver (a CC0 model), the
-  finger trembles harder and harder, the hand flushes red and it bursts by itself (no prop, nothing grows), a revolver (a CC0 model) held in a collector's own raised arm shoots it off (`Enforcers.begin_gun` steps him up and aims his arm bones; the gun sits in his palm, a good way short of the finger). Only the bite raises the hand to the camera; for the other three the hand lies flat on
+  finger trembles harder and harder, the hand flushes red and it bursts by itself (no prop, nothing grows), a revolver (a CC0 model) held in the right-hand collector's own raised arm shoots it off (`Enforcers.begin_gun`: his body stays where it is beside the player, the spine bows and a two-bone reach aims the arm; the gun sits in his palm, a good way short of the finger). Only the bite raises the hand to the camera; for the other three the hand lies flat on
   the table and waits. The collectors' deaths (debt) get the cleaver or the gun, the dealer's (broke) the teeth or
   the burst. The scene calls back at the instant of impact and talks to the view only through signals. The buttons sink into the felt while a finger is lost (`_lose_finger`). **Blood stays**: each hit lays a big splat and 7 to 11 random drops on the felt (`FingerCut._stain`, a procedural splat texture, quad per stain, at most `MAX_STAINS` = 40, each one a draw call) until the table is gone. `FingerCut.warm_up` draws every prop, splat texture and a light once, tiny, when the table opens, so the first lost finger does not stall (compile the shader before it is needed).
 - **A collider that sits in front of another pickable eats its taps**; `pickcheck` catches an overlap.
@@ -161,8 +161,8 @@ integer. The 3D view renders at the window's real resolution.
   `prevent_death` saves it. **A death costs a life** (`RunState.lives`, `life_lost` signal): the house lends the current
   loan again and the run goes on; the fifth death ends it (`died`).
 - The purse is shown as chip columns standing on a rack at the near rim, one per denomination (`world/chip_rack_3d.gd`), display only.
-- The debt is physical too: two identical enforcers (a faceless black-suited CC0 base mesh, arms hung down by bone aiming in skeleton space, breathing) stand behind the player's shoulders at the edges of the view. **A Skeleton3D bone pose is the whole local transform, not a delta on the rest**; they lean in as the
-  deadline nears (`world/enforcers_3d.gd`); on the last hand the right-hand one steps up and raps three times on the felt with his own arm (`Enforcers.knock`, the same two-bone reach that holds the gun).
+- The debt is physical too: two identical enforcers (a faceless black-suited CC0 base mesh, arms hung down by bone aiming in skeleton space, breathing) stand right and left of the player, level with his seat (mostly out of frame, only the reaching arm comes into view). **The collectors never walk; only the arm and the bow of the spine move.** **A Skeleton3D bone pose is the whole local transform, not a delta on the rest**; they lean in as the
+  deadline nears (`world/enforcers_3d.gd`); on the last hand the right-hand one steps up and raps three times on the felt with his own arm, first finger out (`Enforcers.knock`, the same two-bone reach that holds the gun).
 - The deadline is physical: `world/deadline_candles_3d.gd` burns one candle per hand toward the payment, the
   dealer's rim light reddens and the vignette darkens as it nears, the last hand has a heartbeat, and the
   payment is three knocks.
@@ -243,8 +243,8 @@ $G --headless --path /tmp/run --script res://tools/selftest.gd
 
 - After changing a hook signature, grep every effect script that overrides it.
 - When behaviour changes, update this file and the matching page in `docs/` in the same commit.
-- `tools/generate_sfx.py` and `tools/generate_cards.py` regenerate procedural assets; edit the script, not
-  the output.
+- `tools/generate_sfx.py`, `tools/generate_cards.py` and `tools/generate_gloves.py` (the leather gloves, painted in the hands' UV layout read by `tools/dump_hand_uv.gd`) regenerate procedural assets; edit the script, not
+  the output. **A material's emission colour is added to its emission texture**: keep it black when a texture carries the glow.
 
 ## 5. Style and conventions
 

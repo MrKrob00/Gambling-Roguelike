@@ -52,9 +52,10 @@ const RAIL_Z := 1.27
 const RAIL_TOP := TOP + 0.04
 const ACTION_Z := 0.96
 ## Early repayment sits at the right end of the action row, away from the deal button.
-const ENFORCERS_POS := Vector3(0.0, 0.0, 0.8)
+## Beside the player, level with his seat (the camera is at z 2.25), not at the table.
+const ENFORCERS_POS := Vector3(0.0, 0.0, 1.7)
 ## Where the collector knocks before a payment.
-const HAND_POS := Vector3(1.05, TOP + 0.04, 0.3)
+const HAND_POS := Vector3(1.45, TOP + 0.04, 0.95)
 const PAY_OFF_X := 0.8
 ## The purse is inlaid in the felt at the right of the bet circle.
 const LEDGER_POS := Vector3(1.1, TOP + 0.006, 0.12)

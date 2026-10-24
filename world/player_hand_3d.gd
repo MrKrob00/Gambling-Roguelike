@@ -5,13 +5,15 @@ extends Node3D
 
 const Rules := preload("res://core/rules.gd")
 const HAND_SCENE: PackedScene = preload("res://world/hands/hand_r.tscn")
-const GLOVE := Color(0.4, 0.27, 0.22)
+## The glove texture (tools/generate_gloves.py) is lit by its own emission as well, so the hand is not black in the dark room.
+const GLOVE_TEXTURE: Texture2D = preload("res://assets/textures/glove_r.png")
 const HAND_SCALE := 3.5
 ## The felt is at y 1.03; the hand rests a little above it, at the right of the near edge.
 const REST_POS := Vector3(1.2, 1.14, 1.45)
 const PRESENT_POS := Vector3(0.5, 1.7, 1.3)
 ## For the scenes that come to the hand (cleaver, burst, gun) it lies flat on the table, in the open, and waits.
-const LAY_POS := Vector3(0.3, 1.14, 0.95)
+## On the right, near the collector who holds the gun.
+const LAY_POS := Vector3(1.05, 1.14, 0.95)
 const HOVER := 0.3
 const REACH_TIME := 0.2
 const DIP_TIME := 0.07
@@ -38,11 +40,13 @@ func _ready() -> void:
 	_anim.play("idle")
 	var glove := StandardMaterial3D.new()
 	_glove = glove
-	glove.albedo_color = GLOVE
+	glove.albedo_texture = GLOVE_TEXTURE
+	glove.emission_texture = GLOVE_TEXTURE
 	glove.roughness = 0.55
 	glove.emission_enabled = true
-	glove.emission = GLOVE
-	glove.emission_energy_multiplier = 0.6
+	# The emission colour is added to the texture's: black leaves just the texture.
+	glove.emission = Color.BLACK
+	glove.emission_energy_multiplier = 0.55
 	for m in model.find_children("*", "MeshInstance3D", true, false):
 		m.material_override = glove
 		m.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
@@ -136,7 +140,7 @@ func strain_finger(lives_after: int, amount: float) -> void:
 	if amount < 0.0:
 		_strain_base.clear()
 	var glow := clampf(amount, 0.0, 1.0)
-	_glove.emission = GLOVE.lerp(Color(0.95, 0.04, 0.03), glow * (0.7 + 0.3 * sin(Time.get_ticks_msec() * 0.03)))
+	_glove.emission = Color(0.95, 0.04, 0.03) * glow * (0.7 + 0.3 * sin(Time.get_ticks_msec() * 0.03))
 
 ## Where the finger that the next loss takes is, in the world.
 func finger_tip(lives_after: int) -> Vector3:

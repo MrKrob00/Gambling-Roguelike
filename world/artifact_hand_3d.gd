@@ -4,7 +4,8 @@ extends Node3D
 ## fingers (a coin roll) to show its emblem; the others stay put. Poses live in `hands/hand_l.tscn` (AnimationPlayer).
 
 const HAND_SCENE: PackedScene = preload("res://world/hands/hand_l.tscn")
-const GLOVE := Color(0.4, 0.27, 0.22)
+## The glove texture (tools/generate_gloves.py) is lit by its own emission as well, so the hand is not black in the dark room.
+const GLOVE_TEXTURE: Texture2D = preload("res://assets/textures/glove_l.png")
 ## The room is scaled up (a chip is 20 cm across), so the hand is too.
 const HAND_SCALE := 3.5
 const COIN_SCALE := 0.45
@@ -34,11 +35,13 @@ func _ready() -> void:
 	_anim = model.get_node("Anim")
 	_anim.play("idle")
 	var glove := StandardMaterial3D.new()
-	glove.albedo_color = GLOVE
+	glove.albedo_texture = GLOVE_TEXTURE
+	glove.emission_texture = GLOVE_TEXTURE
 	glove.roughness = 0.55
 	glove.emission_enabled = true
-	glove.emission = GLOVE
-	glove.emission_energy_multiplier = 0.6
+	# The emission colour is added to the texture's: black leaves just the texture.
+	glove.emission = Color.BLACK
+	glove.emission_energy_multiplier = 0.55
 	for m in model.find_children("*", "MeshInstance3D", true, false):
 		m.material_override = glove
 		m.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF

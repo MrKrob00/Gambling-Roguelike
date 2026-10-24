@@ -7,8 +7,8 @@ extends Node3D
 const MODEL: PackedScene = preload("res://assets/models/enforcers/male_base_mesh.glb")
 const SUIT := Color(0.1, 0.1, 0.14)
 ## The mesh is human-sized and the room is oversized (a chip is 20 cm).
-const FIGURE_SCALE := 1.1
-const FAR_X := 2.4
+const FIGURE_SCALE := 1.5
+const FAR_X := 2.2
 const NEAR_X := 2.0
 ## They face the table, turned a little toward the player.
 const TURN := 0.12
@@ -17,8 +17,8 @@ const BREATH := 0.012
 const UPPER_DIR := Vector3(0.1, -1.0, 0.0)
 const FORE_DIR := Vector3(0.08, -0.85, 0.5)
 const STEP_TIME := 0.55
-## The right-hand collector stays at least this far out (the table's edge).
-const STAND_MIN_X := 1.95
+## Which way a finger joint bends (about the bone's side axis); the fist is closed with this sign.
+const CURL_DIR := 1.0
 ## The fist rises this far over the felt between knocks.
 const KNOCK_LIFT := 0.45
 ## How much of the straight reach the gunman uses: the rest is a bent elbow.
@@ -36,7 +36,8 @@ var _hold := 0.0
 ## Bone lengths of the arm in metres: upper arm, forearm.
 var _upper_len := 0.0
 var _fore_len := 0.0
-var _stand := Vector3.ZERO
+var _lean := 0.0
+var _pointing := false
 var _arm := "L"
 var _step: float = 0.0
 ## Barrel lift in radians, for the recoil.
@@ -119,15 +120,16 @@ func _point_arm(skeleton: Skeleton3D, arm: String, upper_dir: Vector3, fore_dir:
 
 # ---------------------------------------------------------------- the gunman
 
-## One collector steps up beside the player and raises his arm with `gun` in his hand, its barrel along the arm
-## (`grip` is the point of the gun node held in the palm, `reach` the grip to muzzle distance), `gap` from `tip`.
+## The right-hand collector draws the gun from beside the player: his body stays where it is, he leans over and his arm
+## reaches out with `gun` in the palm, its barrel along the arm (`grip` is the point of the gun node held in the palm,
+## `reach` the grip to muzzle distance), `gap` short of `tip`.
 func begin_gun(tip: Vector3, gun: Node3D, grip: Vector3, reach: float, gap: float) -> void:
-	_begin(tip, gun, grip, gap + reach, Vector3(0.9, 0.0, 0.5))
+	_begin(tip, gun, grip, gap + reach, false)
 
-## The right-hand collector raps three times on the felt at `spot`, the same arm that holds the gun.
+## The same arm raps on the felt at `spot`, with the first finger out and the rest curled.
 func knock(spot: Vector3, taps: int, on_tap: Callable) -> void:
 	var raised := spot + Vector3(0.0, KNOCK_LIFT, 0.0)
-	_begin(raised, null, Vector3.ZERO, 0.05, Vector3(1.0, 0.0, 0.3))
+	_begin(raised, null, Vector3.ZERO, 0.02, true)
 	await get_tree().create_timer(STEP_TIME + 0.25).timeout
 	for i in taps:
 		var fall := create_tween()
@@ -139,12 +141,14 @@ func knock(spot: Vector3, taps: int, on_tap: Callable) -> void:
 		await get_tree().create_timer(0.3).timeout
 	await end_gun()
 
-## He steps up on the right of the target and raises his arm: the hand ends `hold` short of it, the elbow bent.
-func _begin(tip: Vector3, gun: Node3D, grip: Vector3, hold: float, from: Vector3) -> void:
+## Raises the arm toward `tip`, the hand ending `hold` short of it. The lean (a bow of the spine) is how far he has to
+## stoop for the elbow to stay bent: found once, here.
+func _begin(tip: Vector3, gun: Node3D, grip: Vector3, hold: float, pointing: bool) -> void:
 	_gun = gun
 	_gun_grip = grip
 	_gun_tip = tip
 	_hold = hold
+	_pointing = pointing
 	_gunner = _figures[1]
 	var skeleton: Skeleton3D = _gunner.skeleton
 	var upper := skeleton.find_bone("upper_arm.L")
@@ -152,24 +156,17 @@ func _begin(tip: Vector3, gun: Node3D, grip: Vector3, hold: float, from: Vector3
 	var hand := skeleton.find_bone("hand.L")
 	_upper_len = (skeleton.get_bone_global_rest(fore).origin - skeleton.get_bone_global_rest(upper).origin).length() * FIGURE_SCALE
 	_fore_len = (skeleton.get_bone_global_rest(hand).origin - skeleton.get_bone_global_rest(fore).origin).length() * FIGURE_SCALE
-	# Find where he stands, so that the elbow stays bent and the hand reaches the grip.
-	var back := from.normalized()
-	var distance := 1.4
-	# A low target (the felt) is reached by crouching: the feet sink under the black floor.
-	var drop := 0.0
-	var step: Node3D = _gunner.step
-	for i in 6:
-		_stand = Vector3(tip.x, -drop, tip.z) + back * distance
-		# He stays beside the table, never over its felt.
-		_stand.x = maxf(_stand.x, STAND_MIN_X)
-		_place(step, _stand)
+	_arm = "L"
+	_lean = 0.0
+	for i in 14:
+		var angle := i * 0.1
+		_apply_lean(skeleton, angle)
+		_lean = angle
 		var shoulder := _shoulder_world(skeleton, "L")
 		var aim := (tip - shoulder).normalized()
-		var hand_at := tip - aim * _hold
-		var reach := _upper_len + _fore_len
-		drop = maxf(0.0, shoulder.y + drop - (tip.y + 0.55 * reach))
-		distance = maxf(0.6, distance - (shoulder.distance_to(hand_at) - reach * ELBOW_BEND) * 0.8)
-	_arm = "L"
+		if shoulder.distance_to(tip - aim * hold) <= (_upper_len + _fore_len) * ELBOW_BEND:
+			break
+	_apply_lean(skeleton, 0.0)
 	_step = 0.0
 	var tween := create_tween()
 	tween.tween_property(self, "_step", 1.0, STEP_TIME).set_trans(Tween.TRANS_SINE)
@@ -182,25 +179,36 @@ func end_gun() -> void:
 	_gun = null
 	kick = 0.0
 	for f in _figures:
+		_apply_lean(f.skeleton, 0.0)
 		_rest_arms(f)
-		f.step.position = Vector3.ZERO
-		f.step.rotation = Vector3.ZERO
+		_curl_hand(f.skeleton, "L", 0.0)
 
-func _place(step: Node3D, world_pos: Vector3) -> void:
-	step.global_position = world_pos
-	var to_tip := _gun_tip - world_pos
-	step.global_rotation = Vector3(0.0, atan2(-to_tip.x, -to_tip.z), 0.0)
+## Bows the spine toward the table (a pitch about the figure's own side axis, shared by three bones).
+func _apply_lean(skeleton: Skeleton3D, angle: float) -> void:
+	for bone_name in ["spine", "spine.001", "spine.002"]:
+		var bone := skeleton.find_bone(bone_name)
+		var base := skeleton.get_bone_rest(bone).basis.get_rotation_quaternion()
+		skeleton.set_bone_pose_rotation(bone, base * Quaternion(Vector3.RIGHT, angle / 3.0))
+
+## Curls the three fingers after the first one, so only the first finger knocks.
+func _curl_hand(skeleton: Skeleton3D, arm: String, amount: float) -> void:
+	for finger in ["middle", "ring", "pinky"]:
+		for joint in ["01", "02", "03"]:
+			var bone := skeleton.find_bone("f_%s.%s.%s" % [finger, joint, arm])
+			if bone < 0:
+				continue
+			var base := skeleton.get_bone_rest(bone).basis.get_rotation_quaternion()
+			skeleton.set_bone_pose_rotation(bone, base * Quaternion(Vector3.RIGHT, CURL_DIR * amount * 1.3))
 
 func _shoulder_world(skeleton: Skeleton3D, arm: String) -> Vector3:
 	return skeleton.global_transform * skeleton.get_bone_global_pose(skeleton.find_bone("upper_arm." + arm)).origin
 
 func _pose_gunner() -> void:
-	var step: Node3D = _gunner.step
 	var skeleton: Skeleton3D = _gunner.skeleton
-	var body: Node3D = _gunner.body
-	var home: Vector3 = body.global_position
 	var t := _step
-	_place(step, home.lerp(_stand, t))
+	_apply_lean(skeleton, _lean * t)
+	if _pointing:
+		_curl_hand(skeleton, _arm, t)
 	var shoulder := _shoulder_world(skeleton, _arm)
 	var aim_world := (_gun_tip - shoulder).normalized()
 	var hand_at := _gun_tip - aim_world * _hold
@@ -210,7 +218,8 @@ func _pose_gunner() -> void:
 	var along := to_hand.normalized()
 	var a := (span * span + _upper_len * _upper_len - _fore_len * _fore_len) / (2.0 * span)
 	var h := sqrt(maxf(_upper_len * _upper_len - a * a, 0.0))
-	var outward := shoulder - step.global_position
+	var body: Node3D = _gunner.body
+	var outward := shoulder - body.global_position
 	outward.y = 0.0
 	var pole := Vector3.DOWN + outward.normalized() * 0.5
 	pole = (pole - along * pole.dot(along)).normalized()
