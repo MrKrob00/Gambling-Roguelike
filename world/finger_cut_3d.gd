@@ -36,11 +36,40 @@ const STEEL := Color(0.72, 0.74, 0.8)
 var dealer: Node3D
 ## The collectors; one fires the gun.
 var enforcers: Node3D
-## Scales the finger that is about to be lost (1.0 = normal); set by the view for each scene.
 var _stains: Array = []
 var _splats: Array = []
 
-var swell: Callable = func(_amount: float) -> void: pass
+## Makes the finger that is about to be lost tremble and the hand flush (0..1, negative = back to normal); set by the view.
+var strain: Callable = func(_amount: float) -> void: pass
+
+## Draws everything the scenes use once, tiny and in front of the camera, so the first lost finger does not stall on
+## compiling shaders, generating the splat textures or adding a light. Call it a moment after the table opens.
+func warm_up(camera: Camera3D) -> void:
+	var holder := Node3D.new()
+	add_child(holder)
+	holder.global_position = camera.global_position + (-camera.global_transform.basis.z) * 2.0
+	holder.scale = Vector3.ONE * 0.02
+	var cleaver: Node3D = CLEAVER.instantiate()
+	for m in cleaver.find_children("*", "MeshInstance3D", true, false):
+		m.material_override = _cleaver_material()
+	holder.add_child(cleaver)
+	var revolver := MeshInstance3D.new()
+	revolver.mesh = REVOLVER
+	revolver.material_override = _revolver_material()
+	holder.add_child(revolver)
+	for i in SPLAT_VARIANTS:
+		var quad := MeshInstance3D.new()
+		quad.mesh = QuadMesh.new()
+		quad.material_override = _splat_material(i)
+		holder.add_child(quad)
+	_box(holder, Vector3.ONE, Vector3.ZERO, _material(BLOOD, 0.4))
+	_sphere(holder, 0.5, Vector3.ZERO, _material(Color(1.0, 0.9, 0.6), 1.0, 0.0, Color(1.0, 0.85, 0.5), 6.0))
+	var light := OmniLight3D.new()
+	light.light_energy = 0.01
+	holder.add_child(light)
+	_burst(holder.global_position, BLOOD, 1, 0.01, 0.1, Vector3.ZERO, 0.3)
+	await _wait(0.4)
+	holder.queue_free()
 
 func play(kind: int, tip: Vector3, on_hit: Callable) -> void:
 	match kind:
@@ -133,16 +162,17 @@ func _cleaver_material() -> StandardMaterial3D:
 	mat.emission_energy_multiplier = 0.35
 	return mat
 
-## The finger itself swells, throbbing, until it bursts. No props: the hand does it (`swell` scales the finger).
+## The finger trembles harder and harder, the hand burns red, a heartbeat quickens, and it bursts. No props, no growing.
 func _burst_finger(tip: Vector3, on_hit: Callable) -> void:
-	for i in 16:
-		var amount := 1.0 + i * 0.07
-		swell.call(amount)
-		if i % 4 == 0:
-			Audio.sfx(&"game/heartbeat", 1.0 + i * 0.04, -6.0)
-		camera_shake.emit(0.004 * i, 0.12)
-		await _wait(0.07)
-	swell.call(1.0)
+	var steps := 20
+	for i in steps:
+		var amount := float(i) / (steps - 1)
+		strain.call(amount)
+		if i % 5 == 0:
+			Audio.sfx(&"game/heartbeat", 1.0 + amount * 0.5, -6.0)
+		camera_shake.emit(0.003 + 0.006 * amount, 0.1)
+		await _wait(0.06)
+	strain.call(-1.0)
 	_boom(tip)
 	_hit(tip, on_hit, &"game/explosion", 0.0)
 	await _wait(1.0)

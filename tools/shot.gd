@@ -109,8 +109,8 @@ func _initialize() -> void:
 	if shot == "table3d" and OS.has_environment("URGENT"):
 		scene._enforcers.set_urgency(1.0)
 		if OS.get_environment("URGENT") == "hand":
-			scene._warning_hand.knock(3, scene._on_finger_tap)
-			await create_timer(0.62).timeout
+			scene._enforcers.knock(scene.HAND_POS, 3, scene._on_finger_tap)
+			await create_timer(1.1).timeout
 		else:
 			await create_timer(1.2).timeout
 	if shot == "table3d" and OS.has_environment("TOAST"):

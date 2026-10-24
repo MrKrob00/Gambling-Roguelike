@@ -23,6 +23,7 @@ var _anim: AnimationPlayer
 var _tween: Tween
 var _skeleton: Skeleton3D
 var _gen: int = 0
+var _strain_base: Dictionary = {}
 var _glove: StandardMaterial3D
 
 func _ready() -> void:
@@ -116,13 +117,26 @@ func lay_for_cut() -> void:
 	if gen != _gen:
 		return
 
-## Swells the finger the next loss takes (1.0 = normal) and flushes the hand red with it.
-func swell_finger(lives_after: int, amount: float) -> void:
+## The finger the next loss takes strains: it trembles harder and the hand flushes red, `amount` 0..1 (no growing; the
+## size never changes). A negative amount puts everything back.
+func strain_finger(lives_after: int, amount: float) -> void:
 	var finger: String = CUT_ORDER[clampi(Rules.LIVES - lives_after - 1, 0, CUT_ORDER.size() - 1)]
-	var bone := _skeleton.find_bone("%s_Proximal_R" % finger)
-	if bone >= 0:
-		_skeleton.set_bone_pose_scale(bone, Vector3.ONE * amount)
-	_glove.emission = GLOVE.lerp(Color(0.9, 0.05, 0.05), clampf((amount - 1.0) / 0.9, 0.0, 1.0))
+	for seg in ["Proximal", "Intermediate", "Distal"]:
+		var bone := _skeleton.find_bone("%s_%s_R" % [finger, seg])
+		if bone < 0:
+			continue
+		if not _strain_base.has(bone):
+			_strain_base[bone] = _skeleton.get_bone_pose_rotation(bone)
+		var base: Quaternion = _strain_base[bone]
+		if amount < 0.0:
+			_skeleton.set_bone_pose_rotation(bone, base)
+			continue
+		var axis := Vector3(randf_range(-1.0, 1.0), randf_range(-1.0, 1.0), randf_range(-1.0, 1.0)).normalized()
+		_skeleton.set_bone_pose_rotation(bone, base * Quaternion(axis, amount * 0.22 * randf()))
+	if amount < 0.0:
+		_strain_base.clear()
+	var glow := clampf(amount, 0.0, 1.0)
+	_glove.emission = GLOVE.lerp(Color(0.95, 0.04, 0.03), glow * (0.7 + 0.3 * sin(Time.get_ticks_msec() * 0.03)))
 
 ## Where the finger that the next loss takes is, in the world.
 func finger_tip(lives_after: int) -> Vector3:
