@@ -443,7 +443,7 @@ func _payments_and_death() -> void:
 	run.life_lost.connect(func(_left: int, r: StringName) -> void: reason.append(r))
 	_push_hands(table, Rules.PAYMENT_EVERY, 10)
 	check(reason == [&"debt"] and run.alive and run.lives == 4, "an unpaid debt costs a finger, got %s" % str(reason))
-	check(run.chips == 150 and run.debt == 250 and run.hands_to_payment == Rules.PAYMENT_EVERY, "the house lends the loan again, chips %d" % run.chips)
+	check(run.chips == 60 + 150 and run.debt == 250 and run.hands_to_payment == Rules.PAYMENT_EVERY, "the house lends the loan again on top of what is left, chips %d" % run.chips)
 	for i in 4:
 		run.chips = 0
 		run._die(&"debt")
@@ -460,6 +460,22 @@ func _payments_and_death() -> void:
 	table.deal()
 	table.hit()
 	check(reason == [&"broke"], "out of chips costs a finger, got %s" % str(reason))
+
+	# A lost hand costs a finger only when less than the loan is left; the loan then comes on top of what is left.
+	run = _run([&"loose_change"])
+	table = Table.new(run, 1)
+	run.chips = 1000
+	_stack(table, [[10], [10], [6], [7], [10]])
+	table.deal_all_in()
+	table.hit()
+	check(run.lives == Rules.LIVES and run.chips == 500, "a loss that leaves more than the loan costs no finger, lives %d chips %d" % [run.lives, run.chips])
+	run = _run([&"loose_change"])
+	table = Table.new(run, 1)
+	run.chips = 100
+	_stack(table, [[10], [10], [6], [7], [10]])
+	table.deal_all_in()
+	table.hit()
+	check(run.lives == Rules.LIVES - 1 and run.chips == 50 + 150, "a loss that leaves less than the loan costs a finger and the loan is added, lives %d chips %d" % [run.lives, run.chips])
 
 	# Candle of mercy forgives one payment.
 	run = _run([&"candle_of_mercy"])

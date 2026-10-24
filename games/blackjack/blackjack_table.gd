@@ -301,7 +301,7 @@ func _settle() -> void:
 	bet = 0
 	_set_phase(Phase.RESOLVED)
 	hand_resolved.emit(outcome, settled_bet, payout)
-	run.hand_finished(bet)
+	run.hand_finished(bet, outcome == Outcome.LOSE or outcome == Outcome.BUST)
 
 func _record(outcome: int) -> void:
 	var won := outcome == Outcome.WIN or outcome == Outcome.BLACKJACK

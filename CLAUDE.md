@@ -158,9 +158,10 @@ integer. The 3D view renders at the window's real resolution.
   (`BlackjackTable.deal_all_in`, the one door the view uses; there are no bet buttons). The debt falls due after
   `PAYMENT_EVERY` hands and is taken from the purse (`next_payment()`, artifacts may shrink it);
   `pay_off()` pays it early. A paid debt hands out the next loan's chips, writes the next debt and opens a free
-  artifact offer (`loan_closed` signal). Not enough chips at the deadline, or an empty purse, is a death unless
-  `prevent_death` saves it. **A death costs a life** (`RunState.lives`, `life_lost` signal): the house lends the current
-  loan again and the run goes on; the fifth death ends it (`died`).
+  artifact offer (`loan_closed` signal). Not enough chips at the deadline is a death unless `prevent_death` saves it, and so is a **lost hand that leaves
+  less than the loan** (`hand_finished(bet, lost)`): if more than the loan is left (an artifact gave chips back) no finger is taken.
+  **A death costs a life** (`RunState.lives`, `life_lost` signal): the house lends the current loan again, **added to what is left**,
+  and the run goes on; the fifth death ends it (`died`).
 - The purse is shown as chip columns standing on a rack at the near rim, one per denomination (`world/chip_rack_3d.gd`), display only.
 - The debt is physical too: two identical enforcers (a faceless black-suited CC0 base mesh, arms hung down by bone aiming in skeleton space, breathing) stand right and left of the player, level with his seat (mostly out of frame, only the reaching arm comes into view). **The collectors never walk; only the arm and the bow of the spine move.** **They are not drawn or animated while idle** (`_show_gunner`): skinned figures that are mostly out of frame cost a skeleton update and draw calls for nothing; the left-hand one appears for the gun, the right-hand one for the knocks. **A Skeleton3D bone pose is the whole local transform, not a delta on the rest**; they lean in as the
   deadline nears (`world/enforcers_3d.gd`); on the last hand the right-hand one steps up and raps three times on the felt with his own arm, first finger out (`Enforcers.knock`, the same two-bone reach that holds the gun).

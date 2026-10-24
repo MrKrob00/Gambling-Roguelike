@@ -189,12 +189,13 @@ func announce() -> void:
 	countdown_changed.emit(hands_to_payment, next_payment())
 
 ## Called by a table once a hand is fully settled. Handles the payment clock and death.
-func hand_finished(bet_on_table: int) -> void:
+func hand_finished(bet_on_table: int, lost: bool = false) -> void:
 	hands_played += 1
 	hands_to_payment -= 1
 	if hands_to_payment <= 0:
 		_collect_payment()
-	elif chips < min_bet() and bet_on_table == 0:
+	elif bet_on_table == 0 and (chips < min_bet() or (lost and chips < current_loan())):
+		# A lost hand costs a finger only when what is left is less than the house lent.
 		_try_die(DEATH_BROKE)
 	if alive:
 		countdown_changed.emit(hands_to_payment, next_payment())
@@ -241,9 +242,8 @@ func _survives() -> bool:
 			return true
 	return false
 
-## After losing a finger the house lends the current loan again and rewrites its debt.
+## After losing a finger the house lends the current loan again, on top of what is left, and rewrites its debt.
 func _restart_loan() -> void:
-	chips = 0
 	add_chips(current_loan())
 	debt = current_debt()
 	hands_to_payment = payment_every()
