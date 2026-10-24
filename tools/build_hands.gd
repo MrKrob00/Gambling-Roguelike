@@ -24,6 +24,16 @@ func _initialize() -> void:
 	quit()
 
 func _build(side: String) -> void:
+	# The left hand carries the slots for the artifacts (Marker3D `slot1`..`slot3`) placed in the editor against the pose it
+	# is saved in: rebuilding would lose them, so a left hand that has them is left alone.
+	var existing: PackedScene = load(OUT % side.to_lower()) if ResourceLoader.exists(OUT % side.to_lower()) else null
+	if existing != null:
+		var old := existing.instantiate()
+		var has_slots := old.find_child("slot1", true, false) != null
+		old.free()
+		if has_slots:
+			print("kept ", OUT % side.to_lower(), " (it has slots)")
+			return
 	var root := Node3D.new()
 	root.name = "Hand" + ("Left" if side == "L" else "Right")
 	var model: Node3D = load(MODELS[side]).instantiate()

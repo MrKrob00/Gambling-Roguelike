@@ -91,7 +91,7 @@ integer. The 3D view renders at the window's real resolution.
 - **The hands are editable scenes**, not code: `world/hands/hand_l.tscn` and `hand_r.tscn` hold the unpacked glove (a
   Skeleton3D with 26 finger bones) and an AnimationPlayer with the poses `open`, `fist`, `point`, `tap` and the loops and gestures `idle` (breathing: the fingers close and open in a slow wave, the wrist sways), `clench`, `flat` (palm pressed on the table) and `drum` (the fingers drum). `PlayerHand.gesture(name)` plays one when the hand is free; it also fidgets by itself every 6 to 11 s of idleness, and the view asks for `drum` while the dealer plays, `clench` on a lost hand and `flat` on a push.
   Open them in the editor to pose and animate; `tools/build_hands.gd` regenerates them from `assets/models/hand` and
-  **overwrites those edits**. The scripts only call `play(name)`. The right hand (`world/player_hand_3d.gd`) does
+  **overwrites those edits** (except the left hand, which carries the artifact slots `slot1`..`slot3`, Marker3D nodes placed by hand: the tool leaves it alone, and the coins sit at those markers, following their fingers). The scripts only call `play(name)`. The right hand (`world/player_hand_3d.gd`) does
   every press: `BlackjackView3D._act_on` carries it over the felt to the object, taps it and activates the object at
   contact, input is ignored while it reaches. Each death takes a finger of this hand (`set_lives`, `Rules.LIVES` = 5), in one of four scenes
   (`world/finger_cut_3d.gd`, particles plus two CC0 models): the skeleton bites, an enforcer's arm chops it with a cleaver (a CC0 model), the
