@@ -11,6 +11,6 @@ func modify_payout(table, payout: int, outcome: int) -> int:
 		return payout
 	if cooldown_left > 0 or table.bet <= 0:
 		return payout
-	cooldown_left = COOLDOWN
+	cooldown_left = table.run.cooldown_for(COOLDOWN)
 	notify()
 	return maxi(payout, int(table.bet * REFUND / ROUND_TO) * ROUND_TO)

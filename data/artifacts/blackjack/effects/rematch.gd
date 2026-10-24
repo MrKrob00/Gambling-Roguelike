@@ -7,7 +7,7 @@ const COOLDOWN := 3
 func rematch(table) -> bool:
 	if cooldown_left > 0:
 		return false
-	cooldown_left = COOLDOWN
+	cooldown_left = table.run.cooldown_for(COOLDOWN)
 	notify()
 	table.replace_dealer_last_card()
 	return true

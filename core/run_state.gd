@@ -69,6 +69,13 @@ func _most_of_a_kind() -> int:
 		most = maxi(most, counts[k])
 	return most
 
+## The wait, in hands, after an artifact is used, once the artifacts that shorten it have had their say.
+func cooldown_for(base: int) -> int:
+	var hands := base
+	for fx in effects:
+		hands = fx.modify_cooldown(hands)
+	return hands
+
 func min_bet() -> int:
 	var m := Rules.MIN_BET
 	for fx in effects:

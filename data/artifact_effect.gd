@@ -102,6 +102,10 @@ func allows_credit_double(_table) -> bool:
 func modify_offer_size(size: int) -> int:
 	return size
 
+## How many hands an artifact needs to recharge (every artifact's own wait goes through here).
+func modify_cooldown(hands: int) -> int:
+	return hands
+
 ## The total the dealer stands on (17 in the rules).
 func modify_dealer_stands_on(total: int) -> int:
 	return total

@@ -69,7 +69,7 @@ func _load_everything(path: String) -> void:
 
 func _catalog() -> void:
 	var cat = root.get_node("Catalog")
-	check(cat.all().size() == 37, "catalog holds 37 artifacts, has %d" % cat.all().size())
+	check(cat.all().size() == 39, "catalog holds 39 artifacts, has %d" % cat.all().size())
 	var tr_ok := true
 	for a in cat.all():
 		for part in ["NAME", "DESC", "HINT"]:
@@ -299,6 +299,18 @@ func _artifacts() -> void:
 	table.deal_all_in()
 	table.use_artifact(_fx(run, &"hand_swap"))
 	check(table.player.total() == 14 and table.dealer.total() == 16, "the hands change places, player %d dealer %d" % [table.player.total(), table.dealer.total()])
+
+	# Recharge: nimble fingers shorten every wait, the rewound watch ends them all.
+	run = _run([&"card_sleeve", &"nimble_fingers", &"rewound_watch"])
+	table = Table.new(run, 1)
+	_stack(table, [[10], [10], [6], [7], [5], [2]])
+	table.deal_all_in()
+	check(run.cooldown_for(3) == 2 and run.cooldown_for(1) == 1, "nimble fingers shorten a recharge of 3 to 2 and never go below 1")
+	table.use_artifact(_fx(run, &"card_sleeve"))
+	check(_fx(run, &"card_sleeve").cooldown_left == 2, "the sleeve recharges in 2 hands, got %d" % _fx(run, &"card_sleeve").cooldown_left)
+	table.use_artifact(_fx(run, &"rewound_watch"))
+	check(_fx(run, &"card_sleeve").cooldown_left == 0, "the rewound watch recharges everything")
+	check(run.effects.size() == 2, "the spent watch leaves the slots")
 
 	# Marked deck is passive: the hole card is known from the deal.
 	run = _run([&"marked_deck"])

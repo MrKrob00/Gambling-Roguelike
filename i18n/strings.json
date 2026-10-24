@@ -1014,5 +1014,29 @@
  "AGAINST_SELF": {
   "en": "Against yourself",
   "ru": "Против себя"
+ },
+ "ARTIFACT_NIMBLE_FINGERS_NAME": {
+  "en": "Nimble Fingers",
+  "ru": "Ловкие пальцы"
+ },
+ "ARTIFACT_NIMBLE_FINGERS_DESC": {
+  "en": "+ Every recharge is a hand shorter",
+  "ru": "+ Любая перезарядка короче на одну раздачу"
+ },
+ "ARTIFACT_NIMBLE_FINGERS_HINT": {
+  "en": "Use tricks 25 times",
+  "ru": "Использовать приёмы 25 раз"
+ },
+ "ARTIFACT_REWOUND_WATCH_NAME": {
+  "en": "Rewound Watch",
+  "ru": "Заведённые часы"
+ },
+ "ARTIFACT_REWOUND_WATCH_DESC": {
+  "en": "+ Every artifact is ready again at once",
+  "ru": "+ Все артефакты снова готовы сразу"
+ },
+ "ARTIFACT_REWOUND_WATCH_HINT": {
+  "en": "Win 30 hands",
+  "ru": "Выиграть 30 раздач"
  }
 }
