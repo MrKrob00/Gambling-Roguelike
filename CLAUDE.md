@@ -232,6 +232,7 @@ $G --headless --path /tmp/run --script res://tools/selftest.gd
   is sensitive (a hand is a death about half the time, so a run is about ten hands).
 - `tools/playtest.gd`: plays a whole run through the real 3D table by activating the real objects on it, while a chaotic
   player mashes presses and releases on random objects, sliding off some (`SEED=n` varies it). It must reach the result.
+- `tools/artifact_balance.gd`: one artifact held from the start per batch of bot runs, compared with a run of nothing (debts closed, hands, first-life clears; `RUNS=n ONLY=id`). A rough guide: the bot picks no offers and uses buttons crudely.
 - `tools/offerfuzz.gd`: mashes the artifact offer, the hand and the pocket (five loadouts, real pointer events) and checks the hand and the pocket never overflow, no artifact stands twice and every mode can be left (`SEED=n ROUNDS=n`). Run it after touching the offer, the pocket or `RunState` artifact moves.
 - `tools/shot.gd`: renders a screen to a PNG (`SHOT=menu|lobby|result|table3d|table3d_play LOCALE=en|ru OUT=...`);
   needs a real driver: `xvfb-run -a -s "-screen 0 1280x720x24" $G --path /tmp/run --rendering-driver opengl3
