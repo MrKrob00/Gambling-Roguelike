@@ -199,17 +199,9 @@
   "en": "The hole card is ",
   "ru": "Закрытая карта: "
  },
- "HINT_PROGRESS": {
-  "en": "Progress: %d / %d",
-  "ru": "Прогресс: %d / %d"
- },
  "RESULT_NEXT_UNLOCKS": {
   "en": "Closest to opening:",
   "ru": "Ближе всего к открытию:"
- },
- "HINT_UNLOCK": {
-  "en": "How to open: %s",
-  "ru": "Как открыть: %s"
  },
  "DEALER_WELCOME_1": {
   "en": "Sit. The house is patient.",
@@ -854,5 +846,9 @@
  "REASON_SHUFFLES": {
   "en": "Saw the shoe shuffled %d times",
   "ru": "Колода перетасована: %d раз"
+ },
+ "ARTIFACT_LOCKED": {
+  "en": "Locked",
+  "ru": "Заблокировано"
  }
 }
