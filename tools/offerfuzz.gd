@@ -69,6 +69,11 @@ func _initialize() -> void:
 			if view._plaques[&"cancel"].visible and view._plaques[&"cancel"].collision_layer != 0:
 				view._plaques[&"cancel"].activate()
 			await process_frame
+		for i in 30:
+			if not view._queue.busy:
+				break
+			await process_frame
+		view._refresh()
 		if view.run.offer_stage == view.run.Offer.CHOOSING:
 			check(view._plaques[&"skip"].collision_layer != 0, "%s: the offer can always be skipped" % label)
 			view._plaques[&"skip"].activate()

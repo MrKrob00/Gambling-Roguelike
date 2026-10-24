@@ -1076,12 +1076,12 @@
   "ru": "Сыграть 20 раздач"
  },
  "ARTIFACT_SMUGGLERS_COAT_NAME": {
-  "en": "Smuggler's Coat",
-  "ru": "Контрабандное пальто"
+  "en": "Smuggler's Backpack",
+  "ru": "Контрабандный рюкзак"
  },
  "ARTIFACT_SMUGGLERS_COAT_DESC": {
-  "en": "+ The pocket holds two more artifacts while it is on",
-  "ru": "+ Пока пальто в руке, в кармане помещаются ещё два артефакта"
+  "en": "+ The pocket holds two more artifacts\n+ Works from the pocket too",
+  "ru": "+ В кармане помещаются ещё два артефакта\n+ Работает и лёжа в кармане"
  },
  "ARTIFACT_SMUGGLERS_COAT_HINT": {
   "en": "Use the Deeper Pocket",
@@ -1096,16 +1096,16 @@
   "ru": "+ Выигрыш платит в полтора раза больше\n- В кармане на один артефакт меньше"
  },
  "ARTIFACT_CLENCHED_FIST_HINT": {
-  "en": "Play 5 hands in the Smuggler's Coat",
-  "ru": "Сыграть 5 раздач в Контрабандном пальто"
+  "en": "Play 5 hands in the Smuggler's Backpack",
+  "ru": "Сыграть 5 раздач в Контрабандном рюкзаке"
  },
  "REASON_POCKET_STITCHES": {
   "en": "Sewed the pocket deeper",
   "ru": "Карман углублён"
  },
  "REASON_CHEST_HANDS": {
-  "en": "Played %d hands in the Smuggler's Coat",
-  "ru": "Раздач в Контрабандном пальто: %d"
+  "en": "Played %d hands in the Smuggler's Backpack",
+  "ru": "Раздач в Контрабандном рюкзаке: %d"
  },
  "POCKET_PUT": {
   "en": "Tap an artifact in your hand to put it away,\nor one in the pocket to take it out.",

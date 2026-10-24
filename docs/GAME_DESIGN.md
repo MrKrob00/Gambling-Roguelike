@@ -141,7 +141,7 @@ the same idea; a free one is room for the next artifact.
 
 ## The pocket
 
-Artifacts can be stored in the pocket (2 wells) between hands; stored ones do not work. Deeper Pocket (consumable, opens at 20 hands) adds a well for the run; Smuggler's Coat (passive, opens by using the Deeper Pocket) adds two while worn; Clenched Fist (cursed, opens after 5 hands in the Coat) takes one away and pays half as much again on a win.
+Artifacts can be stored in the pocket (2 wells) between hands; stored ones do not work. Deeper Pocket (consumable, opens at 20 hands) adds a well for the run; Smuggler's Backpack (passive, opens by using the Deeper Pocket) adds two while worn or stored; Clenched Fist (cursed, opens after 5 hands in the Backpack) takes one away and pays half as much again on a win.
 
 ## Artifact balance (tools/artifact_balance.gd)
 

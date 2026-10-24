@@ -106,6 +106,10 @@ func modify_offer_size(size: int) -> int:
 func encore(_table, _used) -> void:
 	pass
 
+## True if the artifact still changes the pocket's size while it lies in the pocket (a bag does, a curse does not).
+func works_in_pocket() -> bool:
+	return false
+
 ## How many artifacts the pocket holds (the size is passed through every artifact in hand).
 func modify_pocket_size(size: int) -> int:
 	return size

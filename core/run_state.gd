@@ -242,16 +242,20 @@ func choose_offer_to_pocket(data) -> bool:
 
 ## How many artifacts the pocket holds with the artifacts in hand.
 func pocket_capacity() -> int:
-	return _capacity(effects)
+	return _capacity(effects, pocket)
 
-func _capacity(held: Array) -> int:
+## Artifacts in hand always change the size; stored ones only if they say so (`works_in_pocket`).
+func _capacity(held: Array, stored: Array) -> int:
 	var size := Rules.POCKET_SIZE + pocket_bonus
 	for fx in held:
 		size = fx.modify_pocket_size(size)
+	for fx in stored:
+		if fx.works_in_pocket():
+			size = fx.modify_pocket_size(size)
 	return clampi(size, 0, Rules.POCKET_MAX)
 
 func _pocket_fits(held: Array, stored: Array) -> bool:
-	return stored.size() <= _capacity(held)
+	return stored.size() <= _capacity(held, stored)
 
 ## True if `fx` can go from the hand into the pocket: a free well is left once it stops counting.
 func can_pocket_put(fx) -> bool:

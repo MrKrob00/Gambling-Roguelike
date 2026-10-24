@@ -301,7 +301,7 @@ func _artifacts() -> void:
 	run.offer_stage = RunState.Offer.CHOOSING
 	check(run.choose_offer_to_pocket(run.offer[0]) and run.pocket.size() == 1 and run.effects.is_empty() and run.offer_stage == RunState.Offer.NONE, "an offered artifact goes into the pocket")
 
-	# The pocket: holds two, the coat widens it, the fist narrows it, nothing may overfill it.
+	# The pocket: holds two, the backpack widens it, the fist narrows it, nothing may overfill it.
 	run = _run([&"flat_one", &"flat_two"] if false else [&"pickpocket", &"hand_swap", &"clenched_fist"])
 	run.pocket_bonus = 0
 	check(run.pocket_capacity() == 1, "the clenched fist narrows the pocket to 1, got %d" % run.pocket_capacity())
@@ -316,11 +316,16 @@ func _artifacts() -> void:
 	check(run.pocket.size() == 1 and run.effects.size() == 1, "a pocketed artifact leaves the hand")
 	check(run.pocket_take(run.pocket[0]) and run.pocket.is_empty(), "and comes back")
 	run = _run([&"smugglers_coat", &"pickpocket", &"hand_swap"])
-	check(run.pocket_capacity() == 4, "the coat widens the pocket to 4, got %d" % run.pocket_capacity())
+	check(run.pocket_capacity() == 4, "the backpack widens the pocket to 4, got %d" % run.pocket_capacity())
 	run.pocket_put(_fx(run, &"pickpocket"))
 	run.pocket_put(_fx(run, &"hand_swap"))
-	check(not run.can_pocket_put(_fx(run, &"smugglers_coat")) or run.pocket_capacity() >= 3, "the coat can go in only if the pocket still holds the rest")
-	check(not run.can_leave(_fx(run, &"smugglers_coat")) or run.pocket.size() <= 2, "the coat cannot leave while the pocket would overflow")
+	check(not run.can_pocket_put(_fx(run, &"smugglers_coat")) or run.pocket_capacity() >= 3, "the backpack can go in only if the pocket still holds the rest")
+	check(not run.can_leave(_fx(run, &"smugglers_coat")) or run.pocket.size() <= 2, "the backpack cannot leave while the pocket would overflow")
+	run = _run([&"smugglers_coat", &"pickpocket"])
+	check(run.pocket_put(_fx(run, &"smugglers_coat")) and run.pocket_capacity() == 4, "the backpack widens the pocket from inside it, got %d" % run.pocket_capacity())
+	run = _run([&"clenched_fist", &"pickpocket"])
+	run.pocket_bonus = 1
+	check(run.pocket_put(_fx(run, &"clenched_fist")) and run.pocket_capacity() == 3, "a cursed fist does nothing from the pocket, got %d" % run.pocket_capacity())
 	run = _run([&"pickpocket", &"hand_swap"])
 	run.pocket_bonus = 1
 	check(run.pocket_capacity() == 3, "the deeper pocket adds one, got %d" % run.pocket_capacity())
