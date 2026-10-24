@@ -488,8 +488,8 @@
   "ru": "Выбери свой первый трюк"
  },
  "OFFER_REPLACE": {
-  "en": "Slots full. Tap the artifact to replace.",
-  "ru": "Слоты заняты. Нажми на артефакт для замены."
+  "en": "Slots full. Tap the artifact to replace,\nor an empty pocket well to keep it there.",
+  "ru": "Слоты заняты. Нажми артефакт для замены\nили пустой карман, чтобы убрать его туда."
  },
  "OFFER_CANCEL": {
   "en": "Cancel",

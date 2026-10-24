@@ -295,6 +295,12 @@ func _artifacts() -> void:
 	run.hand_finished(0, true)
 	check(run.debt == run.current_debt() + 100 and owed == Rules.debt_for(0) + 100, "credit chips survive the loss of a finger, debt %d" % run.debt)
 
+	# An offered artifact can go straight into the pocket.
+	run = _run([])
+	run.offer = [_artifact(&"pickpocket")]
+	run.offer_stage = RunState.Offer.CHOOSING
+	check(run.choose_offer_to_pocket(run.offer[0]) and run.pocket.size() == 1 and run.effects.is_empty() and run.offer_stage == RunState.Offer.NONE, "an offered artifact goes into the pocket")
+
 	# The pocket: holds two, the coat widens it, the fist narrows it, nothing may overfill it.
 	run = _run([&"flat_one", &"flat_two"] if false else [&"pickpocket", &"hand_swap", &"clenched_fist"])
 	run.pocket_bonus = 0

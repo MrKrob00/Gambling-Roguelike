@@ -60,11 +60,14 @@ func _init(game: StringName, loadout: Array) -> void:
 	peak_chips = chips
 	rng.randomize()
 
-func _equip(data) -> void:
+func _make_effect(data):
 	var fx = data.effect_script.new()
 	fx.bind(data)
 	fx.triggered.connect(artifact_triggered.emit.bind(fx))
-	effects.append(fx)
+	return fx
+
+func _equip(data) -> void:
+	effects.append(_make_effect(data))
 	Events.stat_peaked.emit(Stat.SAME_KIND, _most_of_a_kind())
 
 ## The most held artifacts of one kind (three of a kind opens the Hand Swap).
@@ -204,6 +207,17 @@ func choose_offer(data, replace = null) -> bool:
 			return false
 		effects.erase(replace)
 	_equip(data)
+	offer_stage = Offer.NONE
+	offer.clear()
+	artifacts_changed.emit()
+	offer_changed.emit()
+	return true
+
+## Takes an offered artifact straight into a free well of the pocket (full slots do not matter).
+func choose_offer_to_pocket(data) -> bool:
+	if offer_stage != Offer.CHOOSING or not (data in offer) or pocket.size() >= pocket_capacity():
+		return false
+	pocket.append(_make_effect(data))
 	offer_stage = Offer.NONE
 	offer.clear()
 	artifacts_changed.emit()

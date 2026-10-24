@@ -344,6 +344,11 @@ func _rebuild_wells() -> void:
 		_wells.append(well)
 
 func _on_well(well) -> void:
+	if _pending_pick != null:
+		if run.choose_offer_to_pocket(_pending_pick):
+			_pending_pick = null
+		_refresh()
+		return
 	if _stash_out != null and well.fx != null:
 		var outside = _stash_out
 		_stash_out = null
@@ -1112,8 +1117,8 @@ func _refresh() -> void:
 	var ring_color := RED if (_discarding or replacing) else PALE
 	for w in _wells:
 		if is_instance_valid(w):
-			w.set_enabled((normal and (w.fx != null or not run.effects.is_empty())) or (pocketing and w.fx != null))
-			w.show_ring(pocketing and w.fx != null, PALE)
+			w.set_enabled((replacing and w.fx == null) or (normal and (w.fx != null or not run.effects.is_empty())) or (pocketing and w.fx != null))
+			w.show_ring((pocketing and w.fx != null) or (replacing and w.fx == null), PALE)
 	for t in _tokens:
 		if is_instance_valid(t):
 			t.refresh(table)
