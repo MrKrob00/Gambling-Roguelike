@@ -1108,8 +1108,8 @@
   "ru": "Раздач в Контрабандном пальто: %d"
  },
  "POCKET_PUT": {
-  "en": "Pick an artifact to put in the pocket.",
-  "ru": "Выбери артефакт, чтобы убрать в карман."
+  "en": "Tap an artifact in your hand to put it away,\nor one in the pocket to take it out.",
+  "ru": "Нажми артефакт в руке, чтобы убрать его в карман,\nили артефакт в кармане, чтобы достать."
  },
  "POCKET_SWAP": {
   "en": "Pick an artifact to put away in its place.",
@@ -1118,5 +1118,13 @@
  "POCKET_CANT": {
   "en": "The pocket would be too small.",
   "ru": "Карман тогда станет мал."
+ },
+ "POCKET": {
+  "en": "Pocket",
+  "ru": "Карман"
+ },
+ "POCKET_SWAP_OUT": {
+  "en": "The pocket is full. Tap the one to swap with.",
+  "ru": "Карман полон. Нажми артефакт, на который поменять."
  }
 }

@@ -68,6 +68,8 @@ const DISCARD_X := -0.8
 ## The pocket wells stand in a column at the left of the felt, one behind another.
 const POCKET_POS := Vector3(-1.5, TOP + 0.004, 0.2)
 const POCKET_STEP := 0.4
+## The pocket button stands above the first well, away from the hand's coins.
+const POCKET_PLAQUE_DZ := -0.65
 const OFFER_Z := 0.2
 const OFFER_SPACING := 0.9
 ## The deadline candles stand on the far rail, in front of the dealer.
@@ -131,6 +133,8 @@ var _discarding: bool = false
 var _stashing: bool = false
 var _swap_with
 var _wells: Array = []
+## A hand artifact that wants to trade places with a pocket one (the pocket is full).
+var _stash_out
 var _ui_state: String = ""
 var _chips_text: int = 0
 var _ledger_started := false
@@ -282,7 +286,7 @@ func _build_controls() -> void:
 		&"hit": ["TABLE_HIT", 0], &"stand": ["TABLE_STAND", 1], &"double": ["TABLE_DOUBLE", 2],
 		&"next": ["TABLE_NEXT", 1],
 		&"skip": ["OFFER_SKIP", 2], &"cancel": ["OFFER_CANCEL", 1],
-		&"discard": ["DISCARD", -1], &"pay_off": ["TABLE_PAY_OFF", -2],
+		&"discard": ["DISCARD", -1], &"pocket": ["POCKET", -3], &"pay_off": ["TABLE_PAY_OFF", -2],
 	}
 	for id in defs:
 		var plaque := Plaque.new()
@@ -290,6 +294,8 @@ func _build_controls() -> void:
 		plaque.setup(defs[id][0])
 		var slot: int = defs[id][1]
 		plaque.position = Vector3(_slot_x(slot), TOP + 0.02, ACTION_Z)
+		if id == &"pocket":
+			plaque.position = POCKET_POS + Vector3(0.0, 0.016, POCKET_PLAQUE_DZ)
 		plaque.activated.connect(_on_plaque.bind(id))
 		plaque.show_plaque(false)
 		plaque.scale = Vector3.ONE * 0.001
@@ -320,6 +326,7 @@ func _rebuild_wells() -> void:
 	_wells.clear()
 	_stashing = false
 	_swap_with = null
+	_stash_out = null
 	var count := maxi(run.pocket_capacity(), run.pocket.size())
 	for i in count:
 		var well := PocketWell.new()
@@ -330,7 +337,13 @@ func _rebuild_wells() -> void:
 		_wells.append(well)
 
 func _on_well(well) -> void:
-	if well.fx == null:
+	if _stash_out != null and well.fx != null:
+		var outside = _stash_out
+		_stash_out = null
+		_stashing = false
+		if not run.pocket_swap(well.fx, outside):
+			_speak(tr("POCKET_CANT"))
+	elif well.fx == null:
 		_stashing = true
 		_swap_with = null
 	elif run.can_pocket_take(well.fx):
@@ -871,8 +884,12 @@ func _is_artifact_valid(obj) -> bool:
 
 func _on_token(token) -> void:
 	if _stashing:
-		_stashing = false
-		if not run.pocket_put(token.fx):
+		if run.pocket_put(token.fx):
+			_stashing = false
+		elif not run.pocket.is_empty() and run.pocket_capacity() > 0:
+			_stash_out = token.fx
+			_speak(tr("POCKET_SWAP_OUT"))
+		else:
 			_speak(tr("POCKET_CANT"))
 	elif _swap_with != null:
 		var inside = _swap_with
@@ -919,6 +936,9 @@ func _on_plaque(id: StringName) -> void:
 			_pending_pick = null
 			_stashing = false
 			_swap_with = null
+			_stash_out = null
+		&"pocket":
+			_stashing = true
 		&"discard": _discarding = true
 	_refresh()
 
@@ -1015,6 +1035,8 @@ func _refresh() -> void:
 		show = [&"deal", &"pay_off"]
 		if not run.effects.is_empty():
 			show.append(&"discard")
+		if not run.effects.is_empty() or not run.pocket.is_empty():
+			show.append(&"pocket")
 	elif _discarding or replacing or (pocketing and betting):
 		show = [&"cancel"]
 	elif picking:
@@ -1035,6 +1057,7 @@ func _refresh() -> void:
 	_plaques[&"double"].set_enabled(table.can_double())
 	_plaques[&"next"].set_enabled(true)
 	_plaques[&"discard"].set_enabled(true)
+	_plaques[&"pocket"].set_enabled(true)
 	_plaques[&"cancel"].set_enabled(true)
 	_plaques[&"skip"].set_enabled(true)
 	_plaques[&"pay_off"].set_caption(tr("TABLE_PAY_OFF") % run.debt)
@@ -1043,7 +1066,8 @@ func _refresh() -> void:
 	var ring_color := RED if (_discarding or replacing) else PALE
 	for w in _wells:
 		if is_instance_valid(w):
-			w.set_enabled(normal and (w.fx != null or not run.effects.is_empty()))
+			w.set_enabled((normal and (w.fx != null or not run.effects.is_empty())) or (pocketing and w.fx != null))
+			w.show_ring(pocketing and w.fx != null, PALE)
 	for t in _tokens:
 		if is_instance_valid(t):
 			t.refresh(table)
