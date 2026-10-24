@@ -2,13 +2,13 @@
 
 importer="font_data_dynamic"
 type="FontFile"
-uid="uid://yakywlu5rglh"
-path="res://.godot/imported/Jacquard12-Regular.ttf-eb46829bffe742835e66ba666107e740.fontdata"
+uid="uid://b4drthe5wtly3"
+path="res://.godot/imported/Rye-Regular.ttf-d4a808a41f063ea9ba1121926dfe0ac4.fontdata"
 
 [deps]
 
-source_file="res://assets/fonts/jacquard12/Jacquard12-Regular.ttf"
-dest_files=["res://.godot/imported/Jacquard12-Regular.ttf-eb46829bffe742835e66ba666107e740.fontdata"]
+source_file="res://assets/fonts/rye/Rye-Regular.ttf"
+dest_files=["res://.godot/imported/Rye-Regular.ttf-d4a808a41f063ea9ba1121926dfe0ac4.fontdata"]
 
 [params]
 
