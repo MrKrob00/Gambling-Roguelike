@@ -9,6 +9,11 @@ const GLOVE_TEXTURE: Texture2D = preload("res://assets/textures/glove_l.png")
 ## The room is scaled up (a chip is 20 cm across), so the hand is too.
 const HAND_SCALE := 3.5
 const COIN_SCALE := 0.45
+## How much of the coin's height sits inside the grip.
+const GRIP_SHARE := 0.1
+## How far, in radii, the centres in GAPS already ride over the groove.
+const GAPS_SINK := 0.3
+const Token := preload("res://world/artifact_token_3d.gd")
 const FOCUS_SCALE := 0.6
 ## Where a coin stands: in the groove between two neighbouring fingers, at the joint between the proximal and the middle phalanx,
 ## in the hand's own space before HAND_SCALE. Measured from the bones in the `idle` pose: the finger-pair midpoint,
@@ -50,8 +55,14 @@ func _ready() -> void:
 ## Puts a token into the knuckle gap `index`, standing on edge and fanned a little.
 func add_token(token, index: int, _count: int) -> void:
 	add_child(token)
-	var pos := GAPS[mini(index, GAPS.size() - 1)] * HAND_SCALE
 	var rotation_at_rest := Vector3(COIN_PITCH, -COIN_YAW, -PI / 2.0)
+	var q := Quaternion.from_euler(rotation_at_rest)
+	# The coin is pinched by the lowest tenth of its height, like a coin held for a flip. GAPS puts its centre
+	# 0.2 radii over the groove, so it is raised by the rest (0.8 radii less the tenth buried), along the disc's own up.
+	var normal := q * Vector3.UP
+	var up_in_disc := (Vector3.UP - normal * Vector3.UP.dot(normal)).normalized()
+	var radius: float = Token.RADIUS * COIN_SCALE
+	var pos := GAPS[mini(index, GAPS.size() - 1)] * HAND_SCALE + up_in_disc * radius * (1.0 - 2.0 * GRIP_SHARE - GAPS_SINK)
 	_rest[token] = [pos, Quaternion.from_euler(rotation_at_rest)]
 	token.position = pos
 	token.quaternion = _rest[token][1]
