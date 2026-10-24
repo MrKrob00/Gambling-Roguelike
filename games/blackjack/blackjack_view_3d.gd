@@ -618,10 +618,11 @@ func _do_life_lost(left: int, reason: StringName) -> void:
 	await _lose_finger(left, reason)
 	await _pause(0.3)
 
-## The hand is raised and one of four scenes takes the finger: the skeleton bites, an enforcer chops it off, the finger
-## bursts, or it is shot off. The collectors prefer the cleaver and the gun, the dealer his teeth and finger bursts.
+## One of four scenes takes the finger: the skeleton bites, an enforcer chops it off, the finger bursts, or it is shot
+## off. A death at the deadline is the collectors' (cleaver or gun); nearly every other death is a lost hand, and the
+## house has any of the four for it, so every scene is seen (a lost hand used to get only the bite and the burst).
 func _lose_finger(left: int, reason: StringName, forced_kind: int = -1) -> void:
-	var options: Array = [FingerCut.Kind.CLEAVER, FingerCut.Kind.PISTOL] if reason == run.DEATH_DEBT else [FingerCut.Kind.BITE, FingerCut.Kind.BURST]
+	var options: Array = [FingerCut.Kind.CLEAVER, FingerCut.Kind.PISTOL] if reason == run.DEATH_DEBT else [FingerCut.Kind.BITE, FingerCut.Kind.CLEAVER, FingerCut.Kind.BURST, FingerCut.Kind.PISTOL]
 	options = options.filter(func(k: int) -> bool: return k != _last_cut)
 	var kind: int = forced_kind if forced_kind >= 0 else options[randi() % options.size()]
 	_last_cut = kind
