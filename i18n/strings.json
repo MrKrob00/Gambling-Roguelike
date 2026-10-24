@@ -788,8 +788,8 @@
   "ru": "+ Прячет следующую карту на дно колоды\n+ и показывает ту, что под ней"
  },
  "ARTIFACT_STACKED_DECK_HINT": {
-  "en": "Win 8 hands with the hole card known",
-  "ru": "Выиграть 8 раздач, зная закрытую карту"
+  "en": "Make the dealer bust 6 times",
+  "ru": "Заставить дилера перебрать 6 раз"
  },
  "ARTIFACT_GLASS_EYE_NAME": {
   "en": "Glass Eye",
@@ -800,8 +800,8 @@
   "ru": "+ Каждая раздача начинается с показа следующей карты колоды"
  },
  "ARTIFACT_GLASS_EYE_HINT": {
-  "en": "Use the Stacked Deck 5 times",
-  "ru": "Использовать Крапленую колоду 5 раз"
+  "en": "See the shoe shuffled 3 times",
+  "ru": "Увидеть, как тасуют колоду, 3 раза"
  },
  "ARTIFACT_STEADY_HANDS_NAME": {
   "en": "Steady Hands",
@@ -847,12 +847,12 @@
   "en": "Won with 10 or less",
   "ru": "Победа с 10 очками или меньше"
  },
- "REASON_HOLE_WINS": {
-  "en": "Won %d hands with the hole card known",
-  "ru": "Побед со знанием закрытой карты: %d"
+ "REASON_DEALER_BUSTS": {
+  "en": "Made the dealer bust %d times",
+  "ru": "Перебор у дилера: %d раз"
  },
- "REASON_STACKED_USES": {
-  "en": "Used the Stacked Deck %d times",
-  "ru": "Крапленая колода использована: %d раз"
+ "REASON_SHUFFLES": {
+  "en": "Saw the shoe shuffled %d times",
+  "ru": "Колода перетасована: %d раз"
  }
 }

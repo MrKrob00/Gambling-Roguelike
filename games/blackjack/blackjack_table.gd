@@ -100,6 +100,7 @@ func deal() -> void:
 		return
 	if shoe.remaining_fraction() < Rules.RESHUFFLE_BELOW:
 		shoe.shuffle()
+		Events.stat_added.emit(Stat.SHUFFLES, 1)
 		shoe_shuffled.emit()
 	player.clear()
 	dealer.clear()
@@ -319,8 +320,8 @@ func _record(outcome: int) -> void:
 		# Only a dealer's bust lets a small hand win.
 		if player.total() <= Rules.LOW_WIN_TOTAL:
 			Events.stat_added.emit(Stat.LOW_WINS, 1)
-	if won and hole_known:
-		Events.stat_added.emit(Stat.HOLE_WINS, 1)
+	if won and dealer.total() > 21:
+		Events.stat_added.emit(Stat.DEALER_BUSTS, 1)
 	if outcome == Outcome.BLACKJACK:
 		Events.stat_added.emit(Stat.BLACKJACKS, 1)
 	if outcome == Outcome.BUST:

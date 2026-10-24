@@ -573,9 +573,13 @@ func _unlocks() -> void:
 	events.stat_added.emit(Stat.MIRROR_USES, 1)
 	check(profile.is_unlocked(_artifact(&"marked_deck")), "ten mirror uses open the marked deck")
 	check(not profile.is_unlocked(_artifact(&"glass_eye")), "the glass eye starts locked")
-	for i in 5:
-		events.stat_added.emit(Stat.STACKED_USES, 1)
-	check(profile.is_unlocked(_artifact(&"glass_eye")), "five stacked deck uses open the glass eye")
+	for i in 3:
+		events.stat_added.emit(Stat.SHUFFLES, 1)
+	check(profile.is_unlocked(_artifact(&"glass_eye")), "three shuffles open the glass eye")
+	check(not profile.is_unlocked(_artifact(&"stacked_deck")), "the stacked deck starts locked")
+	for i in 6:
+		events.stat_added.emit(Stat.DEALER_BUSTS, 1)
+	check(profile.is_unlocked(_artifact(&"stacked_deck")), "six dealer busts open the stacked deck")
 	profile.reset()
 
 # ---------------------------------------------------------------- fuzz

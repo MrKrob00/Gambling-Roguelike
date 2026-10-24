@@ -96,12 +96,12 @@ artifact that shortens the deadline for bigger payouts.
 | sleeping_powder | consumable, 2 | The dealer stands on whatever he has | bust 4 times |
 | hourglass | consumable, 2 | +2 hands before the debt falls due, also between hands | pay 2 debts |
 | hush_envelope | consumable, 1 | Cut the debt by a quarter, also between hands | die to the collectors |
-| stacked_deck | active, 3 hands | Bury the next card at the bottom of the shoe and show the one beneath | win 8 hands with the hole card known (Marked Deck) |
-| glass_eye | passive, rare | Every hand starts with the next card of the shoe shown beside it | use the Stacked Deck 5 times |
+| stacked_deck | active, 3 hands | Bury the next card at the bottom of the shoe and show the one beneath | make the dealer bust 6 times |
+| glass_eye | passive, rare | Every hand starts with the next card of the shoe shown beside it | see the shoe shuffled 3 times |
 | steady_hands | passive | A won double down pays half a stake more | win 3 double downs |
 | borrowed_time | cursed | Two more hands before a debt falls due, new loans a fifth smaller | die to the collectors 3 times |
 | paupers_crown | passive, rare | A won hand of 15 or less pays a whole stake more | win a hand with 10 or less (the dealer busts) |
 
-Chains of unlocks: Cracked Mirror -> (10 uses) Marked Deck -> (8 wins with the hole card known) Stacked Deck -> (5 uses) Glass Eye. Open from the start: Lucky Clover, Card Sleeve, Cursed Doll, Silver Chip.
+The one unlock that depends on another artifact is Marked Deck (10 uses of the Cracked Mirror); every other artifact opens on its own kind of event (pushes, dealer busts, shuffles, doubles, deaths, a win with 10 or less...), so no two unlock the same way. Open from the start: Lucky Clover, Card Sleeve, Cursed Doll, Silver Chip.
 
 Numbers live in `core/rules.gd` and in each artifact `.tres`; this table is a retelling.

@@ -16,5 +16,5 @@ button = true
 uses_per_hand = 1
 cooldown_hands = 3
 charges = 0
-unlock_stat = &"hole_wins"
-unlock_value = 8
+unlock_stat = &"dealer_busts"
+unlock_value = 6

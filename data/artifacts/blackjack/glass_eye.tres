@@ -16,5 +16,5 @@ button = false
 uses_per_hand = 0
 cooldown_hands = 0
 charges = 0
-unlock_stat = &"stacked_uses"
-unlock_value = 5
+unlock_stat = &"shuffles"
+unlock_value = 3
