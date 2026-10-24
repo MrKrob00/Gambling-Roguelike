@@ -133,6 +133,27 @@ func finger_tip(lives_after: int) -> Vector3:
 	var bone := _skeleton.find_bone("%s_Tip_R" % CUT_ORDER[clampi(Rules.LIVES - lives_after - 1, 0, CUT_ORDER.size() - 1)])
 	return (_skeleton.global_transform * _skeleton.get_bone_global_pose(bone)).origin
 
+## Where the cleaver should land on the finger the next loss takes: the middle joint (the thumb has none: its last joint).
+func finger_joint(lives_after: int) -> Vector3:
+	var finger: String = CUT_ORDER[clampi(Rules.LIVES - lives_after - 1, 0, CUT_ORDER.size() - 1)]
+	var bone := _skeleton.find_bone("%s_Intermediate_R" % finger)
+	if bone < 0:
+		bone = _skeleton.find_bone("%s_Distal_R" % finger)
+	return (_skeleton.global_transform * _skeleton.get_bone_global_pose(bone)).origin
+
+## The way the finger the next loss takes points over the felt (a unit vector with y = 0).
+func finger_direction(lives_after: int) -> Vector3:
+	var finger: String = CUT_ORDER[clampi(Rules.LIVES - lives_after - 1, 0, CUT_ORDER.size() - 1)]
+	var from := _skeleton.find_bone("%s_Intermediate_R" % finger)
+	if from < 0:
+		from = _skeleton.find_bone("%s_Proximal_R" % finger)
+	var to := _skeleton.find_bone("%s_Tip_R" % finger)
+	var a: Vector3 = (_skeleton.global_transform * _skeleton.get_bone_global_pose(from)).origin
+	var b: Vector3 = (_skeleton.global_transform * _skeleton.get_bone_global_pose(to)).origin
+	var d := b - a
+	d.y = 0.0
+	return d.normalized() if d.length() > 0.001 else Vector3.ZERO
+
 ## The finger goes. The hand stays open, so the gap is seen; the fist comes later (`lower_after_cut`).
 func cut_finger(lives_after: int) -> void:
 	set_lives(lives_after)

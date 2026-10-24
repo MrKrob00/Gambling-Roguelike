@@ -38,6 +38,10 @@ const STEEL := Color(0.72, 0.74, 0.8)
 var dealer: Node3D
 ## The collectors; one fires the gun.
 var enforcers: Node3D
+## Where the cleaver lands (the middle joint of the finger); the fingertip is used when it is not set.
+var joint := Vector3.ZERO
+## The way the finger points over the felt (unit, y = 0): the blade lies across it.
+var finger_direction := Vector3.ZERO
 var _stain_list: Array = []
 var _blood_mesh: MeshInstance3D
 var _atlas_material: StandardMaterial3D
@@ -105,14 +109,28 @@ func _bite(tip: Vector3, on_hit: Callable) -> void:
 
 ## An enforcer's arm swings a cleaver down onto the finger.
 func _cleaver(tip: Vector3, on_hit: Callable) -> void:
+	# The blade must lie across the finger, whichever way the hand points: a frame stands on the cut point, turned so that
+	# its x axis is the finger's perpendicular, and the arm moves in that frame.
+	var target := joint if joint != Vector3.ZERO else tip
+	var frame := Node3D.new()
+	frame.position = target
+	if finger_direction != Vector3.ZERO:
+		var across := Vector3(-finger_direction.z, 0.0, finger_direction.x)
+		if across.x < 0.0:
+			across = -across
+		frame.rotation.y = atan2(-across.z, across.x)
+	add_child(frame)
 	var arm := Node3D.new()
-	add_child(arm)
+	frame.add_child(arm)
 	# The pivot is the fist at the end of the handle. The cleaver model (CC0) has its handle end low on +y and its cutting
 	# edge on -x: it is centred and scaled by its measured bounds, then turned a quarter so the blade lies along -x with
 	# the edge down.
 	var blade := Node3D.new()
 	arm.add_child(blade)
 	var model: Node3D = CLEAVER.instantiate()
+	# The model's cutting edge is on its +x side (the thin one) and the blade is turned by a quarter about z, which would
+	# put that edge on top: turn the model half a circle about its length axis first.
+	model.rotation_degrees.y = 180.0
 	blade.add_child(model)
 	for m in model.find_children("*", "MeshInstance3D", true, false):
 		m.material_override = _cleaver_material()
@@ -125,7 +143,7 @@ func _cleaver(tip: Vector3, on_hit: Callable) -> void:
 	var edge := bounds.size.x * 0.5 * s
 	_box(arm, Vector3(0.12, 0.12, 0.12), Vector3.ZERO, _material(Color(0.04, 0.04, 0.05), 0.5))
 	_box(arm, Vector3(1.4, 0.2, 0.2), Vector3(0.75, 0.0, 0.0), _material(Color(0.04, 0.04, 0.06), 0.8))
-	var chop_at := tip + Vector3(CLEAVER_LENGTH * 0.5, edge, 0.0)
+	var chop_at := Vector3(CLEAVER_LENGTH * 0.5, edge, 0.0)
 	arm.position = chop_at + Vector3(0.8, 1.0, 0.0)
 	arm.rotation.z = -1.3
 	var rise := create_tween()
@@ -142,7 +160,7 @@ func _cleaver(tip: Vector3, on_hit: Callable) -> void:
 	var out := create_tween()
 	out.tween_property(arm, "position", chop_at + Vector3(0.9, 1.2, 0.0), 0.4)
 	await _wait(0.4)
-	arm.queue_free()
+	frame.queue_free()
 
 ## The bounds of every mesh under `node`, in the space of `frame`.
 func _bounds(node: Node3D, frame: Node3D) -> AABB:
@@ -159,6 +177,8 @@ func _cleaver_material() -> StandardMaterial3D:
 	mat.albedo_texture = CLEAVER_TEXTURE
 	mat.roughness = 0.5
 	mat.metallic = 0.3
+	# The model is a single sheet of triangles and is turned half a circle above: draw both sides.
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
 	mat.emission_enabled = true
 	mat.emission_texture = CLEAVER_TEXTURE
 	mat.emission_energy_multiplier = 0.35

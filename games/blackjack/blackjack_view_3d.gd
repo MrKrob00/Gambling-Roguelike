@@ -706,6 +706,8 @@ func _lose_finger(left: int, reason: StringName, forced_kind: int = -1) -> void:
 	else:
 		await _player_hand.lay_for_cut(_player_hand.LAY_POS_PISTOL if kind == FingerCut.Kind.PISTOL else _player_hand.LAY_POS)
 	var tip: Vector3 = _player_hand.finger_tip(left)
+	_finger_cut.joint = _player_hand.finger_joint(left)
+	_finger_cut.finger_direction = _player_hand.finger_direction(left)
 	await _finger_cut.play(kind, tip, _player_hand.cut_finger.bind(left))
 	await _player_hand.lower_after_cut(left)
 
