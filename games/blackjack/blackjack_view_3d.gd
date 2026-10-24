@@ -72,6 +72,8 @@ const AMBIENCE := "res://assets/audio/ambience/dark_cavern_ambient_001.ogg"
 const GOLD := Color(0.96, 0.63, 0.23)
 const RED := Color(0.95, 0.3, 0.25)
 const PALE := Color(0.85, 0.85, 0.95)
+## Seconds per letter of the dealer's line.
+const SPEECH_STEP := 0.032
 
 var run
 var table
@@ -113,6 +115,7 @@ var _info
 var _flash
 var _toast
 var _offer_cards: Array = []
+var _speech_gen: int = 0
 var _draft_cards: Array = []
 var _count_label: Label3D
 var _pending_pick
@@ -444,7 +447,7 @@ func _do_remove(to_dealer: bool, card) -> void:
 func _do_draft(cards: Array) -> void:
 	_clear_peek()
 	Audio.sfx(&"tabletop/deck_deal_1")
-	_subtitle.text = tr("DRAFT_PICK")
+	_speak(tr("DRAFT_PICK"))
 	for i in cards.size():
 		var pick := DraftCard.new()
 		add_child(pick)
@@ -534,7 +537,7 @@ func _do_next_peek(card) -> void:
 	pop.tween_property(actor, "scale", Vector3.ONE * 1.25, 0.3).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	_peek_actor = actor
 	Audio.sfx(&"trick/sparkle")
-	_subtitle.text = tr("PEEK_NEXT")
+	_speak(tr("PEEK_NEXT"))
 	await _pause(0.8)
 
 func _clear_peek() -> void:
@@ -549,7 +552,7 @@ func _clear_peek() -> void:
 func _do_shuffled() -> void:
 	_clear_peek()
 	Audio.sfx(&"tabletop/deck_shuffle_1")
-	_subtitle.text = tr("TABLE_SHUFFLE")
+	_speak(tr("TABLE_SHUFFLE"))
 	await _pause(0.6)
 
 func _do_resolved(outcome: int, bet: int, payout: int) -> void:
@@ -632,7 +635,7 @@ func _do_countdown(hands_left: int, amount: int) -> void:
 	if hands_left == 1 and was != 1:
 		Audio.sfx(&"game/heartbeat")
 		_say(&"deadline")
-		_subtitle.text = tr("DEBT_WARNING") % amount
+		_speak(tr("DEBT_WARNING") % amount)
 		await _enforcers.knock(HAND_POS, 3, _on_finger_tap)
 	_update_ledger()
 
@@ -646,7 +649,7 @@ func _do_debt(debt: int) -> void:
 
 ## Spells out where the new debt comes from: the house lends a bigger loan and writes it down at once.
 func _do_loan_closed(paid: int, new_loan: int, new_debt: int) -> void:
-	_subtitle.text = tr("DEBT_CLOSED") % [paid, new_loan, new_debt]
+	_speak(tr("DEBT_CLOSED") % [paid, new_loan, new_debt])
 	_add_text_node(BET_SPOT + Vector3(0.0, 0.5, 0.0), "+%d" % new_loan, GOLD)
 	Audio.sfx(&"trick/sparkle")
 	_vignette.flash_color(Color(0.9, 0.8, 0.4), 0.5, 0.8)
@@ -669,12 +672,12 @@ func _do_payment(amount: int, _index: int) -> void:
 	_rig.shake(0.05, 0.5)
 	await _pause(1.1)
 	_add_text_node(BET_SPOT + Vector3(0.0, 0.35, 0.0), "-%d" % amount, RED)
-	_subtitle.text = tr("PAYMENT_PAID") % amount
+	_speak(tr("PAYMENT_PAID") % amount)
 	Audio.sfx(&"game/coin_ding")
 	await _pause(0.9)
 
 func _do_waived(_index: int) -> void:
-	_subtitle.text = tr("PAYMENT_WAIVED")
+	_speak(tr("PAYMENT_WAIVED"))
 	Audio.sfx(&"trick/sparkle")
 	await _pause(1.3)
 
@@ -685,7 +688,7 @@ func _do_life_lost(left: int, reason: StringName) -> void:
 	Audio.sfx(&"game/lose_sting")
 	_vignette.flash_color(RED, 1.0, 1.6)
 	_rig.shake(0.08, 0.6)
-	_subtitle.text = tr("LIFE_LOST") % left
+	_speak(tr("LIFE_LOST") % left)
 	await _lose_finger(left, reason)
 	await _pause(0.3)
 
@@ -830,7 +833,7 @@ func _is_artifact_valid(obj) -> bool:
 
 func _on_token(token) -> void:
 	if _discarding:
-		_subtitle.text = tr("DISCARDED") % token.fx.data.title()
+		_speak(tr("DISCARDED") % token.fx.data.title())
 		_discarding = false
 		run.discard(token.fx)
 	elif _pending_pick != null:
@@ -886,8 +889,23 @@ func _relayout(list: Array, row: Vector3, skip = null) -> void:
 func _pause(seconds: float) -> void:
 	await get_tree().create_timer(seconds).timeout
 
+## The dealer's words appear letter by letter, each pair of letters with a low mumble: he is speaking, not a sign.
+func _speak(message: String) -> void:
+	_speech_gen += 1
+	var gen := _speech_gen
+	_subtitle.text = message
+	_subtitle.visible_characters = 0
+	for i in message.length():
+		await get_tree().create_timer(SPEECH_STEP).timeout
+		if gen != _speech_gen or not is_instance_valid(_subtitle):
+			return
+		_subtitle.visible_characters = i + 1
+		if i % 2 == 0 and message[i] != " ":
+			Audio.sfx(&"voice/dealer_%d" % randi_range(1, 4), randf_range(0.92, 1.08), -9.0)
+	_subtitle.visible_characters = -1
+
 func _say(event: StringName) -> void:
-	_subtitle.text = DealerText.line(event)
+	_speak(DealerText.line(event))
 
 func _add_text_node(pos: Vector3, message: String, color: Color) -> void:
 	var t := FloatingText.new()
@@ -1008,8 +1026,8 @@ func _update_prompt(stage: int, replacing: bool) -> void:
 		return
 	_ui_state = key
 	if replacing:
-		_subtitle.text = tr("OFFER_REPLACE")
+		_speak(tr("OFFER_REPLACE"))
 	elif _discarding:
-		_subtitle.text = tr("DISCARD_PICK")
+		_speak(tr("DISCARD_PICK"))
 	elif stage == RunState.Offer.CHOOSING:
-		_subtitle.text = tr("OFFER_FREE")
+		_speak(tr("OFFER_FREE"))
