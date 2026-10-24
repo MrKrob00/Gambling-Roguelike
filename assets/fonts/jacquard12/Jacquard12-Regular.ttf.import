@@ -2,13 +2,13 @@
 
 importer="font_data_dynamic"
 type="FontFile"
-uid="uid://ekepili2gkwf"
-path="res://.godot/imported/PirataOne-Regular.ttf-b60ad2874d9563baca16bec8ea13290a.fontdata"
+uid="uid://yakywlu5rglh"
+path="res://.godot/imported/Jacquard12-Regular.ttf-eb46829bffe742835e66ba666107e740.fontdata"
 
 [deps]
 
-source_file="res://assets/fonts/pirata_one/PirataOne-Regular.ttf"
-dest_files=["res://.godot/imported/PirataOne-Regular.ttf-b60ad2874d9563baca16bec8ea13290a.fontdata"]
+source_file="res://assets/fonts/jacquard12/Jacquard12-Regular.ttf"
+dest_files=["res://.godot/imported/Jacquard12-Regular.ttf-eb46829bffe742835e66ba666107e740.fontdata"]
 
 [params]
 

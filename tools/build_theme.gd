@@ -3,9 +3,9 @@ extends SceneTree
 ## Run: godot --headless --path . --script res://tools/build_theme.gd
 
 const DD := "res://assets/ui/dark_dwellers/"
-const BODY_FONT := "res://assets/fonts/metamorphous/Metamorphous-Regular.ttf"
+const BODY_FONT := "res://assets/fonts/jacquard12/Jacquard12-Regular.ttf"
 const BODY_FALLBACK := "res://assets/fonts/underdog/Underdog-Regular.ttf"
-const TITLE_FONT := "res://assets/fonts/pirata_one/PirataOne-Regular.ttf"
+const TITLE_FONT := "res://assets/fonts/jacquard12/Jacquard12-Regular.ttf"
 const TITLE_FALLBACK := "res://assets/fonts/underdog/Underdog-Regular.ttf"
 
 const TEXT := Color("d9d4f0")

@@ -1,6 +1,6 @@
 [gd_resource type="FontVariation" format=3]
 
-[ext_resource type="FontFile" path="res://assets/fonts/pirata_one/PirataOne-Regular.ttf" id="1_x8vi6"]
+[ext_resource type="FontFile" path="res://assets/fonts/jacquard12/Jacquard12-Regular.ttf" id="1_x8vi6"]
 [ext_resource type="FontFile" path="res://assets/fonts/underdog/Underdog-Regular.ttf" id="2_k4nlc"]
 
 [resource]
