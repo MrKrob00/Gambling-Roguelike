@@ -79,9 +79,17 @@ def felt():
     return over(out, glow(pool, 55))
 
 
-def candle(x, y, h):
+def felt_edge(x):
+    """The y of the felt's far rim at x (the felt is an ellipse centred at (630, 970), radii 890 and 330)."""
+    return 970 - 330 * math.sqrt(max(0.0, 1 - ((x - 630) / 890) ** 2))
+
+
+def candle(x, h):
+    y = felt_edge(x) + 26
     out = layer()
     d = ImageDraw.Draw(out)
+    d.ellipse((x - 34, y - 9, x + 34, y + 11), fill=(0, 0, 0, 150))
+    d.ellipse((x - 22, y - 7, x + 22, y + 7), fill=(215, 205, 185, 255))
     d.rectangle((x - 16, y - h, x + 16, y), fill=(236, 226, 205, 255))
     d.rectangle((x - 16, y - h, x - 6, y), fill=(255, 250, 235, 255))
     d.ellipse((x - 16, y - h - 7, x + 16, y - h + 7), fill=(245, 240, 225, 255))
@@ -257,9 +265,9 @@ def main():
     img = over(img, spotlight())
     img = over(img, felt())
     for cx in (130, 215, 300):
-        img = over(img, candle(cx, 640, 90 + rng.randint(-12, 12)))
+        img = over(img, candle(cx, 90 + rng.randint(-12, 12)))
     for cx in (960, 1045, 1130):
-        img = over(img, candle(cx, 640, 90 + rng.randint(-12, 12)))
+        img = over(img, candle(cx, 90 + rng.randint(-12, 12)))
     img = place(img, card(300, 430, "A", "\u2660", False), (470, 640), -17)
     img = place(img, card(300, 430, "K", "\u2665", True), (655, 635), 8)
     img = chip_stack(img, "100_Dollar_casino_chip_1.png", 175, 880, 6, 240)
