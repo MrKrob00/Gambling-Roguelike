@@ -800,8 +800,8 @@
   "ru": "+ Выигранное удвоение платит на полставки больше"
  },
  "ARTIFACT_STEADY_HANDS_HINT": {
-  "en": "Win 3 double downs",
-  "ru": "Выиграть 3 удвоения"
+  "en": "Win 6 hands in a row",
+  "ru": "Выиграть 6 раздач подряд"
  },
  "ARTIFACT_BORROWED_TIME_NAME": {
   "en": "Borrowed Time",
@@ -846,5 +846,69 @@
  "ARTIFACT_LOCKED": {
   "en": "Locked",
   "ru": "Заблокировано"
+ },
+ "ARTIFACT_SORE_LOSER_NAME": {
+  "en": "Sore Loser",
+  "ru": "Неудачник"
+ },
+ "ARTIFACT_SORE_LOSER_DESC": {
+  "en": "+ After a lost hand the next one starts with a ten",
+  "ru": "+ После проигрыша следующая раздача начинается с десятки"
+ },
+ "ARTIFACT_SORE_LOSER_HINT": {
+  "en": "Die 4 times",
+  "ru": "Умереть 4 раза"
+ },
+ "ARTIFACT_CREDIT_LINE_NAME": {
+  "en": "Credit Line",
+  "ru": "Кредитная линия"
+ },
+ "ARTIFACT_CREDIT_LINE_DESC": {
+  "en": "+ Double down with an empty purse\n- The borrowed chips are added to the debt",
+  "ru": "+ Удвоение при пустом кошельке\n- Занятые фишки прибавляются к долгу"
+ },
+ "ARTIFACT_CREDIT_LINE_HINT": {
+  "en": "The dealer draws a blackjack",
+  "ru": "У дилера выпадает блэкджек"
+ },
+ "ARTIFACT_MAGPIE_NAME": {
+  "en": "Magpie",
+  "ru": "Сорока"
+ },
+ "ARTIFACT_MAGPIE_DESC": {
+  "en": "+ A free offer shows one artifact more",
+  "ru": "+ Бесплатное предложение показывает на один артефакт больше"
+ },
+ "ARTIFACT_MAGPIE_HINT": {
+  "en": "Pay 6 debts",
+  "ru": "Выплатить 6 долгов"
+ },
+ "ARTIFACT_SHAKY_HAND_NAME": {
+  "en": "Shaky Hand",
+  "ru": "Дрожащая рука"
+ },
+ "ARTIFACT_SHAKY_HAND_DESC": {
+  "en": "+ The dealer stands on 16 instead of 17",
+  "ru": "+ Дилер останавливается на 16, а не на 17"
+ },
+ "ARTIFACT_SHAKY_HAND_HINT": {
+  "en": "Win 20 hands",
+  "ru": "Выиграть 20 раздач"
+ },
+ "ARTIFACT_THREE_CHERRIES_NAME": {
+  "en": "Three Cherries",
+  "ru": "Три вишни"
+ },
+ "ARTIFACT_THREE_CHERRIES_DESC": {
+  "en": "+ A won 21 of three or more cards pays a stake more",
+  "ru": "+ Выигранные 21 из трёх и более карт платят ставку сверху"
+ },
+ "ARTIFACT_THREE_CHERRIES_HINT": {
+  "en": "Play 40 hands",
+  "ru": "Сыграть 40 раздач"
+ },
+ "REASON_DEALER_BLACKJACKS": {
+  "en": "The dealer dealt himself a blackjack",
+  "ru": "У дилера выпал блэкджек"
  }
 }

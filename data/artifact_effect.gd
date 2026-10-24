@@ -86,6 +86,22 @@ func modify_new_debt(debt: int) -> int:
 func affects_loan() -> bool:
 	return false
 
+## A hand has just been settled (after the payout), with its outcome. For things that carry over to the next hand.
+func hand_ended(_table, _outcome: int) -> void:
+	pass
+
+## True lets the player double down on credit when the purse is empty: the borrowed chips are added to the debt.
+func allows_credit_double(_table) -> bool:
+	return false
+
+## How many artifacts a free offer shows.
+func modify_offer_size(size: int) -> int:
+	return size
+
+## The total the dealer stands on (17 in the rules).
+func modify_dealer_stands_on(total: int) -> int:
+	return total
+
 ## A payment could not be paid (or the player is broke). Return true to survive.
 func prevent_death(_run) -> bool:
 	return false

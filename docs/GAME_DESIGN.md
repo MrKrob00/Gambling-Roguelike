@@ -98,10 +98,35 @@ artifact that shortens the deadline for bigger payouts.
 | hush_envelope | consumable, 1 | Cut the debt by a quarter, also between hands | die to the collectors |
 | stacked_deck | active, 3 hands | Bury the next card at the bottom of the shoe and show the one beneath | make the dealer bust 6 times |
 | glass_eye | passive, rare | Every hand starts with the next card of the shoe shown beside it | see the shoe shuffled 3 times |
-| steady_hands | passive | A won double down pays half a stake more | win 3 double downs |
+| steady_hands | passive | A won double down pays half a stake more | win 6 hands in a row |
 | borrowed_time | cursed | Two more hands before a debt falls due, new loans a fifth smaller | die to the collectors 3 times |
+| sore_loser | passive | After a lost hand the next one starts with a ten | die 4 times |
+| credit_line | passive, rare | Double down with an empty purse; the borrowed chips are added to the debt | the dealer draws a blackjack |
+| magpie | passive | A free offer shows one artifact more | pay 6 debts |
+| shaky_hand | passive | The dealer stands on 16 instead of 17 | win 20 hands |
+| three_cherries | passive | A won 21 of three or more cards pays a stake more | play 40 hands |
 | paupers_crown | passive, rare | A won hand of 15 or less pays a whole stake more | win a hand with 10 or less (the dealer busts) |
 
 The one unlock that depends on another artifact is Marked Deck (10 uses of the Cracked Mirror); every other artifact opens on its own kind of event (pushes, dealer busts, shuffles, doubles, deaths, a win with 10 or less...), so no two unlock the same way. Open from the start: Lucky Clover, Card Sleeve, Cursed Doll, Silver Chip.
 
 Numbers live in `core/rules.gd` and in each artifact `.tres`; this table is a retelling.
+
+## Mechanics map: what is taken and what is still free
+
+Every artifact touches one mechanic through a hook. A mechanic that already has an artifact is not used a second time with
+the same idea; a free one is room for the next artifact.
+
+| Mechanic (hook) | Taken by | Still free |
+|---|---|---|
+| Cards seen: the hole card (`peek_hole`), the next card (`peek_next_card`) | Marked Deck, Cracked Mirror, Glass Eye, Lucky Clover (shows the undone card) | peeking at the dealer's next draw; the order of the next three |
+| Cards changed: swap, undo, bury, redeal, an ace (`replace_last_player_card`, `discard_last_player_card`, `bury_next_card`, `redeal_player_hand`, `last_player_card_becomes_ace`) | Card Sleeve, Lucky Clover, Stacked Deck, Second Wind, Top Hat | stealing a dealer's card; a wild card; splitting |
+| Cards given: a ten slipped on top of the shoe (`hand_started`) | Sore Loser | an ace after a blackjack; a pair on demand |
+| The dealer's play: freeze, stand on a total (`freeze_dealer`, `modify_dealer_stands_on`) | Sleeping Powder, Shaky Hand | the dealer busts on 22+; a dealer who shows both cards |
+| The payout by hand: win, push, loss (`modify_payout`) | Sleight of Hand (blackjack), Lucky Penny (push), Cursed Doll (wins, pushes), Black Cat (19+), Gambler's Nerve (4+ cards), Steady Hands (doubles), Pauper's Crown (15 or less), Three Cherries (21 of 3+ cards), Loose Change (loss refund), Rabbit's Foot (streak) | a payout by the dealer's total; by the card suits; by a first card |
+| The stake (`modify_stake`) | nothing | a capped stake that keeps the rest safe (the old Loose Change); a bigger first hand |
+| Double down (`allows_credit_double`) | Credit Line | doubling after a hit; doubling for free once per loan |
+| The debt: payment, new debt, new loan, deadline (`modify_payment`, `modify_new_debt`, `modify_new_loan`, `modify_deadline`, `reduce_debt`, `extend_deadline`) | Silver Chip, Pawn Ticket, Fat Purse, Borrowed Time, Collector's Ledger, Hourglass, Hush Envelope | the debt growing with the win streak; paying early with a bonus; a lender who forgets a hand |
+| Lives (`prevent_death`) | Candle of Mercy | an extra finger; a finger traded for a win |
+| Offers (`modify_offer_size`) | Magpie | rerolling an offer; a guaranteed rare; selling a held artifact |
+| After a hand (`hand_ended`) | Sore Loser | momentum after a win; a reshuffle after a loss |
+| Unlock events | hands played / won, busts, deaths (all, by debt), chips peak, win streak, tricks, debts paid, blackjacks, pushes, wins with 10 or less, dealer busts, shoe shuffles, doubles, dealer blackjacks, Cracked Mirror uses | an early payoff; a fifth-finger run; surviving with fewer than ten chips |

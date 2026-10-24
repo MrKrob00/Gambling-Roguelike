@@ -55,7 +55,7 @@ func can_deal() -> bool:
 	return phase == Phase.BETTING and bet >= min_bet()
 
 func can_double() -> bool:
-	return is_player_turn() and player.cards.size() == 2 and not doubled and run.chips >= bet
+	return is_player_turn() and player.cards.size() == 2 and not doubled and (run.chips >= bet or _credit_double())
 
 ## The stake is always the whole purse: there is no choosing a bet. The view deals through this door.
 func can_deal_all_in() -> bool:
@@ -131,13 +131,30 @@ func stand() -> void:
 		return
 	_set_phase(Phase.DEALER_TURN)
 	_reveal_hole()
-	while not dealer_frozen and dealer.total() < Rules.DEALER_STANDS_ON:
+	while not dealer_frozen and dealer.total() < _dealer_stands_on():
 		_draw(true, true)
 	_settle()
+
+## The effect that lets the player double on credit, or null.
+func _credit_double():
+	for fx in run.effects:
+		if fx.allows_credit_double(self):
+			return fx
+	return null
+
+func _dealer_stands_on() -> int:
+	var total := Rules.DEALER_STANDS_ON
+	for fx in run.effects:
+		total = fx.modify_dealer_stands_on(total)
+	return total
 
 func double_down() -> void:
 	if not can_double():
 		return
+	if run.chips < bet:
+		var credit = _credit_double()
+		credit.notify()
+		run.borrow(bet - run.chips)
 	run.add_chips(-bet)
 	bet *= 2
 	doubled = true
@@ -301,6 +318,8 @@ func _settle() -> void:
 	bet = 0
 	_set_phase(Phase.RESOLVED)
 	hand_resolved.emit(outcome, settled_bet, payout)
+	for fx in run.effects:
+		fx.hand_ended(self, outcome)
 	run.hand_finished(bet, outcome == Outcome.LOSE or outcome == Outcome.BUST)
 
 func _record(outcome: int) -> void:
@@ -324,6 +343,8 @@ func _record(outcome: int) -> void:
 		Events.stat_added.emit(Stat.DEALER_BUSTS, 1)
 	if outcome == Outcome.BLACKJACK:
 		Events.stat_added.emit(Stat.BLACKJACKS, 1)
+	if dealer.is_blackjack():
+		Events.stat_added.emit(Stat.DEALER_BLACKJACKS, 1)
 	if outcome == Outcome.BUST:
 		Events.stat_added.emit(Stat.BUSTS, 1)
 

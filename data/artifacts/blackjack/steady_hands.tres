@@ -16,5 +16,5 @@ button = false
 uses_per_hand = 0
 cooldown_hands = 0
 charges = 0
-unlock_stat = &"doubles_won"
-unlock_value = 3
+unlock_stat = &"win_streak"
+unlock_value = 6

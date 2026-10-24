@@ -69,7 +69,7 @@ func _load_everything(path: String) -> void:
 
 func _catalog() -> void:
 	var cat = root.get_node("Catalog")
-	check(cat.all().size() == 26, "catalog holds 26 artifacts, has %d" % cat.all().size())
+	check(cat.all().size() == 31, "catalog holds 31 artifacts, has %d" % cat.all().size())
 	var tr_ok := true
 	for a in cat.all():
 		for part in ["NAME", "DESC", "HINT"]:
@@ -212,6 +212,28 @@ func _artifacts() -> void:
 	run = _run([&"borrowed_time"])
 	check(_fx(run, &"borrowed_time").modify_deadline(Rules.PAYMENT_EVERY) == Rules.PAYMENT_EVERY + 2, "borrowed time adds two hands")
 	check(_fx(run, &"borrowed_time").modify_new_loan(150) == 120, "borrowed time shrinks the loan by a fifth")
+
+	# Credit line: a double down with an empty purse, the borrowed chips go on the debt.
+	run = _run([&"credit_line"])
+	table = Table.new(run, 1)
+	_stack(table, [[5], [10], [6], [7], [10], [8]])
+	table.deal_all_in()
+	check(table.can_double() and run.chips == 0, "credit line lets the player double with an empty purse")
+	var debt_before: int = run.debt
+	table.double_down()
+	check(run.debt == debt_before + 500, "the credit adds the borrowed stake to the debt, debt %d" % run.debt)
+
+	# Magpie: a free offer shows one artifact more; shaky hand: the dealer stands on 16.
+	run = _run([&"magpie"])
+	var profile = root.get_node("Profile")
+	for a in root.get_node("Catalog").all():
+		profile.unlocked.append(String(a.id))
+	run.start_free_offer()
+	check(run.offer.size() == Rules.OFFER_SIZE + 1, "magpie adds one artifact to the offer, got %d" % run.offer.size())
+	profile.reset()
+	run = _run([&"shaky_hand"])
+	table = Table.new(run, 1)
+	check(table._dealer_stands_on() == Rules.DEALER_STANDS_ON - 1, "shaky hand makes the dealer stand on 16")
 
 	# Marked deck is passive: the hole card is known from the deal.
 	run = _run([&"marked_deck"])
@@ -585,6 +607,9 @@ func _unlocks() -> void:
 	check(profile.is_unlocked(_artifact(&"lucky_penny")), "the first push opens the lucky penny")
 	events.stat_added.emit(Stat.LOW_WINS, 1)
 	check(profile.is_unlocked(_artifact(&"paupers_crown")), "a win with 10 or less opens the pauper's crown")
+	check(not profile.is_unlocked(_artifact(&"credit_line")), "the credit line starts locked")
+	events.stat_added.emit(Stat.DEALER_BLACKJACKS, 1)
+	check(profile.is_unlocked(_artifact(&"credit_line")), "a dealer's blackjack opens the credit line")
 	check(not profile.is_unlocked(_artifact(&"marked_deck")), "the marked deck starts locked")
 	for i in 9:
 		events.stat_added.emit(Stat.MIRROR_USES, 1)

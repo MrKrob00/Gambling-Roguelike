@@ -117,6 +117,13 @@ func pay_off() -> bool:
 	_pay()
 	return true
 
+## Chips lent on the spot (a double down on credit): they are added to the debt as well.
+func borrow(amount: int) -> void:
+	add_chips(amount)
+	debt += amount
+	debt_changed.emit(debt)
+	countdown_changed.emit(hands_to_payment, next_payment())
+
 func add_chips(delta: int) -> void:
 	chips = maxi(chips + delta, 0)
 	if chips > peak_chips:
@@ -150,7 +157,10 @@ func _roll() -> void:
 		var tmp = pool[i]
 		pool[i] = pool[j]
 		pool[j] = tmp
-	offer = pool.slice(0, Rules.OFFER_SIZE)
+	var size := Rules.OFFER_SIZE
+	for fx in effects:
+		size = fx.modify_offer_size(size)
+	offer = pool.slice(0, size)
 	offer_stage = Offer.CHOOSING if not offer.is_empty() else Offer.NONE
 	offer_changed.emit()
 
