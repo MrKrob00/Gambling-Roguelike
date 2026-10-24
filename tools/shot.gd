@@ -1,6 +1,7 @@
 extends SceneTree
 ## Renders a screen with a real GL driver and saves a PNG. Headless never draws.
 ## SHOT=menu|lobby|result|table3d|table3d_play|table3d_offer  OUT=/tmp/shot.png  LOCALE=en|ru
+## store media: ALL=1 (lobby, every artifact open), OFFER=id,id,id (offer), CUT=0 LIVES=4 (the bite)
 ## xvfb-run -a -s "-screen 0 1280x720x24" godot --path <copy> --rendering-driver opengl3 \
 ##   --resolution 1280x720 --script res://tools/shot.gd
 
@@ -17,6 +18,12 @@ func _initialize() -> void:
 		"menu":
 			scene = load("res://ui/menu/main_menu.tscn").instantiate()
 		"lobby":
+			if OS.has_environment("ALL"):
+				var profile_all = root.get_node("Profile")
+				profile_all.save_path = "user://shot_profile.json"
+				for a in catalog.all():
+					if not profile_all.unlocked.has(a.id):
+						profile_all.unlocked.append(a.id)
 			scene = load("res://ui/lobby/lobby.tscn").instantiate()
 		"table3d", "table3d_play", "pickcheck", "table3d_offer":
 			var loadout3 := [catalog.by_id(&"lucky_clover"), catalog.by_id(&"marked_deck"), catalog.by_id(&"cursed_doll")]
@@ -28,7 +35,7 @@ func _initialize() -> void:
 			if shot == "table3d_offer":
 				var profile = root.get_node("Profile")
 				profile.save_path = "user://shot_profile.json"
-				for id in ["cursed_doll", "silver_chip", "top_hat"]:
+				for id in (OS.get_environment("OFFER").split(",") if OS.has_environment("OFFER") else ["cursed_doll", "silver_chip", "top_hat"]):
 					profile.unlocked.append(id)
 				game.run = load("res://core/run_state.gd").new(&"blackjack", [])
 				game.run.start_free_offer()

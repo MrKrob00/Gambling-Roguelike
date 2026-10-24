@@ -1,0 +1,177 @@
+/*
+  Borrowed Luck: itch.io page theme.
+  itch.io > Edit game > Theme > Custom CSS (paste everything below).
+  Palette is the game's: black felt, aged gold, oxblood, the purple of the UI panels.
+  Dashboard colours to set next to it (the "Colors" part of the theme editor):
+    Background #0e0714   Text #e6dcf0   Links/buttons #f5a13b   Button text #1a0a24   Border #5b2f8a
+*/
+@import url('https://fonts.googleapis.com/css2?family=Rye&family=Underdog&display=swap');
+
+:root {
+  --bl-bg: #0e0714;
+  --bl-panel: #1d0f2b;
+  --bl-panel-2: #2a1540;
+  --bl-text: #e6dcf0;
+  --bl-dim: #a99bbd;
+  --bl-gold: #f5a13b;
+  --bl-blood: #a3151f;
+  --bl-purple: #5b2f8a;
+}
+
+body,
+body.game_theme,
+#wrapper,
+.page_widget,
+.view_game_page .game_frame_widget {
+  background: var(--bl-bg) !important;
+  color: var(--bl-text) !important;
+  font-family: 'Underdog', 'Georgia', serif !important;
+}
+
+/* a slow blood-red glow from the bottom of the page, like the rim light over the dealer */
+body {
+  background-image:
+    radial-gradient(ellipse at 50% 120%, rgba(163, 21, 31, 0.35), transparent 60%),
+    radial-gradient(ellipse at 50% -20%, rgba(91, 47, 138, 0.35), transparent 55%) !important;
+  background-attachment: fixed !important;
+}
+
+.inner_column,
+.game_info_panel_widget,
+.game_info_panel_widget .game_info_panel_widget,
+.buy_row,
+.user_formatted {
+  background: transparent !important;
+}
+
+.inner_column {
+  max-width: 1000px;
+}
+
+/* headings are the game's title font */
+.game_title,
+.game_title h1,
+.user_formatted h1,
+.user_formatted h2,
+.user_formatted h3,
+.page_widget h2,
+.page_widget h3,
+.header_widget .game_title {
+  font-family: 'Rye', 'Underdog', serif !important;
+  color: var(--bl-gold) !important;
+  letter-spacing: 0.02em;
+  text-shadow: 0 2px 0 #1a0a24, 0 0 18px rgba(245, 161, 59, 0.25);
+}
+
+.user_formatted h2,
+.user_formatted h3 {
+  border-bottom: 2px solid var(--bl-purple);
+  padding-bottom: 0.25em;
+  margin-top: 1.6em;
+}
+
+.user_formatted p,
+.user_formatted li {
+  line-height: 1.6;
+  color: var(--bl-text) !important;
+}
+
+.user_formatted strong {
+  color: var(--bl-gold);
+}
+
+.user_formatted code {
+  background: var(--bl-panel-2);
+  color: var(--bl-gold);
+  border: 1px solid var(--bl-purple);
+  border-radius: 3px;
+  padding: 0 0.35em;
+}
+
+.user_formatted a,
+a {
+  color: var(--bl-gold) !important;
+}
+
+.user_formatted a:hover,
+a:hover {
+  color: #ffd08a !important;
+}
+
+/* the game frame and the screenshots get a framed-panel look */
+.game_frame,
+.screenshot_list a,
+.screenshot_list img,
+.user_formatted img {
+  border: 2px solid var(--bl-purple) !important;
+  border-radius: 2px;
+  box-shadow: 0 0 0 3px #1a0a24, 0 8px 24px rgba(0, 0, 0, 0.6);
+}
+
+/* buttons: gold plate with a dark purple label, like the plaques on the table */
+.button,
+.button.buy_btn,
+.button.download_btn,
+.button.nav_btn,
+button.button,
+.game_download .button {
+  background: var(--bl-gold) !important;
+  color: #1a0a24 !important;
+  font-family: 'Rye', serif !important;
+  border: 3px solid #7a4b12 !important;
+  border-radius: 2px !important;
+  text-shadow: none !important;
+  box-shadow: 0 4px 0 #3a2208;
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+
+.button:hover,
+.button.buy_btn:hover,
+.button.download_btn:hover {
+  background: #ffbd63 !important;
+}
+
+.button:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #3a2208;
+}
+
+/* the info table on the right (platform, rating, tags) */
+.game_info_panel_widget table td,
+.game_info_panel_widget table th {
+  border-color: #2e1a45 !important;
+  color: var(--bl-text) !important;
+}
+
+.game_info_panel_widget table td:first-child {
+  color: var(--bl-dim) !important;
+}
+
+.game_info_panel_widget a.tag,
+.tags a {
+  background: var(--bl-panel-2);
+  border: 1px solid var(--bl-purple);
+  border-radius: 2px;
+}
+
+/* the footer and the comment area stay readable on the dark page */
+.footer_widget,
+.community_post_list_widget,
+.community_topic_form,
+textarea,
+input[type='text'] {
+  background: var(--bl-panel) !important;
+  color: var(--bl-text) !important;
+  border-color: var(--bl-purple) !important;
+}
+
+::selection {
+  background: var(--bl-blood);
+  color: #fff;
+}
+
+@media (max-width: 640px) {
+  .user_formatted h2 {
+    font-size: 1.35em;
+  }
+}
