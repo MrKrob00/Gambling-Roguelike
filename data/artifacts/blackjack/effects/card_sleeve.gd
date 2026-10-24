@@ -1,7 +1,7 @@
 extends "res://data/artifact_effect.gd"
 ## Active: swaps the last card for a fresh one. Cheating costs hush money, taken out of the stake.
 
-const HUSH_FRACTION := 0.2
+const HUSH_FRACTION := 0.15
 const HUSH_MIN := 5
 
 func hush_cost(table) -> int:

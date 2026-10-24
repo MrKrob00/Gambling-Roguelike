@@ -19,7 +19,7 @@ func _initialize() -> void:
 	var base := _measure(Table, RunState, null, runs)
 	print("%-18s debts %.2f  hands %.1f  first-life %.0f%%" % ["(nothing)", base[0], base[1], base[2]])
 	for data in catalog.all():
-		if only != "" and str(data.id) != only:
+		if only != "" and not (str(data.id) in only.split(",")):
 			continue
 		var m := _measure(Table, RunState, data, runs)
 		rows.append([data.id, m[0], m[1], m[2], m[0] - base[0]])
@@ -61,14 +61,14 @@ func _play(table) -> void:
 	while table.is_player_turn() and guard < 30:
 		guard += 1
 		if not table.draft.is_empty():
-			table.pick_draft(0)
+			table.pick_draft(_best_draft(table))
 			continue
 		var total: int = table.player.total()
 		var up: int = mini(table.dealer.cards[0].rank, 10)
 		var soft: bool = table.player.is_soft()
-		if total >= 12 and total < 21:
+		if total < 21:
 			for fx in table.run.effects:
-				if fx.data.button and fx.can_use(table):
+				if fx.data.button and total >= _window(fx.data.id)[0] and total <= _window(fx.data.id)[1] and fx.can_use(table):
 					table.use_artifact(fx)
 					break
 		if not table.is_player_turn():
@@ -81,3 +81,21 @@ func _play(table) -> void:
 			table.stand()
 		else:
 			table.hit()
+
+## The draft card that keeps the hand nearest to 21 without busting.
+func _best_draft(table) -> int:
+	var best := 0
+	var best_total := -1
+	for i in table.draft.size():
+		var total: int = table.player.total() + mini(table.draft[i].rank, 10)
+		if total <= 21 and total > best_total:
+			best_total = total
+			best = i
+	return best
+
+## The hand totals at which the bot presses a button; the default is a stiff hand.
+func _window(id: StringName) -> Array:
+	match id:
+		&"card_sleeve": return [14, 16]
+		&"pickpocket": return [4, 11]
+		_: return [13, 20]

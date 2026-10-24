@@ -372,8 +372,8 @@
   "ru": "Карта в рукаве"
  },
  "ARTIFACT_CARD_SLEEVE_DESC": {
-  "en": "+ Swaps your last card for a new one\n- Costs 20% of your stake",
-  "ru": "+ Меняет последнюю карту на новую\n- Стоит 20% ставки"
+  "en": "+ Swaps your last card for a new one\n- Costs 15% of your stake",
+  "ru": "+ Меняет последнюю карту на новую\n- Стоит 15% ставки"
  },
  "ARTIFACT_CARD_SLEEVE_HINT": {
   "en": "Win 5 hands",
@@ -444,8 +444,8 @@
   "ru": "Книга коллектора"
  },
  "ARTIFACT_COLLECTORS_LEDGER_DESC": {
-  "en": "+ The debt due is 30% smaller\n- The deadline comes a hand sooner",
-  "ru": "+ Долг к выплате на 30% меньше\n- Срок наступает на раздачу раньше"
+  "en": "+ The debt due is 15% smaller\n- The deadline comes a hand sooner",
+  "ru": "+ Долг к выплате на 15% меньше\n- Срок наступает на раздачу раньше"
  },
  "ARTIFACT_COLLECTORS_LEDGER_HINT": {
   "en": "Be killed by the collectors",
@@ -632,8 +632,8 @@
   "ru": "Мелочь в кармане"
  },
  "ARTIFACT_LOOSE_CHANGE_DESC": {
-  "en": "+ A lost hand gives half of the stake back\n- Works once every 4 hands",
-  "ru": "+ Проигранная раздача возвращает половину ставки\n- Срабатывает раз в 4 раздачи"
+  "en": "+ A lost hand gives half of the stake back\n- Works once every 5 hands",
+  "ru": "+ Проигранная раздача возвращает половину ставки\n- Срабатывает раз в 5 раздач"
  },
  "ARTIFACT_LOOSE_CHANGE_HINT": {
   "en": "Go broke twice",
@@ -728,8 +728,8 @@
   "ru": "Закладная"
  },
  "ARTIFACT_PAWN_TICKET_DESC": {
-  "en": "+ New debts are written 15% smaller",
-  "ru": "+ Новые долги записываются на 15% меньше"
+  "en": "+ New debts are written 10% smaller",
+  "ru": "+ Новые долги записываются на 10% меньше"
  },
  "ARTIFACT_PAWN_TICKET_HINT": {
   "en": "Pay 4 debts",
@@ -740,8 +740,8 @@
   "ru": "Тугой кошелёк"
  },
  "ARTIFACT_FAT_PURSE_DESC": {
-  "en": "+ New loans are 50% bigger\n- New debts are 75% bigger",
-  "ru": "+ Новые займы на 50% больше\n- Новые долги на 75% больше"
+  "en": "+ New loans are 50% bigger\n- New debts are 50% bigger",
+  "ru": "+ Новые займы на 50% больше\n- Новые долги на 50% больше"
  },
  "ARTIFACT_FAT_PURSE_HINT": {
   "en": "Hold 1500 chips",
@@ -808,8 +808,8 @@
   "ru": "Взятое время"
  },
  "ARTIFACT_BORROWED_TIME_DESC": {
-  "en": "+ Two more hands before a debt falls due\n- New loans are a fifth smaller",
-  "ru": "+ На две раздачи больше до срока долга\n- Новые займы меньше на пятую часть"
+  "en": "+ Two more hands before a debt falls due\n- New loans are a tenth smaller",
+  "ru": "+ На две раздачи больше до срока долга\n- Новые займы меньше на десятую часть"
  },
  "ARTIFACT_BORROWED_TIME_HINT": {
   "en": "Die to the collectors 3 times",

@@ -211,7 +211,7 @@ func _artifacts() -> void:
 	# Borrowed time: two more hands, a smaller loan.
 	run = _run([&"borrowed_time"])
 	check(_fx(run, &"borrowed_time").modify_deadline(Rules.PAYMENT_EVERY) == Rules.PAYMENT_EVERY + 2, "borrowed time adds two hands")
-	check(_fx(run, &"borrowed_time").modify_new_loan(150) == 120, "borrowed time shrinks the loan by a fifth")
+	check(_fx(run, &"borrowed_time").modify_new_loan(150) == 135, "borrowed time shrinks the loan by a tenth")
 
 	# Credit line: a double down with an empty purse, the borrowed chips go on the debt.
 	run = _run([&"credit_line"])
@@ -402,7 +402,7 @@ func _artifacts() -> void:
 	var before: int = run.chips
 	table.use_artifact(_fx(run, &"card_sleeve"))
 	check(table.player.total() == 12, "sleeve swapped 6 for 2, total %d" % table.player.total())
-	check(run.chips == before - 20, "sleeve costs 20%% of the stake, chips %d" % run.chips)
+	check(run.chips == before - 15, "sleeve costs 15%% of the stake, chips %d" % run.chips)
 	check(not _fx(run, &"card_sleeve").can_use(table) or table.phase != Table.Phase.PLAYER_TURN, "sleeve recharges: not usable right after use")
 	check(_fx(run, &"card_sleeve").cooldown_left == 3, "sleeve waits 3 hands")
 
@@ -477,7 +477,7 @@ func _artifacts() -> void:
 	check(table.bet == 500, "loose change stakes the whole purse, bet %d" % table.bet)
 	table.hit()
 	check(table.phase == Table.Phase.RESOLVED and run.chips == 250, "loose change returns half of a lost stake, chips %d" % run.chips)
-	check(_fx(run, &"loose_change").cooldown_left == 4, "loose change needs a few hands to recharge")
+	check(_fx(run, &"loose_change").cooldown_left == 5, "loose change needs a few hands to recharge")
 
 	# Lucky penny: a push pays half a stake more.
 	run = _run([&"lucky_penny"])
@@ -553,14 +553,14 @@ func _artifacts() -> void:
 	# Pawn ticket and fat purse change what the house writes.
 	run = _run([&"pawn_ticket"])
 	run.payments_paid = 1
-	check(run.current_debt() == 530, "pawn ticket writes 625 as 530, got %d" % run.current_debt())
+	check(run.current_debt() == 565, "pawn ticket writes 625 as 565, got %d" % run.current_debt())
 	run = _run([&"fat_purse"])
-	check(run.current_loan() == 225 and run.current_debt() == 440, "fat purse: loan 225, debt 440, got %d / %d" % [run.current_loan(), run.current_debt()])
+	check(run.current_loan() == 225 and run.current_debt() == 375, "fat purse: loan 225, debt 375, got %d / %d" % [run.current_loan(), run.current_debt()])
 
 	# Collector's ledger raises the minimum bet and lowers payments.
 	run = _run([&"collectors_ledger"])
 	check(run.payment_every() == Rules.PAYMENT_EVERY - 1, "ledger brings the deadline a hand sooner")
-	check(run.next_payment() == 175, "ledger cuts the debt due to 175, got %d" % run.next_payment())
+	check(run.next_payment() == 213, "ledger cuts the debt due to 213, got %d" % run.next_payment())
 	run = _run([&"silver_chip"])
 	check(run.next_payment() == 225, "silver chip cuts the debt due to 225, got %d" % run.next_payment())
 

@@ -1,7 +1,7 @@
 extends "res://data/artifact_effect.gd"
-## Passive: new debts are written a sixth smaller.
+## Passive: new debts are written a tenth smaller.
 
-const DISCOUNT := 0.85
+const DISCOUNT := 0.9
 const ROUND_TO := 5
 
 func modify_new_debt(debt: int) -> int:

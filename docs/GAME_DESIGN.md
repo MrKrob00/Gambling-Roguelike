@@ -56,8 +56,8 @@ Each cell is one artifact; an empty cell is room for the next one.
 |---|---|---|---|---|
 | Hand and cards | Card Sleeve (swap a card, 3 hands), Cracked Mirror (next card, 3 hands), Stacked Deck (bury the next card, 3 hands) | Marked Deck (hole card), Glass Eye (next card each hand), Gambler's Nerve (4+ cards) | Lucky Clover (undo a bust), Top Hat (ace), Second Wind (redeal), Sleeping Powder (dealer stands) | |
 | Payout | | Sleight of Hand (blackjack 2:1), Rabbit's Foot (streaks), Lucky Penny (pushes), Steady Hands (doubles), Pauper's Crown (small winning hands) | | Cursed Doll (+50% wins, pushes lose), Black Cat (19+ pay double, 17- only the stake) |
-| The stake | | Loose Change (half a lost stake back, every 4 hands) | | |
-| The debt | | Silver Chip (-10% due), Pawn Ticket (new debts -15%) | Hush Envelope (-25% now) | Collector's Ledger (-30% due, a hand sooner), Fat Purse (+50% loans, +75% debts) |
+| The stake | | Loose Change (half a lost stake back, every 5 hands) | | |
+| The debt | | Silver Chip (-10% due), Pawn Ticket (new debts -10%) | Hush Envelope (-25% now) | Collector's Ledger (-15% due, a hand sooner), Fat Purse (+50% loans, +50% debts) |
 | The deadline | | | Hourglass (+2 hands) | Collector's Ledger, Borrowed Time (+2 hands, smaller loans) |
 | Lives | | | Candle of Mercy (survive a death, the last loan again), Pawned Finger (a finger for the whole debt) | |
 
@@ -77,7 +77,7 @@ artifact that shortens the deadline for bigger payouts.
 |---|---|---|---|
 | lucky_clover | consumable, 3 | Undo a bust: the last card goes back on top of the shoe and lies face up beside it, as with the Cracked Mirror | open |
 | marked_deck | passive | Every hand starts with the dealer's hole card shown | use the Cracked Mirror 10 times |
-| card_sleeve | active, 3 hands | Swap your last card for a fresh one, costs 20% of the stake | open |
+| card_sleeve | active, 3 hands | Swap your last card for a fresh one, costs 15% of the stake | open |
 | cracked_mirror | active, 3 hands | Show the next card of the shoe | win 3 hands |
 | cursed_doll | cursed | Wins pay +50%, a push counts as a loss | open |
 | black_cat | cursed | 19+ wins pay double, wins on 17 or less only return the stake | win 4 in a row |
@@ -86,10 +86,10 @@ artifact that shortens the deadline for bigger payouts.
 | lucky_penny | passive | A push pays half a stake more | the first push |
 | gamblers_nerve | passive | Winning with 4+ cards pays +50% | win 12 hands |
 | rabbits_foot | passive | Wins in a streak of 2+ pay +10% per streak step | win 3 in a row |
-| loose_change | passive | A lost hand gives half the stake back; works once every 4 hands | die twice |
-| pawn_ticket | passive | New debts are written 15% smaller | pay 4 debts |
-| fat_purse | cursed | New loans +50%, new debts +75% | hold 1500 chips |
-| collectors_ledger | cursed | The debt due is 30% smaller, the deadline a hand sooner | die to the collectors |
+| loose_change | passive | A lost hand gives half the stake back; works once every 5 hands | die twice |
+| pawn_ticket | passive | New debts are written 10% smaller | pay 4 debts |
+| fat_purse | cursed | New loans +50%, new debts +50% | hold 1500 chips |
+| collectors_ledger | cursed | The debt due is 15% smaller, the deadline a hand sooner | die to the collectors |
 | candle_of_mercy | consumable, 1 | Survive a death, the house hands over your last loan again | die 3 times |
 | top_hat | consumable, 1 | Turn your last card into an Ace | use tricks 10 times |
 | second_wind | consumable, 1 | Throw your hand away and deal two new cards | hold 600 chips |
@@ -99,7 +99,7 @@ artifact that shortens the deadline for bigger payouts.
 | stacked_deck | active, 3 hands | Bury the next card at the bottom of the shoe and show the one beneath | make the dealer bust 6 times |
 | glass_eye | passive, rare | Every hand starts with the next card of the shoe shown beside it | see the shoe shuffled 3 times |
 | steady_hands | passive | A won double down pays half a stake more | win 6 hands in a row |
-| borrowed_time | cursed | Two more hands before a debt falls due, new loans a fifth smaller | die to the collectors 3 times |
+| borrowed_time | cursed | Two more hands before a debt falls due, new loans a tenth smaller | die to the collectors 3 times |
 | sore_loser | passive | After a lost hand the next one starts with a ten | die 4 times |
 | credit_line | passive, rare | Double down with an empty purse; the borrowed chips are added to the debt | the dealer draws a blackjack |
 | magpie | passive | A free offer shows one artifact more | pay 6 debts |
@@ -142,3 +142,7 @@ the same idea; a free one is room for the next artifact.
 ## The pocket
 
 Artifacts can be stored in the pocket (2 wells) between hands; stored ones do not work. Deeper Pocket (consumable, opens at 20 hands) adds a well for the run; Smuggler's Coat (passive, opens by using the Deeper Pocket) adds two while worn; Clenched Fist (cursed, opens after 5 hands in the Coat) takes one away and pays half as much again on a win.
+
+## Artifact balance (tools/artifact_balance.gd)
+
+A bot with basic strategy holds one artifact from the start; debts closed per run is compared with a run of nothing (about 2.5). It pays debts early, so deadline changes and anything that needs a human's judgement (mirror, clover, hourglass, hand swap, counter) read as zero: those are tuned by feel. Tuned after the first sweep: Collector's Ledger (+0.9, now -15% due), Pawn Ticket, Loose Change (+0.5, now every 5 hands), Fat Purse (-0.3, now +50% debts, about +0.1), Borrowed Time (-0.6, now -10% loans), Card Sleeve and Pickpocket (weak, cheaper). Clenched Fist (x1.5 on a win, +0.7) was left at the number asked for: it is the strongest artifact in the pool by design, and a cursed one.

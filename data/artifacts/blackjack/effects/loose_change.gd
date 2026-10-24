@@ -4,7 +4,7 @@ extends "res://data/artifact_effect.gd"
 
 const REFUND := 0.5
 const ROUND_TO := 5
-const COOLDOWN := 4
+const COOLDOWN := 5
 
 func modify_payout(table, payout: int, outcome: int) -> int:
 	if outcome != table.Outcome.LOSE and outcome != table.Outcome.BUST:
